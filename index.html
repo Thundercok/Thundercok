@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spinning Donut ASCII</title>
+    <title>Ông Ba Chèo's Researches</title>
     <style>
         /* Định dạng giao diện tối giản để làm nổi bật chiếc bánh donut */
         body {
@@ -66,7 +66,7 @@
                 var ct=Math.cos(j), st=Math.sin(j);
                 for(var i=0; i<6.28; i+=0.02) { // Vòng lặp phi
                     var sp=Math.sin(i), cp=Math.cos(i),
-                        h=ct+2, // Bán kính vòng xuyến
+                        h=ct+4, // Bán kính vòng xuyến
                         D=1/(sp*h*sA+st*cA+5), // Giá trị Z (chiều sâu)
                         t=sp*h*cA-st*sA;
                         
@@ -91,7 +91,7 @@
         }
         
         // Gọi hàm drawDonut 30 lần mỗi giây (30 FPS)
-        setInterval(drawDonut, 33);
+        setInterval(drawDonut, 63);
         
     })();
 </script>

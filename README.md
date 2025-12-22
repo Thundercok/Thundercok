@@ -3,10 +3,8 @@
   <img src="https://github-readme-stats-eight-theta.vercel.app/api/top-langs/?username=Thundercok&langs_count=6&layout=compact&hide_title=true&hide_border=true&theme=dark&bg_color=0d1117" height="120" style="vertical-align: middle;" />
 
   <br/><br/>
-
   <a href="https://thundercok.github.io">
-  Try my page [thundercok.github.io]
-    <img src="https://img.shields.io/badge/VISIT%20MY%20WEBSITE-39d353?style=for-the-badge&logo=google-chrome&logoColor=white" alt="Website" />
+    <img src="https://img.shields.io/badge/Visit%20My%20Page-39d353?style=for-the-badge&logo=github&logoColor=white" alt="Visit My Page" />
   </a>
 </div>
 

@@ -5,8 +5,8 @@
   <br/><br/>
 
   <a href="https://thundercok.github.io">
+  Try my page [thundercok.github.io]
     <img src="https://img.shields.io/badge/VISIT%20MY%20WEBSITE-39d353?style=for-the-badge&logo=google-chrome&logoColor=white" alt="Website" />
   </a>
 </div>
 
-Try my page [thundercok.github.io](https://thundercok.github.io)

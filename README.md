@@ -3,7 +3,7 @@
   <img src="https://github-readme-stats-eight-theta.vercel.app/api/top-langs/?username=Thundercok&langs_count=6&layout=compact&hide_title=true&hide_border=true&theme=dark&bg_color=0d1117" height="120" style="vertical-align: middle;" />
   <br>
 <a href="https://thundercok.github.io">
-  <img src="https://img.shields.io/badge/🌐_VISIT_MY_WEBSITE-0d1117?style=for-the-badge&logo=vercel&logoColor=white&labelColor=238636" alt="Website" />
+  <img src="https://img.shields.io/badge/✨_My_Portfolio-5a32fa?style=flat-square&logo=magic&logoColor=white" alt="Website" />
 </a>
 </div>
 

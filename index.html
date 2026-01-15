@@ -1,1076 +1,570 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ông Năm Chèo · Research Lab</title>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap');
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ông Năm Chèo · Research Lab</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap');
 
-:root {
-  --green:   #00ff41;
-  --green2:  #00cc33;
-  --green3:  #008f11;
-  --dim:     #003b00;
-  --bg:      #020c02;
-  --bg2:     #040f04;
-  --border:  #0a1f0a;
-  --text:    #b0ffb0;
-  --muted:   #2a4a2a;
-  --amber:   #ffb000;
-  --red:     #ff3333;
-  --scan-speed: 8s;
-}
+    :root {
+      --green: #00ff41;
+      --green2: #00cc33;
+      --green3: #008f11;
+      --dim: #003b00;
+      --bg: #020c02;
+      --bg2: #040f04;
+      --border: #0a1f0a;
+      --text: #b0ffb0;
+      --muted: #2a4a2a;
+    }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-body {
-  background: var(--bg);
-  color: var(--green);
-  font-family: 'Share Tech Mono', monospace;
-  min-height: 100vh;
-  overflow: hidden;
-  position: relative;
-}
+    body {
+      background: var(--bg);
+      color: var(--green);
+      font-family: 'Share Tech Mono', monospace;
+      min-height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
 
-/* ── FLOW FIELD CANVAS ── */
-#canvas-bg {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  opacity: 0.55;
-}
+    /* ── FLOW FIELD CANVAS ── */
+    #canvas-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      opacity: 0.55;
+    }
 
-/* ── SCANLINE OVERLAY ── */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 2px,
-    rgba(0,0,0,0.15) 2px,
-    rgba(0,0,0,0.15) 4px
-  );
-}
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.15) 2px, rgba(0, 0, 0, 0.15) 4px);
+    }
 
-/* ── CRT VIGNETTE ── */
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  background: radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.7) 100%);
-}
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background: radial-gradient(ellipse at center, transparent 60%, rgba(0, 0, 0, 0.7) 100%);
+    }
 
-/* ── PHOSPHOR FLICKER ── */
-@keyframes flicker {
-  0%,100%{opacity:1} 92%{opacity:1} 93%{opacity:.92} 94%{opacity:1} 97%{opacity:.95} 98%{opacity:1}
-}
+    @keyframes flicker {
 
-/* ── SHELL ── */
-#shell {
-  position: relative;
-  z-index: 2;
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  animation: flicker 6s infinite;
-}
+      0%,
+      100% {
+        opacity: 1
+      }
 
-/* ── TOP BAR ── */
-#topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 20px;
-  border-bottom: 1px solid var(--border);
-  background: rgba(2,12,2,0.85);
-  flex-shrink: 0;
-}
+      92% {
+        opacity: 1
+      }
 
-.tb-left { display: flex; align-items: center; gap: 16px; }
+      93% {
+        opacity: .92
+      }
 
-.logo {
-  font-family: 'VT323', monospace;
-  font-size: 22px;
-  color: var(--green);
-  letter-spacing: 2px;
-  text-shadow: 0 0 10px var(--green3);
-}
+      94% {
+        opacity: 1
+      }
 
-.tb-status {
-  font-size: 10px;
-  color: var(--muted);
-  letter-spacing: 1px;
-}
+      97% {
+        opacity: .95
+      }
 
-.tb-status span { color: var(--green3); }
+      98% {
+        opacity: 1
+      }
+    }
 
-.tb-right {
-  font-size: 10px;
-  color: var(--muted);
-  letter-spacing: 1px;
-  text-align: right;
-  line-height: 1.8;
-}
+    #shell {
+      position: relative;
+      z-index: 2;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      animation: flicker 6s infinite;
+    }
 
-.tb-right .live {
-  color: var(--green);
-  animation: blink 1.2s step-end infinite;
-}
+    /* ── TOP BAR ── */
+    #topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 20px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(2, 12, 2, 0.85);
+      flex-shrink: 0;
+    }
 
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+    .tb-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
 
-/* ── TABS ── */
-#tabs {
-  display: flex;
-  gap: 0;
-  border-bottom: 1px solid var(--border);
-  background: rgba(2,8,2,0.9);
-  flex-shrink: 0;
-  padding: 0 20px;
-}
+    .logo {
+      font-family: 'VT323', monospace;
+      font-size: 24px;
+      color: var(--green);
+      letter-spacing: 2px;
+      text-shadow: 0 0 10px var(--green3);
+    }
 
-.tab {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 11px;
-  color: var(--muted);
-  padding: 8px 18px;
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  transition: color .15s;
-  position: relative;
-}
+    .tb-status {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 1px;
+    }
 
-.tab::before {
-  content: '[ ';
-  color: var(--dim);
-}
-.tab::after {
-  content: ' ]';
-  color: var(--dim);
-}
+    .tb-status span {
+      color: var(--green3);
+    }
 
-.tab.active {
-  color: var(--green);
-  border-bottom-color: var(--green);
-  text-shadow: 0 0 8px var(--green3);
-}
-.tab.active::before, .tab.active::after { color: var(--green3); }
-.tab:hover:not(.active) { color: var(--green3); }
+    .tb-right {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 1px;
+      text-align: right;
+      line-height: 1.8;
+    }
 
-/* ── CONTENT AREA ── */
-#content {
-  flex: 1;
-  overflow: hidden;
-  position: relative;
-}
+    .tb-right .live {
+      color: var(--green);
+      animation: blink 1.2s step-end infinite;
+    }
 
-.pane {
-  display: none;
-  height: 100%;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding: 20px;
-  scrollbar-width: thin;
-  scrollbar-color: var(--dim) transparent;
-}
-.pane::-webkit-scrollbar { width: 4px; }
-.pane::-webkit-scrollbar-thumb { background: var(--dim); }
-.pane.active { display: block; }
+    @keyframes blink {
 
-/* ══════════════════════════════
-   HOME PANE
-══════════════════════════════ */
-#pane-home {
-  display: none;
-  height: 100%;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  gap: 0;
-}
-#pane-home.active { display: flex; }
+      0%,
+      100% {
+        opacity: 1
+      }
 
-.home-title {
-  font-family: 'VT323', monospace;
-  font-size: clamp(36px, 6vw, 72px);
-  color: var(--green);
-  letter-spacing: 6px;
-  text-shadow: 0 0 20px var(--green3), 0 0 40px var(--dim);
-  line-height: 1;
-  text-align: center;
-}
+      50% {
+        opacity: 0
+      }
+    }
 
-.home-sub {
-  font-size: 11px;
-  color: var(--muted);
-  letter-spacing: 4px;
-  margin-top: 8px;
-  text-align: center;
-}
+    /* ── CONTENT AREA (PAPERS ONLY) ── */
+    #content {
+      flex: 1;
+      padding: 20px;
+      overflow: hidden;
+    }
 
-.home-divider {
-  width: 200px;
-  height: 1px;
-  background: var(--border);
-  margin: 28px auto;
-  position: relative;
-}
-.home-divider::before {
-  content: '◆';
-  position: absolute;
-  left: 50%; transform: translateX(-50%) translateY(-50%);
-  color: var(--green3);
-  font-size: 10px;
-  background: var(--bg);
-  padding: 0 6px;
-}
+    .papers-layout {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 20px;
+      height: 100%;
+    }
 
-.stat-grid {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin-bottom: 20px;
-}
+    .papers-sidebar {
+      border-right: 1px solid var(--border);
+      padding-right: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: var(--dim) transparent;
+    }
 
-.stat-box {
-  border: 1px solid var(--border);
-  padding: 14px 20px;
-  text-align: center;
-  min-width: 110px;
-  background: rgba(0,255,65,0.02);
-  position: relative;
-}
-.stat-box::before {
-  content: '';
-  position: absolute;
-  top: -1px; left: 8px;
-  width: 30px; height: 1px;
-  background: var(--bg);
-}
+    .pane-title {
+      font-size: 14px;
+      letter-spacing: 2px;
+      color: var(--green3);
+      margin-bottom: 8px;
+    }
 
-.stat-label {
-  font-size: 8px;
-  color: var(--muted);
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  margin-bottom: 6px;
-}
+    .papers-sidebar input {
+      width: 100%;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--green);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px;
+      padding: 8px 12px;
+      outline: none;
+      letter-spacing: 1px;
+    }
 
-.stat-val {
-  font-family: 'VT323', monospace;
-  font-size: 32px;
-  color: var(--green);
-  line-height: 1;
-  text-shadow: 0 0 10px var(--green3);
-}
+    .papers-sidebar input:focus {
+      border-color: var(--green3);
+    }
 
-.stat-unit {
-  font-size: 9px;
-  color: var(--green3);
-  margin-top: 2px;
-}
+    .papers-sidebar input::placeholder {
+      color: var(--dim);
+    }
 
-.rank-line {
-  font-size: 11px;
-  color: var(--muted);
-  letter-spacing: 2px;
-  text-align: center;
-}
-.rank-line strong { color: var(--green); font-weight: normal; }
+    .tag-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
 
-.prog-wrap {
-  width: 300px;
-  margin: 16px auto 0;
-}
-.prog-label-row {
-  display: flex;
-  justify-content: space-between;
-  font-size: 9px;
-  color: var(--muted);
-  letter-spacing: 1px;
-  margin-bottom: 6px;
-}
-.prog-track {
-  height: 3px;
-  background: var(--border);
-  position: relative;
-}
-.prog-fill {
-  height: 100%;
-  background: var(--green);
-  box-shadow: 0 0 6px var(--green3);
-  transition: width 1s;
-}
+    .ptag {
+      font-size: 10px;
+      padding: 4px 8px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      cursor: pointer;
+      letter-spacing: 1px;
+      transition: all .15s;
+    }
 
-/* ══════════════════════════════
-   GPA PANE
-══════════════════════════════ */
-.pane-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 16px;
-  flex-wrap: wrap;
-  gap: 8px;
-  border-bottom: 1px solid var(--border);
-  padding-bottom: 12px;
-}
+    .ptag.on {
+      border-color: var(--green3);
+      color: var(--green);
+      background: rgba(0, 255, 65, 0.05);
+    }
 
-.pane-title {
-  font-family: 'VT323', monospace;
-  font-size: 24px;
-  color: var(--green3);
-  letter-spacing: 3px;
-}
+    .ptag:hover:not(.on) {
+      color: var(--green3);
+      border-color: var(--dim);
+    }
 
-.pane-subtitle {
-  font-size: 9px;
-  color: var(--muted);
-  letter-spacing: 2px;
-  margin-top: 3px;
-}
+    .paper-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 10px;
+    }
 
-.gpa-hero {
-  font-family: 'VT323', monospace;
-  font-size: 48px;
-  color: var(--green);
-  text-shadow: 0 0 14px var(--green3);
-  line-height: 1;
-}
-.gpa-hero-sub {
-  font-size: 9px;
-  color: var(--muted);
-  letter-spacing: 2px;
-  text-align: right;
-  margin-top: 4px;
-}
+    .pcard {
+      border: 1px solid var(--border);
+      padding: 12px;
+      cursor: pointer;
+      transition: all .15s;
+      background: rgba(0, 255, 65, 0.01);
+    }
 
-/* sem tabs inside GPA pane */
-.sem-tabs {
-  display: flex;
-  gap: 0;
-  border: 1px solid var(--border);
-  margin-bottom: 14px;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-.sem-tabs::-webkit-scrollbar { display: none; }
-.sem-tab {
-  font-size: 9px;
-  color: var(--muted);
-  padding: 6px 14px;
-  cursor: pointer;
-  letter-spacing: 1px;
-  border-right: 1px solid var(--border);
-  white-space: nowrap;
-  transition: all .15s;
-  flex-shrink: 0;
-}
-.sem-tab:last-child { border-right: none; }
-.sem-tab.active { color: var(--green); background: rgba(0,255,65,0.04); }
-.sem-tab:hover:not(.active) { color: var(--green3); }
+    .pcard:hover,
+    .pcard.active {
+      border-color: var(--green3);
+      background: rgba(0, 255, 65, 0.04);
+    }
 
-/* ASCII table */
-.ascii-table-wrap {
-  overflow-x: auto;
-  margin-bottom: 12px;
-  font-size: 11px;
-}
-.ascii-table-wrap::-webkit-scrollbar { height: 3px; }
-.ascii-table-wrap::-webkit-scrollbar-thumb { background: var(--dim); }
+    .pcard.active .pc-title {
+      color: var(--green);
+    }
 
-table.gt {
-  width: 100%;
-  border-collapse: collapse;
-  min-width: 640px;
-}
-table.gt thead tr { border-bottom: 1px solid var(--border); }
-table.gt th {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 9px;
-  color: var(--muted);
-  padding: 6px 10px;
-  text-align: center;
-  letter-spacing: 2px;
-  font-weight: normal;
-  text-transform: uppercase;
-}
-table.gt th.l { text-align: left; }
-table.gt td {
-  padding: 7px 10px;
-  border-bottom: 1px solid rgba(10,31,10,0.6);
-  text-align: center;
-  font-size: 11px;
-  color: var(--muted);
-  transition: background .1s;
-}
-table.gt td.n { text-align: left; color: var(--text); max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-table.gt td.nil { color: var(--dim); }
-table.gt tr:hover td { background: rgba(0,255,65,0.025); }
-table.gt tr:hover td.n { color: var(--green); }
+    .pc-tag {
+      font-size: 10px;
+      color: var(--green3);
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
 
-.badge {
-  display: inline-block;
-  font-size: 9px;
-  padding: 2px 8px;
-  border: 1px solid;
-  letter-spacing: 1px;
-}
+    .pc-title {
+      font-size: 12px;
+      color: var(--text);
+      line-height: 1.5;
+      margin-bottom: 4px;
+    }
 
-.score-cards {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 12px;
-  flex-wrap: wrap;
-}
-.sc {
-  flex: 1;
-  min-width: 80px;
-  border: 1px solid var(--border);
-  padding: 10px 12px;
-  text-align: center;
-  background: rgba(0,255,65,0.01);
-}
-.sc-l { font-size: 8px; color: var(--muted); letter-spacing: 2px; margin-bottom: 4px; text-transform: uppercase; }
-.sc-v { font-family: 'VT323', monospace; font-size: 26px; line-height: 1; }
-.sc-s { font-size: 8px; color: var(--muted); margin-top: 2px; }
+    .content-viewer {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-height: 0;
+    }
 
-/* ══════════════════════════════
-   PAPERS PANE
-══════════════════════════════ */
-.papers-layout {
-  display: grid;
-  grid-template-columns: 220px 1fr;
-  gap: 16px;
-  height: calc(100vh - 120px);
-}
+    .viewer-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border: 1px solid var(--border);
+      padding: 8px 16px;
+      font-size: 12px;
+      color: var(--muted);
+      flex-shrink: 0;
+      background: rgba(2, 8, 2, 0.5);
+    }
 
-.papers-sidebar {
-  border-right: 1px solid var(--border);
-  padding-right: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: var(--dim) transparent;
-}
+    .viewer-title {
+      flex: 1;
+      color: var(--green3);
+      letter-spacing: 1px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
 
-.papers-sidebar input {
-  width: 100%;
-  background: transparent;
-  border: 1px solid var(--border);
-  color: var(--green);
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 10px;
-  padding: 6px 10px;
-  outline: none;
-  letter-spacing: 1px;
-}
-.papers-sidebar input:focus { border-color: var(--green3); }
-.papers-sidebar input::placeholder { color: var(--dim); }
+    .viewer-btn {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      padding: 4px 12px;
+      cursor: pointer;
+      background: transparent;
+      letter-spacing: 1px;
+      transition: all .15s;
+    }
 
-.tag-filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-}
-.ptag {
-  font-size: 9px;
-  padding: 3px 8px;
-  border: 1px solid var(--border);
-  color: var(--muted);
-  cursor: pointer;
-  letter-spacing: 1px;
-  transition: all .15s;
-}
-.ptag.on { border-color: var(--green3); color: var(--green); background: rgba(0,255,65,0.05); }
-.ptag:hover:not(.on) { color: var(--green3); border-color: var(--dim); }
+    .viewer-btn:hover {
+      color: var(--green);
+      border-color: var(--green3);
+    }
 
-.paper-list { display: flex; flex-direction: column; gap: 4px; }
+    .iframe-wrap {
+      flex: 1;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      position: relative;
+      background: #fff;
+      /* White background for PDFs/HTML */
+    }
 
-.pcard {
-  border: 1px solid var(--border);
-  padding: 10px;
-  cursor: pointer;
-  transition: all .15s;
-  background: rgba(0,255,65,0.01);
-}
-.pcard:hover, .pcard.active { border-color: var(--green3); background: rgba(0,255,65,0.04); }
-.pcard.active .pc-title { color: var(--green); }
-.pc-tag { font-size: 8px; color: var(--green3); letter-spacing: 1px; margin-bottom: 4px; }
-.pc-title { font-size: 10px; color: var(--text); line-height: 1.4; margin-bottom: 4px; }
-.pc-meta { font-size: 8px; color: var(--muted); }
+    .iframe-placeholder {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      background: var(--bg);
+      z-index: 10;
+    }
 
-.pdf-viewer {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  min-height: 0;
-}
+    .iframe-placeholder .big {
+      font-family: 'VT323', monospace;
+      font-size: 64px;
+      color: var(--dim);
+    }
 
-.pdf-toolbar {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  border: 1px solid var(--border);
-  padding: 6px 12px;
-  font-size: 10px;
-  color: var(--muted);
-  flex-shrink: 0;
-}
-.pdf-title { flex: 1; color: var(--green3); letter-spacing: 1px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.pdf-btn {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 9px;
-  color: var(--muted);
-  border: 1px solid var(--border);
-  padding: 3px 10px;
-  cursor: pointer;
-  background: transparent;
-  letter-spacing: 1px;
-  transition: all .15s;
-}
-.pdf-btn:hover { color: var(--green); border-color: var(--green3); }
+    .iframe-placeholder .hint {
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 2px;
+    }
 
-.pdf-frame-wrap {
-  flex: 1;
-  border: 1px solid var(--border);
-  overflow: hidden;
-  position: relative;
-  min-height: 400px;
-}
+    #content-embed {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: none;
+    }
 
-.pdf-placeholder {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-}
-.pdf-placeholder .big { font-family: 'VT323', monospace; font-size: 48px; color: var(--dim); }
-.pdf-placeholder .hint { font-size: 10px; color: var(--muted); letter-spacing: 2px; }
+    /* ── BOTTOM STATUS BAR ── */
+    #statusbar {
+      height: 26px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      background: rgba(2, 8, 2, 0.95);
+      flex-shrink: 0;
+      z-index: 2;
+    }
 
-#pdf-embed {
-  width: 100%;
-  height: 100%;
-  border: none;
-  display: none;
-}
+    .sb {
+      font-size: 10px;
+      color: var(--dim);
+      letter-spacing: 1px;
+    }
 
-/* ── BOTTOM STATUS BAR ── */
-#statusbar {
-  height: 22px;
-  border-top: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 20px;
-  background: rgba(2,8,2,0.95);
-  flex-shrink: 0;
-  z-index: 2;
-}
-.sb { font-size: 9px; color: var(--dim); letter-spacing: 1px; }
-.sb.green { color: var(--green3); }
-</style>
+    .sb.green {
+      color: var(--green3);
+    }
+  </style>
 </head>
+
 <body>
 
-<canvas id="canvas-bg"></canvas>
+  <canvas id="canvas-bg"></canvas>
 
-<div id="shell">
-
-  <!-- TOP BAR -->
-  <div id="topbar">
-    <div class="tb-left">
-      <div class="logo">ONC//LAB</div>
-      <div class="tb-status">SYS:<span id="sys-status">ONLINE</span> &nbsp;|&nbsp; MEM:<span>OK</span></div>
-    </div>
-    <div class="tb-right">
-      <span id="clock-display">--:--:--</span><br>
-      <span class="live">● LIVE</span>
-    </div>
-  </div>
-
-  <!-- TABS -->
-  <div id="tabs">
-    <div class="tab active" data-tab="home">HOME</div>
-    <div class="tab" data-tab="gpa">GPA</div>
-    <div class="tab" data-tab="papers">PAPERS</div>
-  </div>
-
-  <!-- CONTENT -->
-  <div id="content">
-
-    <!-- HOME -->
-    <div id="pane-home" class="pane active">
-      <div class="home-title" id="h-title">ÔNG NĂM CHÈO</div>
-      <div class="home-sub">RESEARCH LABORATORY &nbsp;·&nbsp; TDTU &nbsp;·&nbsp; HO CHI MINH CITY</div>
-
-      <div class="home-divider"></div>
-
-      <div class="stat-grid">
-        <div class="stat-box">
-          <div class="stat-label">ĐTBTL</div>
-          <div class="stat-val" id="h-dtb">—</div>
-          <div class="stat-unit">/ 10</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-label">XẾP LOẠI</div>
-          <div class="stat-val" id="h-rank" style="font-size:22px;padding-top:4px">—</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-label">TC TÍCH LŨY</div>
-          <div class="stat-val" id="h-tc">0</div>
-          <div class="stat-unit">TÍN CHỈ</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-label">PAPERS</div>
-          <div class="stat-val" id="h-papers">0</div>
-          <div class="stat-unit">PUBLISHED</div>
+  <div id="shell">
+    <div id="topbar">
+      <div class="tb-left">
+        <div class="logo">ONC//LAB</div>
+        <div class="tb-status">SYS:<span id="sys-status">ONLINE</span> &nbsp;|&nbsp; TYPE:<span>RESEARCH_ARCHIVE</span>
         </div>
       </div>
-
-      <div class="rank-line" id="h-rank-line">mục tiêu: &nbsp;<strong>GIỎI ≥ 8.0</strong></div>
-
-      <div class="prog-wrap">
-        <div class="prog-label-row">
-          <span id="h-prog-l">0% đến mục tiêu</span>
-          <span>TARGET: 8.00</span>
-        </div>
-        <div class="prog-track">
-          <div class="prog-fill" id="h-prog" style="width:0%"></div>
-        </div>
+      <div class="tb-right">
+        <span id="clock-display">--:--:--</span><br>
+        <span class="live">● LIVE</span>
       </div>
     </div>
 
-    <!-- GPA -->
-    <div id="pane-gpa" class="pane">
-      <div class="pane-header">
-        <div>
-          <div class="pane-title">// GPA TRACKER</div>
-          <div class="pane-subtitle">ĐẠI HỌC TÔN ĐỨC THẮNG &nbsp;·&nbsp; THANG ĐIỂM 10</div>
-        </div>
-        <div>
-          <div class="gpa-hero" id="g-dtb">—</div>
-          <div class="gpa-hero-sub" id="g-rank">/ 10</div>
-        </div>
-      </div>
-
-      <div class="sem-tabs" id="sem-tabs"></div>
-
-      <div class="ascii-table-wrap">
-        <table class="gt">
-          <thead>
-            <tr>
-              <th style="width:24px">#</th>
-              <th class="l">MÔN HỌC</th>
-              <th>TC</th>
-              <th>QT<br><span style="font-size:8px;color:var(--dim)">%</span></th>
-              <th>GK<br><span style="font-size:8px;color:var(--dim)">%</span></th>
-              <th>CK<br><span style="font-size:8px;color:var(--dim)">%</span></th>
-              <th>TCTL</th>
-              <th>XẾP LOẠI</th>
-            </tr>
-          </thead>
-          <tbody id="g-tbody"></tbody>
-        </table>
-      </div>
-
-      <div class="score-cards" id="g-cards"></div>
-
-      <div class="prog-wrap" style="width:100%;margin:0">
-        <div class="prog-label-row">
-          <span id="g-prog-l">tiến độ</span>
-          <span style="color:var(--green3)">MỤC TIÊU: 8.00</span>
-        </div>
-        <div class="prog-track">
-          <div class="prog-fill" id="g-prog" style="width:0%"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- PAPERS -->
-    <div id="pane-papers" class="pane">
+    <div id="content">
       <div class="papers-layout">
         <div class="papers-sidebar">
-          <div class="pane-title">// PAPERS</div>
-          <input id="psearch" placeholder="> SEARCH..." oninput="renderPapers()"/>
+          <div class="pane-title">// REPOSITORY</div>
+          <input id="psearch" placeholder="> SEARCH QUERY..." oninput="renderPapers()" />
           <div class="tag-filters" id="ptags"></div>
           <div class="paper-list" id="plist"></div>
         </div>
-
-        <div class="pdf-viewer">
-          <div class="pdf-toolbar">
-            <span class="pdf-title" id="pdf-title">SELECT A PAPER →</span>
-            <button class="pdf-btn" onclick="openExternal()">↗ OPEN</button>
+        <div class="content-viewer">
+          <div class="viewer-toolbar">
+            <span class="viewer-title" id="viewer-title">AWAITING SELECTION...</span>
+            <button class="viewer-btn" onclick="openExternal()">↗ OPEN IN NEW TAB</button>
           </div>
-          <div class="pdf-frame-wrap">
-            <div class="pdf-placeholder" id="pdf-placeholder">
+          <div class="iframe-wrap">
+            <div class="iframe-placeholder" id="iframe-placeholder">
               <div class="big">▣</div>
-              <div class="hint">SELECT PAPER FROM LIST</div>
+              <div class="hint">SELECT AN ENTRY TO RENDER</div>
             </div>
-            <iframe id="pdf-embed" title="PDF viewer"></iframe>
+            <iframe id="content-embed" title="Content viewer"></iframe>
           </div>
         </div>
       </div>
     </div>
 
-  </div><!-- /content -->
-
-  <!-- STATUS BAR -->
-  <div id="statusbar">
-    <span class="sb">ONC//LAB v1.0 &nbsp;·&nbsp; TDTU &nbsp;·&nbsp; HO CHI MINH CITY</span>
-    <span class="sb green" id="sb-right">FLOW_FIELD::ACTIVE</span>
+    <div id="statusbar">
+      <span class="sb">ONC//LAB v2.0 &nbsp;·&nbsp; DATABASE CONNECTED</span>
+      <span class="sb green">FLOW_FIELD::ACTIVE</span>
+    </div>
   </div>
 
-</div><!-- /shell -->
+  <script>
+    // ==========================================
+    // 1. DATA (RESEARCH PAPERS)
+    // ==========================================
+    const papers = [
+      // Hỗ trợ cả file PDF truyền thống...
+      { id: 'vrptw-alns', title: 'Adaptive Large Neighborhood Search for VRPTW', year: 2024, tags: ['vrptw'], url: 'papers/vrptw-alns.pdf', type: 'PDF' },
+      // ...và cả file HTML cho Web-based Papers (có animation/tương tác)
+      { id: 'metro-tft', title: 'Demand Forecasting for HCMC Metro Line 1', year: 2024, tags: ['metro', 'interactive'], url: 'papers/metro-tft-interactive.html', type: 'WEB' },
+      { id: 'rl-mdvrp', title: 'Reinforcement Learning for Multi-Depot Vehicle Routing', year: 2023, tags: ['ml', 'vrptw'], url: 'papers/rl-mdvrp.pdf', type: 'PDF' },
+      { id: 'colgen', title: 'Time Window Relaxation in Column Generation', year: 2023, tags: ['vrptw'], url: 'papers/colgen.pdf', type: 'PDF' },
+    ];
 
-<script>
-// ══════════════════════════════
-//  FLOW FIELD
-// ══════════════════════════════
-const cv = document.getElementById('canvas-bg');
-const ctx = cv.getContext('2d');
-const CELL = 14;
-let ft = 0;
-let mouse = { x: -9999, y: -9999, active: false };
-let ripples = [];
-
-function resizeCanvas() { cv.width = window.innerWidth; cv.height = window.innerHeight; }
-resizeCanvas();
-window.addEventListener('resize', resizeCanvas);
-
-const P = Array.from({length:512}, () => Math.random() * Math.PI * 2);
-function noise(x, y, z) {
-  const ix=Math.floor(x), iy=Math.floor(y), fx=x-ix, fy=y-iy;
-  const sx=fx*fx*(3-2*fx), sy=fy*fy*(3-2*fy);
-  const id=(a,b)=>((a&255)+(b&255)*256)&511;
-  const a=Math.sin(P[id(ix,iy)]+z), b=Math.sin(P[id(ix+1,iy)]+z);
-  const c=Math.sin(P[id(ix,iy+1)]+z), d=Math.sin(P[id(ix+1,iy+1)]+z);
-  return (a+(b-a)*sx+(c-a)*sy+(d+a-b-c)*sx*sy)*0.5+0.5;
-}
-function lerpA(a,b,t){ let d=b-a; while(d>Math.PI)d-=Math.PI*2; while(d<-Math.PI)d+=Math.PI*2; return a+d*t; }
-function gChar(angle, speed) {
-  if(speed<0.12) return ' ';
-  if(speed<0.28) return '·';
-  const seg=Math.floor((((angle%(Math.PI*2))+Math.PI*2)%(Math.PI*2))/(Math.PI*2)*8);
-  if(speed<0.52) return['—','\\','|','/','—','\\','|','/'][seg];
-  if(speed<0.75) return['+','×','*','+','×','*','+','×'][seg];
-  return['#','@','$','%','#','@','$','%'][seg];
-}
-
-document.addEventListener('mousemove', e => { mouse.x=e.clientX; mouse.y=e.clientY; mouse.active=true; });
-document.addEventListener('mouseleave', () => { mouse.active=false; });
-document.addEventListener('click', e => { ripples.push({x:e.clientX, y:e.clientY, age:0, maxAge:45}); });
-
-function drawFlow() {
-  ft += 0.014;
-  ripples = ripples.filter(r => r.age < r.maxAge);
-  ripples.forEach(r => r.age++);
-  ctx.clearRect(0, 0, cv.width, cv.height);
-  ctx.font = `${CELL-2}px 'Share Tech Mono', monospace`;
-  const cols = Math.ceil(cv.width/CELL), rows = Math.ceil(cv.height/CELL);
-
-  for(let r=0; r<rows; r++) {
-    for(let c=0; c<cols; c++) {
-      const px=c*CELL+CELL/2, py=r*CELL+CELL/2;
-      const nx=c/cols, ny=r/rows;
-      let angle = noise(nx*3, ny*3, ft*0.35) * Math.PI * 4;
-      let speed = noise(nx*4+10, ny*4+10, ft*0.25+5);
-
-      if(mouse.active) {
-        const dx=px-mouse.x, dy=py-mouse.y, dist=Math.sqrt(dx*dx+dy*dy);
-        if(dist < 140) {
-          const inf = Math.pow(1-dist/140, 2) * 0.9;
-          angle = lerpA(angle, Math.atan2(dy,dx)+Math.PI, inf);
-          speed = Math.min(1, speed + inf*0.4);
-        }
-      }
-      ripples.forEach(rip => {
-        const dx=px-rip.x, dy=py-rip.y, dist=Math.sqrt(dx*dx+dy*dy);
-        const wf=(rip.age/rip.maxAge)*280;
-        if(Math.abs(dist-wf)<35) {
-          const ri=(1-Math.abs(dist-wf)/35)*(1-rip.age/rip.maxAge)*0.75;
-          angle = lerpA(angle, Math.atan2(dy,dx), ri);
-          speed = Math.min(1, speed+ri*0.5);
-        }
-      });
-
-      const ch = gChar(angle, speed);
-      if(ch===' ') continue;
-
-      // green phosphor palette
-      let g = Math.floor(100 + speed * 155);
-      let alpha = 0.18 + speed * 0.55;
-      // cyan tint near cursor
-      let blueV = 0;
-      if(mouse.active) {
-        const dx=px-mouse.x, dy=py-mouse.y, dist=Math.sqrt(dx*dx+dy*dy);
-        const prox = Math.max(0, 1-dist/180);
-        blueV = Math.floor(prox * 120);
-        alpha = Math.min(0.9, alpha + prox*0.25);
-      }
-      ctx.fillStyle = `rgba(0,${g},${blueV},${alpha})`;
-      ctx.fillText(ch, c*CELL, r*CELL+CELL);
+    // ==========================================
+    // 2. CORE LOGIC
+    // ==========================================
+    function updateClock() {
+      const now = new Date();
+      const pad = n => String(n).padStart(2, '0');
+      document.getElementById('clock-display').textContent = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
     }
-  }
-  requestAnimationFrame(drawFlow);
-}
-drawFlow();
+    setInterval(updateClock, 1000); updateClock();
 
-// ══════════════════════════════
-//  CLOCK
-// ══════════════════════════════
-function updateClock() {
-  const now = new Date();
-  const pad = n => String(n).padStart(2,'0');
-  document.getElementById('clock-display').textContent =
-    `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
-}
-setInterval(updateClock, 1000);
-updateClock();
+    const allTags = ['ALL', ...new Set(papers.flatMap(p => p.tags).map(t => t.toUpperCase()))];
+    let activeTag = 'ALL', activePaper = null;
 
-// ══════════════════════════════
-//  TABS
-// ══════════════════════════════
-document.querySelectorAll('.tab').forEach(t => {
-  t.addEventListener('click', () => {
-    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
-    document.querySelectorAll('.pane').forEach(x => x.classList.remove('active'));
-    t.classList.add('active');
-    document.getElementById('pane-' + t.dataset.tab).classList.add('active');
-  });
-});
+    function renderTagFilters() {
+      const el = document.getElementById('ptags'); el.innerHTML = '';
+      allTags.forEach(tag => {
+        const d = document.createElement('div');
+        d.className = 'ptag' + (tag === activeTag ? ' on' : ''); d.textContent = tag;
+        d.onclick = () => { activeTag = tag; renderTagFilters(); renderPapers(); }; el.appendChild(d);
+      });
+    }
 
-// ══════════════════════════════
-//  DATA
-// ══════════════════════════════
-const TARGET = 8.0;
+    function renderPapers() {
+      const q = document.getElementById('psearch').value.toLowerCase();
+      const filtered = papers.filter(p => {
+        const tagOk = activeTag === 'ALL' || p.tags.map(t => t.toUpperCase()).includes(activeTag);
+        const searchOk = !q || p.title.toLowerCase().includes(q);
+        return tagOk && searchOk;
+      });
+      const el = document.getElementById('plist'); el.innerHTML = '';
+      filtered.forEach(p => {
+        const d = document.createElement('div'); d.className = 'pcard' + (activePaper === p.id ? ' active' : '');
+        d.innerHTML = `<div class="pc-tag">[${p.tags[0].toUpperCase()}] ${p.year} | ${p.type}</div><div class="pc-title">${p.title}</div>`;
+        d.onclick = () => loadPaper(p); el.appendChild(d);
+      });
+    }
 
-const semesters = [
-  {
-    label: 'HK1 23-24',
-    courses: [
-      {name:'Giải tích ứng dụng cho CNTT', tc:4, qt:8.75, wQT:10, gk:9.5, wGK:30, ck:7.3, wCK:60},
-      {name:'Phương pháp lập trình',        tc:4, qt:7.25, wQT:20, gk:5.7, wGK:30, ck:5.8, wCK:50},
-      {name:'Tổ chức máy tính',             tc:4, qt:8.0,  wQT:20, gk:7.0, wGK:30, ck:6.2, wCK:50},
-      {name:'Triết học Mác-Lênin',          tc:3, qt:8.8,  wQT:10, gk:7.3, wGK:30, ck:5.8, wCK:60},
-      {name:'QP&AN Học phần 3',             tc:1, qt:null,  wQT:0,  gk:8.0, wGK:40, ck:8.0, wCK:60},
-    ]
-  },
-  { label:'HK2 23-24', courses:[] },
-  { label:'HK1 24-25', courses:[] },
-  { label:'HK2 24-25', courses:[] },
-  { label:'HK1 25-26', courses:[] },
-  { label:'HK2 25-26', courses:[] },
-];
+    function loadPaper(p) {
+      activePaper = p.id; renderPapers();
+      document.getElementById('viewer-title').textContent = p.title;
 
-// papers — điền pdf: 'papers/ten-file.pdf' khi có file thật
-const papers = [
-  {id:'vrptw-alns', title:'Adaptive Large Neighborhood Search for VRPTW with Heterogeneous Fleet', year:2024, tags:['vrptw'], pdf:'papers/vrptw-alns.pdf'},
-  {id:'metro-tft',  title:'Demand Forecasting for HCMC Metro Line 1 Using Temporal Fusion Transformer', year:2024, tags:['metro'], pdf:'papers/metro-tft.pdf'},
-  {id:'rl-mdvrp',   title:'Reinforcement Learning for Multi-Depot Vehicle Routing', year:2023, tags:['ml','vrptw'], pdf:'papers/rl-mdvrp.pdf'},
-  {id:'colgen',     title:'Time Window Relaxation in Column Generation for VRPTW', year:2023, tags:['vrptw'], pdf:'papers/colgen.pdf'},
-];
+      const embed = document.getElementById('content-embed');
+      const placeholder = document.getElementById('iframe-placeholder');
 
-// ══════════════════════════════
-//  GPA LOGIC
-// ══════════════════════════════
-function calcTCTL(r) {
-  if(r.ck===null) return null;
-  if(r.wGK>0 && r.gk===null) return null;
-  const qt = r.wQT>0 && r.qt!==null ? r.qt*(r.wQT/100) : 0;
-  const gk = r.wGK>0 ? r.gk*(r.wGK/100) : 0;
-  const ck = r.ck*(r.wCK/100);
-  return Math.round((qt+gk+ck)*10)/10;
-}
+      embed.src = p.url;
+      embed.style.display = 'block';
+      placeholder.style.display = 'none';
+    }
 
-function rankInfo(s) {
-  if(s===null) return {text:'—',       c:'var(--dim)',    bd:'var(--border)'};
-  if(s>=9.0)   return {text:'XUẤT SẮC',c:'var(--green)',  bd:'var(--green3)'};
-  if(s>=8.0)   return {text:'GIỎI',    c:'#88ff88',       bd:'#448844'};
-  if(s>=7.0)   return {text:'KHÁ',     c:'var(--amber)',  bd:'#886600'};
-  if(s>=6.0)   return {text:'TB KHÁ',  c:'#ffcc44',       bd:'#886600'};
-  if(s>=5.0)   return {text:'TB',      c:'#ff8844',       bd:'#883300'};
-  if(s>=4.0)   return {text:'YẾU',     c:'var(--red)',    bd:'#880000'};
-  return             {text:'KÉM',      c:'#ff0000',       bd:'#660000'};
-}
+    function openExternal() {
+      const p = papers.find(x => x.id === activePaper);
+      if (p) window.open(p.url, '_blank');
+    }
 
-function calcAll(courses) {
-  let ws=0, tc=0, pass=0, fail=0, pend=0;
-  courses.forEach(r => {
-    const t=calcTCTL(r);
-    if(t===null){pend+=r.tc;return;}
-    ws+=t*r.tc; tc+=r.tc;
-    t>=5?pass+=r.tc:fail+=r.tc;
-  });
-  return {dtb:tc?Math.round(ws/tc*100)/100:null, tc, pass, fail, pend};
-}
+    renderTagFilters(); renderPapers();
 
-function fmtCell(v, w) {
-  const s = v===null ? '<span class="nil">—</span>' : v.toFixed(1);
-  const wl = w>0 ? `<br><span style="font-size:8px;color:var(--dim)">${w}%</span>` : '<br><span style="font-size:8px;color:var(--dim)">—</span>';
-  return s+wl;
-}
+    // ==========================================
+    // 3. CANVAS BACKGROUND
+    // ==========================================
+    const cv = document.getElementById('canvas-bg');
+    const ctx = cv.getContext('2d');
+    const CELL = 14; let ft = 0, mouse = { x: -9999, y: -9999, active: false }, ripples = [];
 
-let activeSem = 0;
+    function resizeCanvas() { cv.width = window.innerWidth; cv.height = window.innerHeight; }
+    resizeCanvas(); window.addEventListener('resize', resizeCanvas);
 
-function renderSemTabs() {
-  const el = document.getElementById('sem-tabs');
-  el.innerHTML = '';
-  semesters.forEach((s,i) => {
-    const d = document.createElement('div');
-    d.className = 'sem-tab' + (i===activeSem?' active':'');
-    d.textContent = s.label;
-    d.onclick = () => { activeSem=i; renderSemTabs(); renderSemTable(); };
-    el.appendChild(d);
-  });
-}
+    const P = Array.from({ length: 512 }, () => Math.random() * Math.PI * 2);
+    function noise(x, y, z) {
+      const ix = Math.floor(x), iy = Math.floor(y), fx = x - ix, fy = y - iy; const sx = fx * fx * (3 - 2 * fx), sy = fy * fy * (3 - 2 * fy);
+      const id = (a, b) => ((a & 255) + (b & 255) * 256) & 511;
+      const a = Math.sin(P[id(ix, iy)] + z), b = Math.sin(P[id(ix + 1, iy)] + z), c = Math.sin(P[id(ix, iy + 1)] + z), d = Math.sin(P[id(ix + 1, iy + 1)] + z);
+      return (a + (b - a) * sx + (c - a) * sy + (d + a - b - c) * sx * sy) * 0.5 + 0.5;
+    }
+    function lerpA(a, b, t) { let d = b - a; while (d > Math.PI) d -= Math.PI * 2; while (d < -Math.PI) d += Math.PI * 2; return a + d * t; }
+    function gChar(angle, speed) {
+      if (speed < 0.12) return ' '; if (speed < 0.28) return '·';
+      const seg = Math.floor((((angle % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2)) / (Math.PI * 2) * 8);
+      if (speed < 0.52) return ['—', '\\', '|', '/', '—', '\\', '|', '/'][seg];
+      if (speed < 0.75) return ['+', '×', '*', '+', '×', '*', '+', '×'][seg];
+      return ['#', '@', '$', '%', '#', '@', '$', '%'][seg];
+    }
 
-function renderSemTable() {
-  const sem = semesters[activeSem];
-  const tb = document.getElementById('g-tbody');
-  tb.innerHTML = '';
+    document.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; mouse.active = true; });
+    document.addEventListener('mouseleave', () => { mouse.active = false; });
+    document.addEventListener('click', e => { ripples.push({ x: e.clientX, y: e.clientY, age: 0, maxAge: 45 }); });
 
-  if(!sem.courses.length) {
-    tb.innerHTML = `<tr><td colspan="8" class="nil" style="text-align:center;padding:24px;letter-spacing:2px;font-size:9px">NO DATA &nbsp;·&nbsp; ADD COURSES TO semesters[] IN SOURCE</td></tr>`;
-    document.getElementById('g-cards').innerHTML='';
-    document.getElementById('g-prog').style.width='0%';
-    document.getElementById('g-prog-l').textContent='no data';
-    return;
-  }
+    function drawFlow() {
+      ft += 0.014; ripples = ripples.filter(r => r.age < r.maxAge); ripples.forEach(r => r.age++);
+      ctx.clearRect(0, 0, cv.width, cv.height); ctx.font = `${CELL - 2}px 'Share Tech Mono', monospace`;
+      const cols = Math.ceil(cv.width / CELL), rows = Math.ceil(cv.height / CELL);
 
-  sem.courses.forEach((r,i) => {
-    const t=calcTCTL(r), rk=rankInfo(t);
-    const tc = t===null?'var(--dim)':t>=7?'var(--green)':t>=5?'var(--amber)':'var(--red)';
-    tb.innerHTML += `<tr>
-      <td class="nil">${i+1}</td>
-      <td class="n" title="${r.name}">${r.name}</td>
-      <td>${r.tc}</td>
-      <td>${fmtCell(r.qt,r.wQT)}</td>
-      <td>${fmtCell(r.gk,r.wGK)}</td>
-      <td>${fmtCell(r.ck,r.wCK)}</td>
-      <td style="color:${tc};font-size:14px">${t!==null?t.toFixed(1):'<span class="nil">—</span>'}</td>
-      <td><span class="badge" style="color:${rk.c};border-color:${rk.bd}">${rk.text}</span></td>
-    </tr>`;
-  });
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const px = c * CELL + CELL / 2, py = r * CELL + CELL / 2, nx = c / cols, ny = r / rows;
+          let angle = noise(nx * 3, ny * 3, ft * 0.35) * Math.PI * 4, speed = noise(nx * 4 + 10, ny * 4 + 10, ft * 0.25 + 5);
 
-  const st=calcAll(sem.courses), rk=rankInfo(st.dtb);
-  const pct = st.dtb!==null?Math.min(100,st.dtb/TARGET*100):0;
+          if (mouse.active) {
+            const dx = px - mouse.x, dy = py - mouse.y, dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < 140) { const inf = Math.pow(1 - dist / 140, 2) * 0.9; angle = lerpA(angle, Math.atan2(dy, dx) + Math.PI, inf); speed = Math.min(1, speed + inf * 0.4); }
+          }
+          ripples.forEach(rip => {
+            const dx = px - rip.x, dy = py - rip.y, dist = Math.sqrt(dx * dx + dy * dy), wf = (rip.age / rip.maxAge) * 280;
+            if (Math.abs(dist - wf) < 35) { const ri = (1 - Math.abs(dist - wf) / 35) * (1 - rip.age / rip.maxAge) * 0.75; angle = lerpA(angle, Math.atan2(dy, dx), ri); speed = Math.min(1, speed + ri * 0.5); }
+          });
 
-  document.getElementById('g-dtb').textContent = st.dtb!==null?st.dtb.toFixed(2):'—';
-  document.getElementById('g-rank').textContent = (st.dtb!==null?rk.text:'—') + ' / 10';
-  document.getElementById('g-rank').style.color = rk.c;
-
-  document.getElementById('g-cards').innerHTML = `
-    <div class="sc"><div class="sc-l">ĐTBHK</div><div class="sc-v" style="color:var(--green)">${st.dtb!==null?st.dtb.toFixed(2):'—'}</div><div class="sc-s">/ 10</div></div>
-    <div class="sc"><div class="sc-l">XẾP LOẠI</div><div class="sc-v" style="color:${rk.c};font-size:18px;padding-top:4px">${st.dtb!==null?rk.text:'—'}</div></div>
-    <div class="sc"><div class="sc-l">TC QUA</div><div class="sc-v" style="color:#2a9a2a">${st.pass}</div><div class="sc-s">/${st.tc+st.pend} đăng ký</div></div>
-    <div class="sc"><div class="sc-l">TC RỚT</div><div class="sc-v" style="color:${st.fail?'var(--red)':'var(--dim)'}">${st.fail}</div></div>
-    <div class="sc"><div class="sc-l">CHỜ ĐIỂM</div><div class="sc-v" style="color:var(--muted)">${st.pend}</div><div class="sc-s">TC</div></div>
-  `;
-
-  document.getElementById('g-prog').style.width = pct+'%';
-  document.getElementById('g-prog-l').textContent = `${Math.round(pct)}% ĐẾN MỤC TIÊU`;
-}
-
-// ══════════════════════════════
-//  HOME STATS (overall)
-// ══════════════════════════════
-function renderHome() {
-  let ws=0, tc=0, pass=0, fail=0;
-  semesters.forEach(sem => sem.courses.forEach(r => {
-    const t=calcTCTL(r); if(t===null)return;
-    ws+=t*r.tc; tc+=r.tc; t>=5?pass+=r.tc:fail+=r.tc;
-  }));
-  const dtb = tc?Math.round(ws/tc*100)/100:null;
-  const rk = rankInfo(dtb);
-  const pct = dtb!==null?Math.min(100,dtb/TARGET*100):0;
-
-  document.getElementById('h-dtb').textContent = dtb!==null?dtb.toFixed(2):'—';
-  document.getElementById('h-rank').textContent = dtb!==null?rk.text:'—';
-  document.getElementById('h-rank').style.color = rk.c;
-  document.getElementById('h-tc').textContent = tc;
-  document.getElementById('h-papers').textContent = papers.length;
-  document.getElementById('h-prog').style.width = pct+'%';
-  document.getElementById('h-prog-l').textContent = `${Math.round(pct)}% ĐẾN MỤC TIÊU`;
-}
-
-// ══════════════════════════════
-//  PAPERS
-// ══════════════════════════════
-const allTags = ['ALL', ...new Set(papers.flatMap(p=>p.tags).map(t=>t.toUpperCase()))];
-let activeTag = 'ALL', activePaper = null;
-
-function renderTagFilters() {
-  const el = document.getElementById('ptags');
-  el.innerHTML='';
-  allTags.forEach(tag => {
-    const d=document.createElement('div');
-    d.className='ptag'+(tag===activeTag?' on':'');
-    d.textContent=tag;
-    d.onclick=()=>{activeTag=tag;renderTagFilters();renderPapers();};
-    el.appendChild(d);
-  });
-}
-
-function renderPapers() {
-  const q = document.getElementById('psearch').value.toLowerCase();
-  const filtered = papers.filter(p => {
-    const tagOk = activeTag==='ALL' || p.tags.map(t=>t.toUpperCase()).includes(activeTag);
-    const searchOk = !q || p.title.toLowerCase().includes(q);
-    return tagOk && searchOk;
-  });
-  const el = document.getElementById('plist');
-  el.innerHTML='';
-  filtered.forEach(p => {
-    const d=document.createElement('div');
-    d.className='pcard'+(activePaper===p.id?' active':'');
-    d.innerHTML=`<div class="pc-tag">[${p.tags[0].toUpperCase()}] ${p.year}</div>
-      <div class="pc-title">${p.title}</div>`;
-    d.onclick=()=>loadPaper(p);
-    el.appendChild(d);
-  });
-}
-
-function loadPaper(p) {
-  activePaper = p.id;
-  renderPapers();
-  document.getElementById('pdf-title').textContent = p.title;
-  const embed = document.getElementById('pdf-embed');
-  const placeholder = document.getElementById('pdf-placeholder');
-  embed.src = p.pdf;
-  embed.style.display = 'block';
-  placeholder.style.display = 'none';
-}
-
-function openExternal() {
-  const p = papers.find(x=>x.id===activePaper);
-  if(p) window.open(p.pdf, '_blank');
-}
-
-// ══════════════════════════════
-//  INIT
-// ══════════════════════════════
-renderSemTabs();
-renderSemTable();
-renderHome();
-renderTagFilters();
-renderPapers();
-</script>
+          const ch = gChar(angle, speed); if (ch === ' ') continue;
+          let g = Math.floor(100 + speed * 155), alpha = 0.18 + speed * 0.55, blueV = 0;
+          if (mouse.active) {
+            const dx = px - mouse.x, dy = py - mouse.y, dist = Math.sqrt(dx * dx + dy * dy), prox = Math.max(0, 1 - dist / 180);
+            blueV = Math.floor(prox * 120); alpha = Math.min(0.9, alpha + prox * 0.25);
+          }
+          ctx.fillStyle = `rgba(0,${g},${blueV},${alpha})`; ctx.fillText(ch, c * CELL, r * CELL + CELL);
+        }
+      }
+      requestAnimationFrame(drawFlow);
+    }
+    drawFlow();
+  </script>
 </body>
+
 </html>

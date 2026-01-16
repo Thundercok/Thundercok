@@ -131,9 +131,10 @@
     }
 
     .tb-status span {
-      color: var(--green3);
+      color: var(--amber);
     }
 
+    /* Amber for "INITIALIZING" */
     .tb-right {
       font-size: 11px;
       color: var(--muted);
@@ -147,6 +148,67 @@
       animation: blink 1.2s step-end infinite;
     }
 
+    /* ── HERO CONTENT ── */
+    #content {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      padding: 20px;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    .hero-box {
+      background: rgba(2, 12, 2, 0.7);
+      border: 1px solid var(--border);
+      padding: 40px 60px;
+      text-align: center;
+      box-shadow: 0 0 30px rgba(0, 59, 0, 0.5);
+      backdrop-filter: blur(4px);
+    }
+
+    .hero-title {
+      font-family: 'VT323', monospace;
+      font-size: 64px;
+      color: var(--green);
+      letter-spacing: 6px;
+      text-shadow: 0 0 20px var(--green3);
+      line-height: 1;
+      margin-bottom: 10px;
+    }
+
+    .hero-sub {
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 4px;
+      margin-bottom: 40px;
+    }
+
+    .terminal-line {
+      font-size: 16px;
+      color: var(--text);
+      letter-spacing: 1px;
+      display: inline-block;
+      text-align: left;
+    }
+
+    .prompt {
+      color: var(--green3);
+      margin-right: 8px;
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 10px;
+      height: 16px;
+      background-color: var(--green);
+      vertical-align: middle;
+      margin-left: 4px;
+      animation: blink 1s step-end infinite;
+    }
+
     @keyframes blink {
 
       0%,
@@ -157,209 +219,6 @@
       50% {
         opacity: 0
       }
-    }
-
-    /* ── CONTENT AREA (PAPERS ONLY) ── */
-    #content {
-      flex: 1;
-      padding: 20px;
-      overflow: hidden;
-    }
-
-    .papers-layout {
-      display: grid;
-      grid-template-columns: 260px 1fr;
-      gap: 20px;
-      height: 100%;
-    }
-
-    .papers-sidebar {
-      border-right: 1px solid var(--border);
-      padding-right: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      overflow-y: auto;
-      scrollbar-width: thin;
-      scrollbar-color: var(--dim) transparent;
-    }
-
-    .pane-title {
-      font-size: 14px;
-      letter-spacing: 2px;
-      color: var(--green3);
-      margin-bottom: 8px;
-    }
-
-    .papers-sidebar input {
-      width: 100%;
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--green);
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 12px;
-      padding: 8px 12px;
-      outline: none;
-      letter-spacing: 1px;
-    }
-
-    .papers-sidebar input:focus {
-      border-color: var(--green3);
-    }
-
-    .papers-sidebar input::placeholder {
-      color: var(--dim);
-    }
-
-    .tag-filters {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-
-    .ptag {
-      font-size: 10px;
-      padding: 4px 8px;
-      border: 1px solid var(--border);
-      color: var(--muted);
-      cursor: pointer;
-      letter-spacing: 1px;
-      transition: all .15s;
-    }
-
-    .ptag.on {
-      border-color: var(--green3);
-      color: var(--green);
-      background: rgba(0, 255, 65, 0.05);
-    }
-
-    .ptag:hover:not(.on) {
-      color: var(--green3);
-      border-color: var(--dim);
-    }
-
-    .paper-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-top: 10px;
-    }
-
-    .pcard {
-      border: 1px solid var(--border);
-      padding: 12px;
-      cursor: pointer;
-      transition: all .15s;
-      background: rgba(0, 255, 65, 0.01);
-    }
-
-    .pcard:hover,
-    .pcard.active {
-      border-color: var(--green3);
-      background: rgba(0, 255, 65, 0.04);
-    }
-
-    .pcard.active .pc-title {
-      color: var(--green);
-    }
-
-    .pc-tag {
-      font-size: 10px;
-      color: var(--green3);
-      letter-spacing: 1px;
-      margin-bottom: 6px;
-    }
-
-    .pc-title {
-      font-size: 12px;
-      color: var(--text);
-      line-height: 1.5;
-      margin-bottom: 4px;
-    }
-
-    .content-viewer {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      min-height: 0;
-    }
-
-    .viewer-toolbar {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      border: 1px solid var(--border);
-      padding: 8px 16px;
-      font-size: 12px;
-      color: var(--muted);
-      flex-shrink: 0;
-      background: rgba(2, 8, 2, 0.5);
-    }
-
-    .viewer-title {
-      flex: 1;
-      color: var(--green3);
-      letter-spacing: 1px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .viewer-btn {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 11px;
-      color: var(--muted);
-      border: 1px solid var(--border);
-      padding: 4px 12px;
-      cursor: pointer;
-      background: transparent;
-      letter-spacing: 1px;
-      transition: all .15s;
-    }
-
-    .viewer-btn:hover {
-      color: var(--green);
-      border-color: var(--green3);
-    }
-
-    .iframe-wrap {
-      flex: 1;
-      border: 1px solid var(--border);
-      overflow: hidden;
-      position: relative;
-      background: #fff;
-      /* White background for PDFs/HTML */
-    }
-
-    .iframe-placeholder {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      background: var(--bg);
-      z-index: 10;
-    }
-
-    .iframe-placeholder .big {
-      font-family: 'VT323', monospace;
-      font-size: 64px;
-      color: var(--dim);
-    }
-
-    .iframe-placeholder .hint {
-      font-size: 12px;
-      color: var(--muted);
-      letter-spacing: 2px;
-    }
-
-    #content-embed {
-      width: 100%;
-      height: 100%;
-      border: none;
-      display: none;
     }
 
     /* ── BOTTOM STATUS BAR ── */
@@ -395,8 +254,7 @@
     <div id="topbar">
       <div class="tb-left">
         <div class="logo">ONC//LAB</div>
-        <div class="tb-status">SYS:<span id="sys-status">ONLINE</span> &nbsp;|&nbsp; TYPE:<span>RESEARCH_ARCHIVE</span>
-        </div>
+        <div class="tb-status">SYS:<span style="color:#ffb000">BOOTING</span> &nbsp;|&nbsp; DB:<span>EMPTY</span></div>
       </div>
       <div class="tb-right">
         <span id="clock-display">--:--:--</span><br>
@@ -405,50 +263,25 @@
     </div>
 
     <div id="content">
-      <div class="papers-layout">
-        <div class="papers-sidebar">
-          <div class="pane-title">// REPOSITORY</div>
-          <input id="psearch" placeholder="> SEARCH QUERY..." oninput="renderPapers()" />
-          <div class="tag-filters" id="ptags"></div>
-          <div class="paper-list" id="plist"></div>
-        </div>
-        <div class="content-viewer">
-          <div class="viewer-toolbar">
-            <span class="viewer-title" id="viewer-title">AWAITING SELECTION...</span>
-            <button class="viewer-btn" onclick="openExternal()">↗ OPEN IN NEW TAB</button>
-          </div>
-          <div class="iframe-wrap">
-            <div class="iframe-placeholder" id="iframe-placeholder">
-              <div class="big">▣</div>
-              <div class="hint">SELECT AN ENTRY TO RENDER</div>
-            </div>
-            <iframe id="content-embed" title="Content viewer"></iframe>
-          </div>
+      <div class="hero-box">
+        <div class="hero-title">ÔNG NĂM CHÈO</div>
+        <div class="hero-sub">RESEARCH LABORATORY &nbsp;·&nbsp; INITIALIZING</div>
+
+        <div class="terminal-line">
+          <span class="prompt">guest@onc-lab:~$</span> ông ba chèo đang cố học data hehe<span class="cursor"></span>
         </div>
       </div>
     </div>
 
     <div id="statusbar">
-      <span class="sb">ONC//LAB v2.0 &nbsp;·&nbsp; DATABASE CONNECTED</span>
+      <span class="sb">AWAITING FIRST DATA INPUT...</span>
       <span class="sb green">FLOW_FIELD::ACTIVE</span>
     </div>
   </div>
 
   <script>
     // ==========================================
-    // 1. DATA (RESEARCH PAPERS)
-    // ==========================================
-    const papers = [
-      // Hỗ trợ cả file PDF truyền thống...
-      { id: 'vrptw-alns', title: 'Adaptive Large Neighborhood Search for VRPTW', year: 2024, tags: ['vrptw'], url: 'papers/vrptw-alns.pdf', type: 'PDF' },
-      // ...và cả file HTML cho Web-based Papers (có animation/tương tác)
-      { id: 'metro-tft', title: 'Demand Forecasting for HCMC Metro Line 1', year: 2024, tags: ['metro', 'interactive'], url: 'papers/metro-tft-interactive.html', type: 'WEB' },
-      { id: 'rl-mdvrp', title: 'Reinforcement Learning for Multi-Depot Vehicle Routing', year: 2023, tags: ['ml', 'vrptw'], url: 'papers/rl-mdvrp.pdf', type: 'PDF' },
-      { id: 'colgen', title: 'Time Window Relaxation in Column Generation', year: 2023, tags: ['vrptw'], url: 'papers/colgen.pdf', type: 'PDF' },
-    ];
-
-    // ==========================================
-    // 2. CORE LOGIC
+    // 1. CLOCK
     // ==========================================
     function updateClock() {
       const now = new Date();
@@ -457,54 +290,8 @@
     }
     setInterval(updateClock, 1000); updateClock();
 
-    const allTags = ['ALL', ...new Set(papers.flatMap(p => p.tags).map(t => t.toUpperCase()))];
-    let activeTag = 'ALL', activePaper = null;
-
-    function renderTagFilters() {
-      const el = document.getElementById('ptags'); el.innerHTML = '';
-      allTags.forEach(tag => {
-        const d = document.createElement('div');
-        d.className = 'ptag' + (tag === activeTag ? ' on' : ''); d.textContent = tag;
-        d.onclick = () => { activeTag = tag; renderTagFilters(); renderPapers(); }; el.appendChild(d);
-      });
-    }
-
-    function renderPapers() {
-      const q = document.getElementById('psearch').value.toLowerCase();
-      const filtered = papers.filter(p => {
-        const tagOk = activeTag === 'ALL' || p.tags.map(t => t.toUpperCase()).includes(activeTag);
-        const searchOk = !q || p.title.toLowerCase().includes(q);
-        return tagOk && searchOk;
-      });
-      const el = document.getElementById('plist'); el.innerHTML = '';
-      filtered.forEach(p => {
-        const d = document.createElement('div'); d.className = 'pcard' + (activePaper === p.id ? ' active' : '');
-        d.innerHTML = `<div class="pc-tag">[${p.tags[0].toUpperCase()}] ${p.year} | ${p.type}</div><div class="pc-title">${p.title}</div>`;
-        d.onclick = () => loadPaper(p); el.appendChild(d);
-      });
-    }
-
-    function loadPaper(p) {
-      activePaper = p.id; renderPapers();
-      document.getElementById('viewer-title').textContent = p.title;
-
-      const embed = document.getElementById('content-embed');
-      const placeholder = document.getElementById('iframe-placeholder');
-
-      embed.src = p.url;
-      embed.style.display = 'block';
-      placeholder.style.display = 'none';
-    }
-
-    function openExternal() {
-      const p = papers.find(x => x.id === activePaper);
-      if (p) window.open(p.url, '_blank');
-    }
-
-    renderTagFilters(); renderPapers();
-
     // ==========================================
-    // 3. CANVAS BACKGROUND
+    // 2. CANVAS BACKGROUND
     // ==========================================
     const cv = document.getElementById('canvas-bg');
     const ctx = cv.getContext('2d');

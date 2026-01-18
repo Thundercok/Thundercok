@@ -4,14 +4,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ông Năm Chèo · Research Lab v4</title>
+  <title>Ông Năm Chèo · Research Lab v5</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap');
 
     /* ── THEME ENGINE ── */
     :root {
       --hue: 120;
-      /* Default Green */
       --main: #00ff41;
       --main2: #008f11;
       --bg: #020c02;
@@ -88,6 +87,7 @@
       z-index: 0;
       opacity: 0.6;
       mix-blend-mode: screen;
+      pointer-events: none;
     }
 
     body::before {
@@ -186,6 +186,8 @@
       border-bottom: 2px solid transparent;
       letter-spacing: 2px;
       transition: all .2s;
+      position: relative;
+      z-index: 10;
     }
 
     .tab.active {
@@ -248,7 +250,6 @@
       animation: glitchFade 0.4s cubic-bezier(0.1, 0.9, 0.2, 1) forwards;
     }
 
-    /* ── UI ELEMENTS ── */
     .pane-title {
       font-size: 14px;
       letter-spacing: 2px;
@@ -267,6 +268,7 @@
       padding: 8px 12px;
       outline: none;
       transition: border 0.2s;
+      width: 100%;
     }
 
     input:focus {
@@ -314,7 +316,7 @@
       color: var(--main2);
     }
 
-    /* COMMAND PALETTE (CTRL+K) */
+    /* COMMAND PALETTE */
     #cmd-palette {
       position: fixed;
       top: 20%;
@@ -346,6 +348,7 @@
       padding: 16px;
       font-family: 'Share Tech Mono';
       color: var(--text);
+      background: transparent;
     }
 
     .cmd-list {
@@ -376,7 +379,7 @@
       text-transform: uppercase;
     }
 
-    /* RE-USE OLD PANES */
+    /* PAPERS */
     #pane-papers {
       flex-direction: column;
     }
@@ -445,65 +448,117 @@
       color: var(--main);
     }
 
-    #pane-experiments {
+    .btn-open {
+      cursor: pointer;
+      padding: 4px 8px;
+      border: 1px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .btn-open:hover {
+      border-color: var(--main);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    /* ARCADE (NEW) */
+    #pane-arcade {
+      align-items: center;
+      justify-content: center;
       flex-direction: column;
     }
 
-    .exp-layout {
-      display: grid;
-      grid-template-columns: 320px 1fr;
-      gap: 20px;
-      height: 100%;
-    }
-
-    .task-board {
-      border: 1px solid var(--border);
-      background: rgba(0, 0, 0, 0.3);
-      padding: 16px;
+    .arcade-machine {
+      border: 2px solid var(--border);
+      background: var(--bg2);
+      padding: 20px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
-    }
-
-    .task-item {
-      border: 1px solid var(--muted);
-      padding: 10px 10px 10px 24px;
+      align-items: center;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.8), inset 0 0 20px var(--border);
       position: relative;
     }
 
-    .task-item.active {
-      border-color: var(--main2);
-      box-shadow: inset 2px 0 0 var(--main);
-      background: rgba(0, 0, 0, 0.5);
+    .arcade-header {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      font-family: 'VT323', monospace;
+      font-size: 24px;
+      color: var(--main2);
+      margin-bottom: 15px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 10px;
+      text-shadow: 0 0 5px var(--main2);
     }
 
-    .task-item::before {
-      content: '>';
-      position: absolute;
-      left: 8px;
+    .arcade-screen {
+      border: 2px solid var(--main2);
+      background: #000;
+      box-shadow: 0 0 15px var(--main2);
+      position: relative;
+    }
+
+    #game-canvas {
+      display: block;
+    }
+
+    .arcade-controls {
+      margin-top: 20px;
+      font-size: 12px;
       color: var(--muted);
+      text-align: center;
+      letter-spacing: 2px;
     }
 
-    .task-item.active::before {
+    .arcade-controls kbd {
+      border: 1px solid var(--muted);
+      padding: 2px 6px;
+      margin: 0 2px;
       color: var(--main);
-      animation: blink 1s infinite;
     }
 
-    .console-wrap {
-      border: 1px solid var(--border);
-      background: var(--bg2);
-      padding: 16px;
-      font-family: 'Courier Prime';
-      font-size: 13px;
-      color: var(--muted);
-      overflow-y: auto;
+    .game-over-screen {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
       display: flex;
       flex-direction: column;
-      justify-content: flex-end;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
     }
 
-    .log-line span {
-      color: var(--main2);
+    .game-over-screen.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .go-title {
+      font-family: 'VT323';
+      font-size: 48px;
+      color: var(--err);
+      text-shadow: 0 0 10px var(--err);
+      margin-bottom: 10px;
+    }
+
+    .go-btn {
+      background: transparent;
+      border: 1px solid var(--main);
+      color: var(--main);
+      font-family: 'Share Tech Mono';
+      font-size: 16px;
+      padding: 10px 20px;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: all 0.2s;
+    }
+
+    .go-btn:hover {
+      background: var(--main);
+      color: var(--bg);
+      box-shadow: 0 0 15px var(--main);
     }
 
     #statusbar {
@@ -518,6 +573,7 @@
       z-index: 2;
       font-size: 10px;
       color: var(--muted);
+      position: relative;
     }
 
     @keyframes blink {
@@ -563,14 +619,14 @@
     <div id="tabs">
       <div class="tab active" data-tab="home">HOME</div>
       <div class="tab" data-tab="papers">PAPERS</div>
-      <div class="tab" data-tab="experiments">EXPERIMENTS</div>
+      <div class="tab" data-tab="arcade">ARCADE</div>
     </div>
 
     <div id="content">
       <div id="pane-home" class="pane active">
         <div class="hero-box">
           <div class="hero-title">ÔNG NĂM CHÈO</div>
-          <div style="font-size: 14px; color: var(--muted); margin-bottom: 20px;">// RESEARCH LAB v4.0 CORE</div>
+          <div style="font-size: 14px; color: var(--muted); margin-bottom: 20px;">// RESEARCH LAB v5.0 CORE</div>
           <div style="font-size: 18px; color: var(--text);">
             <span style="color:var(--main2)">guest@onc-lab:~$</span> ông ba chèo đang cố học data hehe<span
               style="display:inline-block; width:10px; height:18px; background:var(--main); margin-left:5px; animation:blink 1s infinite"></span>
@@ -589,28 +645,29 @@
           <div class="iframe-wrap">
             <div class="viewer-toolbar">
               <span id="viewer-title">...</span>
-              <span style="cursor:pointer" onclick="openExternal()">[ OPEN NEW TAB ]</span>
+              <span class="btn-open" onclick="openExternal()">[ OPEN NEW TAB ]</span>
             </div>
             <iframe id="content-embed" style="width:100%; height:100%; border:none;" title="Viewer"></iframe>
           </div>
         </div>
       </div>
 
-      <div id="pane-experiments" class="pane">
-        <div class="exp-layout">
-          <div class="task-board">
-            <div class="pane-title">ACTIVE WORKLOADS</div>
-            <div class="task-item">Set up CUDA Environment</div>
-            <div class="task-item active">Train RL Model (VRPTW)</div>
-            <div class="task-item">Scrape Metro Data</div>
+      <div id="pane-arcade" class="pane">
+        <div class="arcade-machine">
+          <div class="arcade-header">
+            <span>DATA_SNAKE.EXE</span>
+            <span>SCORE: <span id="score-display">0</span></span>
           </div>
-          <div class="console-wrap">
-            <div class="log-line"><span>[SYS]</span> Fetching latest weights... OK</div>
-            <div class="log-line"><span>[SYS]</span> Epoch 1/100 | Loss: 2.401 | Acc: 45%</div>
-            <div class="log-line"><span>[SYS]</span> Epoch 2/100 | Loss: 1.842 | Acc: 58%</div>
-            <div class="log-line"><span>[WARN]</span> GPU Memory near limit (14.2/16GB)</div>
-            <div class="log-line"><span>[SYS]</span> Awaiting next gradient step...<span
-                style="animation:blink 1s infinite">_</span></div>
+          <div class="arcade-screen">
+            <canvas id="game-canvas" width="400" height="400"></canvas>
+            <div class="game-over-screen" id="go-screen">
+              <div class="go-title">SYSTEM FAILURE</div>
+              <div style="color:var(--text)">FINAL SCORE: <span id="final-score">0</span></div>
+              <button class="go-btn" onclick="resetGame()">REBOOT SEQUENCE</button>
+            </div>
+          </div>
+          <div class="arcade-controls">
+            USE <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> OR <kbd>ARROWS</kbd> TO NAVIGATE
           </div>
         </div>
       </div>
@@ -627,17 +684,17 @@
     // 1. FAST BOOT SEQUENCE
     // ==========================================
     const bootScreen = document.getElementById('boot-screen');
-    const isBooted = sessionStorage.getItem('onc_lab_v4');
+    const isBooted = sessionStorage.getItem('onc_lab_v5');
 
     async function runBoot() {
       if (!isBooted) {
-        const lines = ["KERNEL PANIC... RECOVERING", "LOADING THEMES...", "ESTABLISHING TELEMETRY...", "SYSTEM READY."];
+        const lines = ["KERNEL PANIC... RECOVERING", "LOADING ARCADE MODULE...", "ESTABLISHING TELEMETRY...", "SYSTEM READY."];
         for (let text of lines) {
           const el = document.createElement('div'); el.className = 'boot-line'; el.textContent = text;
           bootScreen.appendChild(el);
           await new Promise(r => setTimeout(r, 150));
         }
-        sessionStorage.setItem('onc_lab_v4', 'true');
+        sessionStorage.setItem('onc_lab_v5', 'true');
       }
       bootScreen.style.opacity = '0';
       setTimeout(() => bootScreen.style.display = 'none', 200);
@@ -653,27 +710,34 @@
     }
     setInterval(updateClock, 1000); updateClock();
 
-    // Fake Live Metrics
     setInterval(() => {
-      document.getElementById('tel-cpu').textContent = Math.floor(Math.random() * 15 + 10); // 10-25%
-      document.getElementById('tel-ram').textContent = Math.floor(Math.random() * 5 + 60);  // 60-65%
-      document.getElementById('tel-gpu').textContent = Math.floor(Math.random() * 40 + 50); // 50-90% (Data Learner vibe)
+      document.getElementById('tel-cpu').textContent = Math.floor(Math.random() * 15 + 10);
+      document.getElementById('tel-ram').textContent = Math.floor(Math.random() * 5 + 60);
+      document.getElementById('tel-gpu').textContent = Math.floor(Math.random() * 40 + 50);
     }, 1500);
 
     // ==========================================
     // 3. TAB LOGIC
     // ==========================================
+    let currentTab = 'home';
     function switchTab(tabId) {
+      currentTab = tabId;
       document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
       document.querySelectorAll('.pane').forEach(x => x.classList.remove('active'));
       document.querySelector(`.tab[data-tab="${tabId}"]`).classList.add('active');
 
       const targetPane = document.getElementById('pane-' + tabId);
-      // Re-trigger animation
       targetPane.style.animation = 'none';
-      targetPane.offsetHeight; // trigger reflow
+      targetPane.offsetHeight; // reflow
       targetPane.style.animation = null;
       targetPane.classList.add('active');
+
+      // Quản lý game state
+      if (tabId === 'arcade') {
+        if (!gameLoop) gameLoop = setInterval(updateSnake, 100);
+      } else {
+        if (gameLoop) { clearInterval(gameLoop); gameLoop = null; }
+      }
     }
 
     document.querySelectorAll('.tab').forEach(t => {
@@ -681,7 +745,7 @@
     });
 
     // ==========================================
-    // 4. COMMAND PALETTE (CTRL+K) & THEMES
+    // 4. COMMAND PALETTE (BUG FIXED)
     // ==========================================
     const palette = document.getElementById('cmd-palette');
     const cmdInput = document.getElementById('cmd-input');
@@ -690,10 +754,10 @@
     const commands = [
       { cat: 'Navigation', name: 'Go to Home', action: () => switchTab('home') },
       { cat: 'Navigation', name: 'Go to Papers', action: () => switchTab('papers') },
-      { cat: 'Navigation', name: 'Go to Experiments', action: () => switchTab('experiments') },
+      { cat: 'Navigation', name: 'Play Arcade', action: () => switchTab('arcade') },
       { cat: 'Theme', name: 'Set Theme: Matrix Green', action: () => setTheme('green') },
       { cat: 'Theme', name: 'Set Theme: Overdrive Amber', action: () => setTheme('amber') },
-      { cat: 'Theme', name: 'Set Theme: Deep Ocean (Blue)', action: () => setTheme('blue') },
+      { cat: 'Theme', name: 'Set Theme: Deep Ocean', action: () => setTheme('blue') },
       { cat: 'System', name: 'Clear Cache & Reboot', action: () => { sessionStorage.clear(); location.reload(); } }
     ];
 
@@ -713,8 +777,14 @@
         const el = document.createElement('div');
         el.className = 'cmd-item' + (idx === selectedCmdIndex ? ' selected' : '');
         el.innerHTML = `<span>${cmd.name}</span><span class="cmd-cat">${cmd.cat}</span>`;
+
+        // FIX BUG: Dùng mousedown thay vì click để ăn lệnh trước khi blur kích hoạt
+        el.onmousedown = (e) => {
+          e.preventDefault(); // Ngăn input bị mất focus
+          cmd.action();
+          hidePalette();
+        };
         el.onmouseover = () => { selectedCmdIndex = idx; renderCommands(cmdInput.value); };
-        el.onclick = () => { cmd.action(); hidePalette(); };
         cmdList.appendChild(el);
       });
     }
@@ -731,6 +801,11 @@
       palette.classList.remove('visible');
       cmdInput.blur();
     }
+
+    // Lắng nghe sự kiện blur, delay 1 xíu để cho phép click xuyên qua nếu lỡ dùng chuột
+    cmdInput.addEventListener('blur', () => {
+      setTimeout(() => { if (palette.classList.contains('visible')) hidePalette(); }, 150);
+    });
 
     document.addEventListener('keydown', (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
@@ -768,7 +843,115 @@
     renderPapers();
 
     // ==========================================
-    // 6. CANVAS BACKGROUND (THEME REACTIVE)
+    // 6. SNAKE GAME LOGIC (ARCADE)
+    // ==========================================
+    const gCanvas = document.getElementById('game-canvas');
+    const gCtx = gCanvas.getContext('2d');
+    const box = 20;
+    let snake, food, score, d, gameLoop, isGameOver;
+
+    function getThemeColors() {
+      const style = getComputedStyle(document.body);
+      return {
+        main: style.getPropertyValue('--main').trim() || '#00ff41',
+        main2: style.getPropertyValue('--main2').trim() || '#008f11',
+        bg: style.getPropertyValue('--bg2').trim() || '#040f04'
+      };
+    }
+
+    function initGame() {
+      snake = [];
+      snake[0] = { x: 9 * box, y: 10 * box };
+      food = { x: Math.floor(Math.random() * 19 + 1) * box, y: Math.floor(Math.random() * 19 + 1) * box };
+      score = 0; d = "RIGHT"; isGameOver = false;
+      document.getElementById('score-display').textContent = score;
+      document.getElementById('go-screen').classList.remove('show');
+    }
+
+    function resetGame() {
+      initGame();
+      if (!gameLoop) gameLoop = setInterval(updateSnake, 100);
+    }
+
+    document.addEventListener("keydown", (e) => {
+      // Chỉ nhận nút khi ở tab arcade và không mở bảng command
+      if (currentTab !== 'arcade' || palette.classList.contains('visible') || isGameOver) return;
+
+      let key = e.key.toLowerCase();
+      if ((key === 'arrowleft' || key === 'a') && d !== "RIGHT") d = "LEFT";
+      else if ((key === 'arrowup' || key === 'w') && d !== "DOWN") d = "UP";
+      else if ((key === 'arrowright' || key === 'd') && d !== "LEFT") d = "RIGHT";
+      else if ((key === 'arrowdown' || key === 's') && d !== "UP") d = "DOWN";
+    });
+
+    function collision(head, array) {
+      for (let i = 0; i < array.length; i++) {
+        if (head.x === array[i].x && head.y === array[i].y) return true;
+      }
+      return false;
+    }
+
+    function updateSnake() {
+      const colors = getThemeColors();
+
+      // Clear canvas
+      gCtx.fillStyle = colors.bg;
+      gCtx.fillRect(0, 0, 400, 400);
+
+      // Draw snake
+      for (let i = 0; i < snake.length; i++) {
+        gCtx.fillStyle = (i === 0) ? colors.main : colors.main2;
+        gCtx.fillRect(snake[i].x, snake[i].y, box, box);
+        gCtx.strokeStyle = colors.bg;
+        gCtx.strokeRect(snake[i].x, snake[i].y, box, box);
+      }
+
+      // Draw food (Data point)
+      gCtx.fillStyle = colors.main;
+      gCtx.beginPath();
+      gCtx.arc(food.x + box / 2, food.y + box / 2, box / 2 - 2, 0, Math.PI * 2);
+      gCtx.fill();
+
+      let snakeX = snake[0].x;
+      let snakeY = snake[0].y;
+
+      if (d === "LEFT") snakeX -= box;
+      if (d === "UP") snakeY -= box;
+      if (d === "RIGHT") snakeX += box;
+      if (d === "DOWN") snakeY += box;
+
+      // Wrap around borders (Terminal style)
+      if (snakeX < 0) snakeX = 400 - box;
+      else if (snakeX >= 400) snakeX = 0;
+      if (snakeY < 0) snakeY = 400 - box;
+      else if (snakeY >= 400) snakeY = 0;
+
+      if (snakeX === food.x && snakeY === food.y) {
+        score++;
+        document.getElementById('score-display').textContent = score;
+        food = { x: Math.floor(Math.random() * 19) * box, y: Math.floor(Math.random() * 19) * box };
+      } else {
+        snake.pop();
+      }
+
+      let newHead = { x: snakeX, y: snakeY };
+
+      if (collision(newHead, snake)) {
+        clearInterval(gameLoop);
+        gameLoop = null;
+        isGameOver = true;
+        document.getElementById('final-score').textContent = score;
+        document.getElementById('go-screen').classList.add('show');
+        return;
+      }
+
+      snake.unshift(newHead);
+    }
+
+    initGame();
+
+    // ==========================================
+    // 7. CANVAS BACKGROUND (THEME REACTIVE)
     // ==========================================
     const cv = document.getElementById('canvas-bg'); const ctx = cv.getContext('2d');
     const CELL = 14; let ft = 0;
@@ -801,7 +984,6 @@
       ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
       ctx.font = `${CELL - 2}px 'Share Tech Mono', monospace`;
 
-      // Read current theme Hue from CSS variables dynamically
       const style = getComputedStyle(document.body);
       const hue = style.getPropertyValue('--hue').trim() || 120;
 

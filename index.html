@@ -23,7 +23,7 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%); /* Căn giữa hoàn hảo */
-            z-index: -1; /* Đẩy xuống lớp dưới cùng */
+            z-index: 0; /* Đẩy xuống lớp dưới cùng */
             opacity: 0.3; /* Làm mờ để không lấn át nội dung */
             
             /* Sửa lỗi Aspect Ratio ở đây: Không dùng scaleX */
@@ -110,7 +110,7 @@
         };
 
         // Chạy 30 khung hình / giây
-        setInterval(renderDonut, 33);
+        setInterval(renderDonut, 63);
     </script>
 </body>
 </html>

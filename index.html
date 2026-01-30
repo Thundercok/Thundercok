@@ -17,12 +17,11 @@
             overflow: hidden; /* Ngăn cuộn trang nếu chỉ làm trang landing */
         }
 
-        /* KHUNG CHỨA ASCII DONUT LÀM BACKGROUND */
         #donut-background {
             position: absolute;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%); /* Căn giữa hoàn hảo */
+            transform: translate(-50%, -50%) scale(1.5); /* Căn giữa hoàn hảo */
             z-index: 0; /* Đẩy xuống lớp dưới cùng */
             opacity: 0.3; /* Làm mờ để không lấn át nội dung */
             
@@ -110,7 +109,7 @@
         };
 
         // Chạy 30 khung hình / giây
-        setInterval(renderDonut, 63);
+        setInterval(renderDonut, 53);
     </script>
 </body>
 </html>

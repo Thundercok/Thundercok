@@ -6,4 +6,3 @@
   <img src="https://img.shields.io/badge/Try my site-5a32fa?style=flat-square&logo=magic&logoColor=white" alt="Website" />
 </a>
 </div>
-

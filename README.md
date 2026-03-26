@@ -10,9 +10,12 @@
           <td width="50%">
             <img src="https://streak-stats.demolab.com?user=Thundercok&theme=default&border_radius=10" width="100%" />
           </td>
+          </td>
+          <td width="50%">
+            <img src="https://github-readme-stats-eight-theta.vercel.app/api/top-langs/?username=Thundercok&theme=default&border_radius=10&layout=compact&hide_title=false" width="100%" />          </td>
         </tr>
       </table>
-      <img src="https://github-readme-stats-eight-theta.vercel.app/api/top-langs/?username=Thundercok&theme=default&border_radius=10&layout=compact&hide_title=false" width="100%" />
+
     </td>
   </tr>
 </table>

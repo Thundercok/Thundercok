@@ -1,115 +1,308 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ông Năm Chèo's Research Laboratory</title>
-    <style>
-        /* RESET CƠ BẢN */
-        body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #050505; /* Nền đen sâu */
-            color: #ffffff;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            overflow: hidden; /* Ngăn cuộn trang nếu chỉ làm trang landing */
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GPA Tracker · Ông Năm Chèo</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#050505;color:#fff;font-family:'Segoe UI',Tahoma,sans-serif;min-height:100vh;padding:24px 16px}
+.page{max-width:900px;margin:0 auto}
 
-        #donut-background {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(1.5); /* Căn giữa hoàn hảo */
-            z-index: 0; /* Đẩy xuống lớp dưới cùng */
-            opacity: 0.3; /* Làm mờ để không lấn át nội dung */
-            
-            /* Sửa lỗi Aspect Ratio ở đây: Không dùng scaleX */
-            font-family: monospace; /* Bắt buộc dùng font đơn cách */
-            font-size: 14px;
-            line-height: 14px; 
-            letter-spacing: 2px; /* Kéo giãn khoảng cách chữ một chút để bù trừ tỷ lệ font */
-            color: #00ff00; /* Màu xanh hacker cổ điển, có thể đổi sang #555555 cho thanh lịch hơn */
-            white-space: pre;
-            text-align: center;
-        }
+/* header */
+.top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px;flex-wrap:wrap;gap:12px}
+.top-left h1{font-size:16px;font-weight:500;letter-spacing:3px;color:#ccc}
+.top-left p{font-family:monospace;font-size:9px;color:#2a2a2a;letter-spacing:2px;margin-top:4px}
+.gpa-display{text-align:right}
+.gpa-num{font-size:40px;font-weight:500;color:#00ff00;line-height:1}
+.gpa-meta{font-family:monospace;font-size:10px;color:#2a5a2a;margin-top:4px;line-height:1.8}
 
-        /* NỘI DUNG CHÍNH CỦA WEBSITE ĐÈ LÊN TRÊN */
-        .content-overlay {
-            position: relative;
-            z-index: 1; /* Nổi lên trên background */
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.8); /* Thêm bóng chữ để dễ đọc trên nền */
-        }
+/* semester tabs */
+.sem-tabs{display:flex;gap:0;border-bottom:0.5px solid #111;margin-bottom:20px;overflow-x:auto}
+.sem-tab{font-family:monospace;font-size:9px;letter-spacing:1px;color:#2a2a2a;padding:8px 14px;cursor:pointer;border-bottom:1.5px solid transparent;white-space:nowrap;transition:all .2s}
+.sem-tab.active{color:#00ff00;border-bottom-color:#00ff00}
+.sem-tab:hover:not(.active){color:#444}
 
-        .content-overlay h1 {
-            font-size: 3rem;
-            margin-bottom: 10px;
-            letter-spacing: 2px;
-        }
+/* table */
+.tw{overflow-x:auto;margin-bottom:16px}
+.tw::-webkit-scrollbar{height:3px}
+.tw::-webkit-scrollbar-thumb{background:#111}
+table{width:100%;border-collapse:collapse;font-size:11px;min-width:600px}
+th{font-family:monospace;font-size:9px;color:#2a2a2a;letter-spacing:1px;padding:7px 10px;border-bottom:0.5px solid #111;text-align:center;font-weight:400;white-space:nowrap}
+th.l{text-align:left}
+td{padding:8px 10px;border-bottom:0.5px solid #0a0a0a;color:#555;text-align:center;font-family:monospace;font-size:11px;white-space:nowrap}
+td.name{text-align:left;color:#888;font-family:'Segoe UI',sans-serif;font-size:11px;max-width:220px;overflow:hidden;text-overflow:ellipsis}
+td.nil{color:#1a1a1a}
+tr:hover td{background:rgba(255,255,255,.015)}
+.gr{display:inline-block;font-family:monospace;font-size:9px;padding:2px 8px;border-radius:4px}
 
-        .content-overlay p {
-            font-size: 1.2rem;
-            color: #cccccc;
-        }
-    </style>
+/* summary cards */
+.cards{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.card{flex:1;min-width:80px;background:rgba(255,255,255,.02);border:0.5px solid #111;border-radius:8px;padding:10px 12px;text-align:center}
+.card-l{font-family:monospace;font-size:8px;color:#222;letter-spacing:2px;margin-bottom:5px}
+.card-v{font-size:18px;font-weight:500}
+
+/* progress */
+.prog{margin-bottom:8px}
+.prog-labels{display:flex;justify-content:space-between;font-family:monospace;font-size:9px;color:#222;margin-bottom:5px}
+.prog-track{height:2px;background:#0d0d0d;border-radius:99px;overflow:hidden}
+.prog-fill{height:100%;border-radius:99px;background:#00ff00;transition:width .8s}
+
+/* overall section */
+.overall{margin-top:32px;padding-top:20px;border-top:0.5px solid #0d0d0d}
+.overall-title{font-family:monospace;font-size:9px;color:#2a2a2a;letter-spacing:3px;margin-bottom:14px}
+.overall-cards{display:flex;gap:8px;flex-wrap:wrap}
+.oc{flex:1;min-width:100px;background:rgba(0,255,0,.04);border:0.5px solid #0d2a0d;border-radius:8px;padding:12px;text-align:center}
+.oc-l{font-family:monospace;font-size:8px;color:#1a3a1a;letter-spacing:2px;margin-bottom:6px}
+.oc-v{font-size:22px;font-weight:500;color:#00ff00}
+.oc-s{font-family:monospace;font-size:9px;color:#1a4a1a;margin-top:2px}
+</style>
 </head>
 <body>
+<div class="page">
 
-    <div class="content-overlay">
-        <h1>Ông Năm Chèo's Research Laboratory</h1>
+  <div class="top">
+    <div class="top-left">
+      <h1>ÔNG NĂM CHÈO</h1>
+      <p>tôn đức thắng · gpa tracker · read-only</p>
     </div>
+    <div class="gpa-display">
+      <div class="gpa-num" id="gpa4-top">—</div>
+      <div class="gpa-meta" id="gpa-meta-top">/ 4.0 &nbsp;·&nbsp; — / 10<br>tích lũy tổng hợp</div>
+    </div>
+  </div>
 
-    <div id="donut-background"></div>
+  <div class="sem-tabs" id="sem-tabs"></div>
 
-    <script>
-        // Thuật toán ASCII Donut của Andy Sloane
-        const preTag = document.getElementById('donut-background');
-        let A = 1, B = 1;
+  <div class="tw">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:22px">#</th>
+          <th class="l">Môn học</th>
+          <th>TC</th>
+          <th>KT1</th>
+          <th>KT2</th>
+          <th>GK</th>
+          <th>CK</th>
+          <th>TCTL</th>
+          <th>Chữ</th>
+          <th>4.0</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
 
-        const renderDonut = () => {
-            let b = [];
-            let z = [];
-            A += 0.05; // Tốc độ xoay trục X
-            B += 0.03; // Tốc độ xoay trục Y
-            
-            let cA = Math.cos(A), sA = Math.sin(A),
-                cB = Math.cos(B), sB = Math.sin(B);
-                
-            for (let k = 0; k < 1760; k++) {
-                b[k] = k % 80 === 79 ? "\n" : " ";
-                z[k] = 0;
-            }
-            
-            for (let j = 0; j < 6.28; j += 0.07) {
-                let ct = Math.cos(j), st = Math.sin(j);
-                for (let i = 0; i < 6.28; i += 0.02) {
-                    let sp = Math.sin(i), cp = Math.cos(i),
-                        h = ct + 2, 
-                        D = 1 / (sp * h * sA + st * cA + 5), 
-                        t = sp * h * cA - st * sA;
-                        
-                    let x = 0 | (40 + 30 * D * (cp * h * cB - t * sB)),
-                        y = 0 | (12 + 15 * D * (cp * h * sB + t * cB)),
-                        o = x + 80 * y,
-                        N = 0 | (8 * ((st * sA - sp * ct * cA) * cB - sp * ct * sA - st * cA - cp * ct * sB));
-                        
-                    if (y < 22 && y >= 0 && x >= 0 && x < 79 && D > z[o]) {
-                        z[o] = D;
-                        b[o] = ".,-~:;=!*#$@"[N > 0 ? N : 0];
-                    }
-                }
-            }
-            preTag.innerHTML = b.join("");
-        };
+  <div class="cards" id="cards"></div>
 
-        // Chạy 30 khung hình / giây
-        setInterval(renderDonut, 53);
-    </script>
+  <div class="prog">
+    <div class="prog-labels">
+      <span id="prog-l">tiến độ đến mục tiêu</span>
+      <span style="color:#1a3a1a">mục tiêu: 3.60</span>
+    </div>
+    <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+  </div>
+
+  <div class="overall">
+    <div class="overall-title">tổng hợp toàn khóa</div>
+    <div class="overall-cards" id="overall-cards"></div>
+  </div>
+
+</div>
+
+<script>
+const TARGET = 3.60;
+
+// ── DATA: điền theo transcript, null = chưa có điểm ──
+const semesters = [
+  {
+    label: 'HK1 · 2023-2024',
+    courses: [
+      {name:'Giải tích ứng dụng cho CNTT', tc:4, kt1:8.0, kt2:9.0, gk:9.5, ck:7.3},
+      {name:'Phương pháp lập trình',        tc:4, kt1:7.5, kt2:7.0, gk:5.7, ck:5.8},
+      {name:'Tổ chức máy tính',             tc:4, kt1:8.0, kt2:8.0, gk:7.0, ck:6.2},
+      {name:'Triết học Mác-Lênin',          tc:3, kt1:8.8, kt2:null, gk:7.3, ck:5.8},
+      {name:'QP&AN Học phần 3',             tc:1, kt1:null, kt2:null, gk:8.0, ck:8.0},
+    ]
+  },
+  {
+    label: 'HK2 · 2023-2024',
+    courses: [
+      // thêm môn vào đây
+    ]
+  },
+  {
+    label: 'HK1 · 2024-2025',
+    courses: []
+  },
+  {
+    label: 'HK2 · 2024-2025',
+    courses: []
+  },
+  {
+    label: 'HK1 · 2025-2026',
+    courses: []
+  },
+  {
+    label: 'HK2 · 2025-2026',
+    courses: []
+  },
+];
+
+// ── LOGIC ──
+function calcTCTL(r) {
+  const has = v => v !== null && v !== undefined;
+  if (!has(r.gk) || !has(r.ck)) return null;
+  if (!has(r.kt1) && !has(r.kt2)) return +(r.gk * 0.4 + r.ck * 0.6).toFixed(2);
+  if (has(r.kt1) && !has(r.kt2))  return +(r.kt1 * 0.1 + r.gk * 0.3 + r.ck * 0.6).toFixed(2);
+  return +(r.kt1 * 0.1 + r.kt2 * 0.1 + r.gk * 0.3 + r.ck * 0.5).toFixed(2);
+}
+
+function to4(s) {
+  if (s === null) return null;
+  if (s >= 9.0) return 4.0;
+  if (s >= 8.5) return 4.0;
+  if (s >= 8.0) return 3.7;
+  if (s >= 7.0) return 3.0;
+  if (s >= 6.5) return 2.5;
+  if (s >= 5.5) return 2.0;
+  if (s >= 5.0) return 1.0;
+  return 0.0;
+}
+
+function gradeInfo(s) {
+  if (s === null) return {ch:'—', c:'#1a1a1a', bg:'transparent'};
+  if (s >= 9.0) return {ch:'A+', c:'#00ff00', bg:'rgba(0,255,0,.08)'};
+  if (s >= 8.5) return {ch:'A',  c:'#00ee00', bg:'rgba(0,238,0,.08)'};
+  if (s >= 8.0) return {ch:'B+', c:'#88ff88', bg:'rgba(136,255,136,.08)'};
+  if (s >= 7.0) return {ch:'B',  c:'#aaffaa', bg:'rgba(170,255,170,.08)'};
+  if (s >= 6.5) return {ch:'C+', c:'#ffcc44', bg:'rgba(255,204,68,.08)'};
+  if (s >= 5.5) return {ch:'C',  c:'#ffaa00', bg:'rgba(255,170,0,.08)'};
+  if (s >= 5.0) return {ch:'D',  c:'#ff6644', bg:'rgba(255,102,68,.08)'};
+  return {ch:'F', c:'#ff2222', bg:'rgba(255,34,34,.08)'};
+}
+
+function rankInfo(gpa4) {
+  if (gpa4 >= 3.6) return {text:'Xuất sắc', c:'#00ff00'};
+  if (gpa4 >= 3.2) return {text:'Giỏi',     c:'#88ff88'};
+  if (gpa4 >= 2.5) return {text:'Khá',       c:'#ffcc44'};
+  if (gpa4 >= 2.0) return {text:'Trung bình',c:'#ff8844'};
+  return {text:'Yếu', c:'#ff4444'};
+}
+
+function fmt(v) {
+  return v === null ? '<span class="nil">—</span>' : v.toFixed(1);
+}
+
+function calcSemStats(courses) {
+  let ws4 = 0, tc = 0, ws10 = 0, pass = 0, fail = 0;
+  courses.forEach(r => {
+    const t = calcTCTL(r);
+    if (t === null) return;
+    const g4 = to4(t);
+    ws4 += g4 * r.tc;
+    ws10 += t * r.tc;
+    tc += r.tc;
+    t >= 5.0 ? pass += r.tc : fail += r.tc;
+  });
+  return { gpa4: tc ? ws4/tc : 0, gpa10: tc ? ws10/tc : 0, tc, pass, fail };
+}
+
+// ── RENDER ──
+let activeSem = 0;
+
+function renderTabs() {
+  const el = document.getElementById('sem-tabs');
+  el.innerHTML = '';
+  semesters.forEach((s, i) => {
+    const d = document.createElement('div');
+    d.className = 'sem-tab' + (i === activeSem ? ' active' : '');
+    d.textContent = s.label;
+    d.onclick = () => { activeSem = i; renderTabs(); renderTable(); };
+    el.appendChild(d);
+  });
+}
+
+function renderTable() {
+  const sem = semesters[activeSem];
+  const tb = document.getElementById('tbody');
+  tb.innerHTML = '';
+
+  if (!sem.courses.length) {
+    tb.innerHTML = '<tr><td colspan="10" style="color:#1a1a1a;text-align:center;padding:24px;font-family:monospace;font-size:10px;letter-spacing:2px">chưa có dữ liệu · thêm môn vào semesters[] trong code</td></tr>';
+    document.getElementById('cards').innerHTML = '';
+    document.getElementById('prog-l').textContent = 'tiến độ đến mục tiêu';
+    document.getElementById('prog-fill').style.width = '0%';
+    return;
+  }
+
+  sem.courses.forEach((r, i) => {
+    const t = calcTCTL(r);
+    const g4 = t !== null ? to4(t) : null;
+    const g = gradeInfo(t);
+    const tc = t === null ? '#1a1a1a' : t >= 7.0 ? '#00ff00' : t >= 5.0 ? '#ffaa00' : '#ff4444';
+    tb.innerHTML += `<tr>
+      <td style="color:#1a1a1a">${i+1}</td>
+      <td class="name" title="${r.name}">${r.name}</td>
+      <td>${r.tc}</td>
+      <td>${fmt(r.kt1)}</td>
+      <td>${fmt(r.kt2)}</td>
+      <td>${fmt(r.gk)}</td>
+      <td>${fmt(r.ck)}</td>
+      <td style="color:${tc};font-weight:500">${t !== null ? t.toFixed(1) : '<span class="nil">—</span>'}</td>
+      <td><span class="gr" style="color:${g.c};background:${g.bg}">${g.ch}</span></td>
+      <td style="color:#444">${g4 !== null ? g4.toFixed(1) : '<span class="nil">—</span>'}</td>
+    </tr>`;
+  });
+
+  const st = calcSemStats(sem.courses);
+  const rk = rankInfo(st.gpa4);
+  const pct = Math.min(100, (st.gpa4 / TARGET) * 100);
+
+  document.getElementById('cards').innerHTML = `
+    <div class="card"><div class="card-l">GPA 4.0</div><div class="card-v" style="color:#00ff00">${st.tc ? st.gpa4.toFixed(2) : '—'}</div></div>
+    <div class="card"><div class="card-l">GPA 10</div><div class="card-v" style="color:#2a8a2a">${st.tc ? st.gpa10.toFixed(2) : '—'}</div></div>
+    <div class="card"><div class="card-l">TỔNG TC</div><div class="card-v" style="color:#444">${st.tc}</div></div>
+    <div class="card"><div class="card-l">TC QUA</div><div class="card-v" style="color:#00ff00">${st.pass}</div></div>
+    <div class="card"><div class="card-l">TC RỚT</div><div class="card-v" style="color:${st.fail ? '#ff4444' : '#1a1a1a'}">${st.fail}</div></div>
+    <div class="card"><div class="card-l">XẾP LOẠI</div><div class="card-v" style="color:${rk.c};font-size:13px;margin-top:3px">${st.tc ? rk.text : '—'}</div></div>
+  `;
+
+  document.getElementById('prog-l').textContent = `${Math.round(pct)}% đến mục tiêu`;
+  document.getElementById('prog-fill').style.width = pct + '%';
+}
+
+function renderOverall() {
+  // tính GPA tích lũy toàn bộ học kỳ
+  let ws4 = 0, ws10 = 0, tc = 0, pass = 0, fail = 0;
+  semesters.forEach(sem => {
+    sem.courses.forEach(r => {
+      const t = calcTCTL(r);
+      if (t === null) return;
+      ws4 += to4(t) * r.tc;
+      ws10 += t * r.tc;
+      tc += r.tc;
+      t >= 5.0 ? pass += r.tc : fail += r.tc;
+    });
+  });
+  const gpa4 = tc ? ws4 / tc : 0;
+  const gpa10 = tc ? ws10 / tc : 0;
+  const rk = rankInfo(gpa4);
+
+  document.getElementById('gpa4-top').textContent = tc ? gpa4.toFixed(2) : '—';
+  document.getElementById('gpa-meta-top').innerHTML = `/ 4.0 &nbsp;·&nbsp; ${tc ? gpa10.toFixed(2) : '—'} / 10<br>tích lũy toàn khóa`;
+
+  document.getElementById('overall-cards').innerHTML = `
+    <div class="oc"><div class="oc-l">GPA TÍCH LŨY</div><div class="oc-v">${tc ? gpa4.toFixed(2) : '—'}</div><div class="oc-s">/ 4.0 &nbsp;·&nbsp; ${tc ? gpa10.toFixed(2) : '—'} / 10</div></div>
+    <div class="oc"><div class="oc-l">TỔNG TC TÍCH LŨY</div><div class="oc-v" style="color:#2a8a2a">${tc}</div><div class="oc-s">qua: ${pass} &nbsp;·&nbsp; rớt: ${fail}</div></div>
+    <div class="oc"><div class="oc-l">XẾP LOẠI</div><div class="oc-v" style="color:${rk.c};font-size:16px">${tc ? rk.text : '—'}</div><div class="oc-s">mục tiêu: xuất sắc</div></div>
+  `;
+}
+
+renderTabs();
+renderTable();
+renderOverall();
+</script>
 </body>
 </html>

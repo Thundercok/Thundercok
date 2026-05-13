@@ -1,0 +1,75 @@
+/* =========================================
+   css/markdown.css - DOCS STYLING
+========================================= */
+
+#md-viewer {
+    padding: 40px 50px;
+    max-width: 850px;
+    margin: 0 auto;
+}
+
+#md-viewer h1 {
+    font-family: "Playfair Display", serif;
+    font-style: italic;
+    color: var(--sage);
+    font-size: 38px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 10px;
+    margin-bottom: 25px;
+}
+
+#md-viewer h2 {
+    font-family: "DM Mono", monospace;
+    color: var(--soft);
+    font-size: 20px;
+    margin-top: 40px;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+#md-viewer p,
+#md-viewer ul {
+    font-family: "Crimson Pro", serif;
+    font-size: 19px;
+    line-height: 1.8;
+    color: var(--text);
+    opacity: 0.9;
+    margin-bottom: 20px;
+}
+
+#md-viewer ul {
+    margin-left: 20px;
+}
+
+#md-viewer li {
+    margin-bottom: 8px;
+}
+
+#md-viewer code {
+    background: rgba(0, 0, 0, 0.4);
+    color: var(--amber);
+    font-family: "DM Mono", monospace;
+    font-size: 15px;
+    padding: 2px 6px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+}
+
+.sim-container {
+    width: 100%;
+    height: 600px;
+    margin: 40px 0;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg3);
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.sim-container iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+}

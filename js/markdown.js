@@ -62,15 +62,22 @@ async function loadPaper(p) {
         throw new Error(`HTTP error! status: ${response.status}`);
       const rawText = await response.text();
 
-      // Dọn dẹp lề và parse Markdown
       let cleanContent = rawText.replace(/^[ \t]+/gm, "");
       let html = marked.parse(cleanContent);
 
-      // Render Simulator an toàn
-      html = html.replace(
-        /::SIMULATOR\[(.*?)\]::/g,
-        '<div class="sim-container"><iframe src="$1"></iframe></div>',
-      );
+      // [PROD FIX]: Tự động nội suy đường dẫn tương đối
+      // Lấy thư mục chứa file markdown hiện tại (vd: "papers/dsa/linked-list/")
+      const basePath = p.url.substring(0, p.url.lastIndexOf("/") + 1);
+
+      // Render Simulator an toàn và thông minh
+      html = html.replace(/::SIMULATOR\[(.*?)\]::/g, (match, simPath) => {
+        let finalPath = simPath;
+        // Nếu không phải link tuyệt đối (http) hoặc link từ root (/), thì tự động nối basePath
+        if (!simPath.startsWith("http") && !simPath.startsWith("/")) {
+          finalPath = basePath + simPath;
+        }
+        return `<div class="sim-container"><iframe src="${finalPath}"></iframe></div>`;
+      });
 
       mdViewer.innerHTML = html;
     } catch (e) {

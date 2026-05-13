@@ -1,0 +1,486 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Dijkstra State Machine</title>
+        <link
+            href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap"
+            rel="stylesheet"
+        />
+
+        <!-- Lấy bảng màu từ thư mục css gốc -->
+        <link rel="stylesheet" href="../css/styles.css" />
+
+        <style>
+            /* CSS ĐẶC THÙ CHO DIJKSTRA CANVAS */
+            body {
+                background: var(--bg);
+                color: var(--text);
+                font-family: "DM Mono", monospace;
+                height: 100vh;
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
+                margin: 0;
+                padding: 0;
+            }
+
+            /* ── TOOLBAR ── */
+            #toolbar {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px 16px;
+                border-bottom: 1px solid var(--border);
+                background: rgba(0, 0, 0, 0.2);
+            }
+            .btn {
+                background: transparent;
+                border: 1px solid var(--border);
+                color: var(--soft);
+                font-family: inherit;
+                font-size: 11px;
+                padding: 6px 12px;
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+            .btn:hover:not(:disabled) {
+                border-color: var(--sage);
+                color: var(--sage);
+                background: rgba(122, 158, 126, 0.1);
+            }
+            .btn:disabled {
+                opacity: 0.3;
+                cursor: not-allowed;
+            }
+            #status {
+                font-size: 10px;
+                color: var(--amber);
+                letter-spacing: 1px;
+            }
+
+            /* ── MAIN LAYOUT ── */
+            #workspace {
+                display: flex;
+                flex: 1;
+                min-height: 0;
+            }
+
+            /* LEFT: CANVAS */
+            #graph-panel {
+                flex: 1;
+                border-right: 1px solid var(--border);
+                position: relative;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                background: radial-gradient(
+                    circle at center,
+                    #1f251f 0%,
+                    #1a1f1a 100%
+                );
+            }
+            canvas {
+                display: block;
+            }
+            #memory-dump {
+                position: absolute;
+                bottom: 16px;
+                left: 16px;
+                font-size: 10px;
+                color: var(--muted);
+                background: rgba(0, 0, 0, 0.6);
+                padding: 8px;
+                border: 1px solid var(--border);
+            }
+            .mem-item {
+                margin-bottom: 4px;
+            }
+            .mem-val {
+                color: var(--text);
+            }
+
+            /* RIGHT: JAVA CODE */
+            #code-panel {
+                width: 45%;
+                overflow-y: auto;
+                padding: 16px;
+                background: #151915;
+            }
+            .code-line {
+                font-size: 11px;
+                line-height: 1.6;
+                display: flex;
+                color: var(--muted);
+                border-left: 2px solid transparent;
+                padding-left: 8px;
+                transition: all 0.1s;
+            }
+            .code-line.active {
+                color: var(--sage);
+                border-left-color: var(--sage);
+                background: rgba(122, 158, 126, 0.05);
+            }
+            .code-line .ln {
+                width: 24px;
+                display: inline-block;
+                opacity: 0.5;
+                user-select: none;
+            }
+            .code-line.active::before {
+                content: ">";
+                position: absolute;
+                margin-left: -20px;
+                color: var(--sage);
+                animation: blink 1s step-end infinite;
+            }
+
+            @keyframes blink {
+                0%,
+                100% {
+                    opacity: 1;
+                }
+                50% {
+                    opacity: 0;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div id="toolbar">
+            <button class="btn" id="btn-prev" onclick="step(-1)">
+                ◄ step_back
+            </button>
+            <div id="status">INIT_STATE</div>
+            <button class="btn" id="btn-next" onclick="step(1)">
+                step_forward ►
+            </button>
+        </div>
+
+        <div id="workspace">
+            <div id="graph-panel">
+                <canvas id="cvs" width="400" height="400"></canvas>
+                <div id="memory-dump"></div>
+            </div>
+            <div id="code-panel" id="code-container">
+                <!-- Injected by JS -->
+            </div>
+        </div>
+
+        <script>
+            // Giữ nguyên toàn bộ phần Script logic (javaCode, nodes, edges, states, engine logic) của file Dijkstra cũ ở đây
+            const javaCode = `public void dijkstra(int src) {
+  Arrays.fill(dist, Integer.MAX_VALUE);
+  dist[src] = 0;
+
+  PriorityQueue<Node> pq = new PriorityQueue<>();
+  pq.add(new Node(src, 0));
+
+  while (!pq.isEmpty()) {
+      Node u = pq.poll();
+
+      if (visited[u.id]) continue;
+      visited[u.id] = true;
+
+      for (Edge e : adj[u.id]) {
+          if (dist[u.id] + e.weight < dist[e.to]) {
+              dist[e.to] = dist[u.id] + e.weight;
+              pq.add(new Node(e.to, dist[e.to]));
+          }
+      }
+  }
+}`;
+
+            const nodes = {
+                0: { x: 50, y: 200, label: "0" },
+                1: { x: 180, y: 80, label: "1" },
+                2: { x: 180, y: 320, label: "2" },
+                3: { x: 350, y: 200, label: "3" },
+            };
+            const edges = [
+                { u: 0, v: 1, w: 4 },
+                { u: 0, v: 2, w: 1 },
+                { u: 1, v: 3, w: 1 },
+                { u: 2, v: 1, w: 2 },
+                { u: 2, v: 3, w: 5 },
+            ];
+
+            // Hack for boolean printing
+            var T = "<span style='color:var(--sage)'>true</span>";
+            var F = "<span style='color:var(--rose)'>false</span>";
+
+            const states = [
+                {
+                    line: 1,
+                    desc: "INIT: Set all distances to infinity",
+                    dist: ["∞", "∞", "∞", "∞"],
+                    vis: [F, F, F, F],
+                    pq: "[]",
+                    activeNode: null,
+                    activeEdge: null,
+                },
+                {
+                    line: 2,
+                    desc: "INIT: Set distance of source (0) to 0",
+                    dist: [0, "∞", "∞", "∞"],
+                    vis: [F, F, F, F],
+                    pq: "[]",
+                    activeNode: 0,
+                    activeEdge: null,
+                },
+                {
+                    line: 5,
+                    desc: "INIT: Add source to PriorityQueue",
+                    dist: [0, "∞", "∞", "∞"],
+                    vis: [F, F, F, F],
+                    pq: "[(0, 0)]",
+                    activeNode: 0,
+                    activeEdge: null,
+                },
+                {
+                    line: 7,
+                    desc: "LOOP: Check if PQ is empty",
+                    dist: [0, "∞", "∞", "∞"],
+                    vis: [F, F, F, F],
+                    pq: "[(0, 0)]",
+                    activeNode: null,
+                    activeEdge: null,
+                },
+                {
+                    line: 8,
+                    desc: "POLL: Extract min from PQ -> Node 0",
+                    dist: [0, "∞", "∞", "∞"],
+                    vis: [F, F, F, F],
+                    pq: "[]",
+                    activeNode: 0,
+                    activeEdge: null,
+                },
+                {
+                    line: 11,
+                    desc: "VISIT: Mark Node 0 as visited",
+                    dist: [0, "∞", "∞", "∞"],
+                    vis: [T, F, F, F],
+                    pq: "[]",
+                    activeNode: 0,
+                    activeEdge: null,
+                },
+                {
+                    line: 13,
+                    desc: "EDGE: Check neighbors of 0 (Edge 0->1)",
+                    dist: [0, "∞", "∞", "∞"],
+                    vis: [T, F, F, F],
+                    pq: "[]",
+                    activeNode: 0,
+                    activeEdge: { u: 0, v: 1 },
+                },
+                {
+                    line: 14,
+                    desc: "RELAX: 0 + 4 < ∞. Update dist[1]",
+                    dist: [0, 4, "∞", "∞"],
+                    vis: [T, F, F, F],
+                    pq: "[(1, 4)]",
+                    activeNode: 1,
+                    activeEdge: { u: 0, v: 1 },
+                },
+                {
+                    line: 13,
+                    desc: "EDGE: Check neighbors of 0 (Edge 0->2)",
+                    dist: [0, 4, "∞", "∞"],
+                    vis: [T, F, F, F],
+                    pq: "[(1, 4)]",
+                    activeNode: 0,
+                    activeEdge: { u: 0, v: 2 },
+                },
+                {
+                    line: 14,
+                    desc: "RELAX: 0 + 1 < ∞. Update dist[2]",
+                    dist: [0, 4, 1, "∞"],
+                    vis: [T, F, F, F],
+                    pq: "[(2, 1), (1, 4)]",
+                    activeNode: 2,
+                    activeEdge: { u: 0, v: 2 },
+                },
+                {
+                    line: 8,
+                    desc: "POLL: Extract min -> Node 2 (dist: 1)",
+                    dist: [0, 4, 1, "∞"],
+                    vis: [T, F, F, F],
+                    pq: "[(1, 4)]",
+                    activeNode: 2,
+                    activeEdge: null,
+                },
+                {
+                    line: 11,
+                    desc: "VISIT: Mark Node 2 as visited",
+                    dist: [0, 4, 1, "∞"],
+                    vis: [T, F, T, F],
+                    pq: "[(1, 4)]",
+                    activeNode: 2,
+                    activeEdge: null,
+                },
+                {
+                    line: 14,
+                    desc: "RELAX: 1 + 2 < 4. Update dist[1] to 3",
+                    dist: [0, 3, 1, "∞"],
+                    vis: [T, F, T, F],
+                    pq: "[(1, 3), (1, 4)]",
+                    activeNode: 1,
+                    activeEdge: { u: 2, v: 1 },
+                },
+                {
+                    line: 14,
+                    desc: "RELAX: 1 + 5 < ∞. Update dist[3] to 6",
+                    dist: [0, 3, 1, 6],
+                    vis: [T, F, T, F],
+                    pq: "[(1, 3), (1, 4), (3, 6)]",
+                    activeNode: 3,
+                    activeEdge: { u: 2, v: 3 },
+                },
+                {
+                    line: 8,
+                    desc: "POLL: Extract min -> Node 1 (dist: 3)",
+                    dist: [0, 3, 1, 6],
+                    vis: [T, F, T, F],
+                    pq: "[(1, 4), (3, 6)]",
+                    activeNode: 1,
+                    activeEdge: null,
+                },
+                {
+                    line: 11,
+                    desc: "VISIT: Mark Node 1 as visited",
+                    dist: [0, 3, 1, 6],
+                    vis: [T, T, T, F],
+                    pq: "[(1, 4), (3, 6)]",
+                    activeNode: 1,
+                    activeEdge: null,
+                },
+                {
+                    line: 14,
+                    desc: "RELAX: 3 + 1 < 6. Update dist[3] to 4",
+                    dist: [0, 3, 1, 4],
+                    vis: [T, T, T, F],
+                    pq: "[(3, 4), (1, 4), (3, 6)]",
+                    activeNode: 3,
+                    activeEdge: { u: 1, v: 3 },
+                },
+                {
+                    line: 18,
+                    desc: "HALT: Algorithm completes shortest paths",
+                    dist: [0, 3, 1, 4],
+                    vis: [T, T, T, T],
+                    pq: "[]",
+                    activeNode: null,
+                    activeEdge: null,
+                },
+            ];
+
+            let currStateIdx = 0;
+            const cvs = document.getElementById("cvs");
+            const ctx = cvs.getContext("2d");
+            const codePanel = document.getElementById("code-panel");
+
+            function init() {
+                const lines = javaCode.split("\n");
+                codePanel.innerHTML = lines
+                    .map(
+                        (l, i) =>
+                            `<div class="code-line" id="line-${i + 1}"><span class="ln">${i + 1}</span> <pre style="margin:0;font-family:inherit">${l}</pre></div>`,
+                    )
+                    .join("");
+                renderState();
+            }
+
+            function step(dir) {
+                currStateIdx += dir;
+                if (currStateIdx < 0) currStateIdx = 0;
+                if (currStateIdx >= states.length)
+                    currStateIdx = states.length - 1;
+                renderState();
+            }
+
+            function renderState() {
+                const st = states[currStateIdx];
+
+                document.getElementById("status").textContent =
+                    `[STATE ${currStateIdx + 1}/${states.length}] ${st.desc}`;
+                document.getElementById("btn-prev").disabled =
+                    currStateIdx === 0;
+                document.getElementById("btn-next").disabled =
+                    currStateIdx === states.length - 1;
+
+                document
+                    .querySelectorAll(".code-line")
+                    .forEach((el) => el.classList.remove("active"));
+                document
+                    .getElementById(`line-${st.line}`)
+                    .classList.add("active");
+
+                // Tự động cuộn code (Fix lỗi UX)
+                document
+                    .getElementById(`line-${st.line}`)
+                    .scrollIntoView({ behavior: "smooth", block: "center" });
+
+                document.getElementById("memory-dump").innerHTML = `
+    <div class="mem-item">dist[] = <span class="mem-val">[${st.dist.join(", ")}]</span></div>
+    <div class="mem-item">visited = <span class="mem-val">[${st.vis.join(", ")}]</span></div>
+    <div class="mem-item">PQ = <span class="mem-val">${st.pq}</span></div>
+  `;
+
+                ctx.clearRect(0, 0, cvs.width, cvs.height);
+
+                edges.forEach((e) => {
+                    const n1 = nodes[e.u],
+                        n2 = nodes[e.v];
+                    const isActive =
+                        st.activeEdge &&
+                        st.activeEdge.u === e.u &&
+                        st.activeEdge.v === e.v;
+
+                    ctx.beginPath();
+                    ctx.moveTo(n1.x, n1.y);
+                    ctx.lineTo(n2.x, n2.y);
+                    ctx.strokeStyle = isActive ? "#d4944a" : "#2a352a";
+                    ctx.lineWidth = isActive ? 3 : 1.5;
+                    ctx.stroke();
+
+                    const mx = (n1.x + n2.x) / 2,
+                        my = (n1.y + n2.y) / 2;
+                    ctx.fillStyle = isActive ? "#d4944a" : "#5a7057";
+                    ctx.font = "12px DM Mono";
+                    ctx.fillText(e.w, mx - 5, my - 10);
+                });
+
+                Object.keys(nodes).forEach((id) => {
+                    const n = nodes[id];
+                    const isVisited = st.vis[id] === T;
+                    const isActive = st.activeNode == id;
+
+                    ctx.beginPath();
+                    ctx.arc(n.x, n.y, 20, 0, Math.PI * 2);
+                    ctx.fillStyle = isVisited ? "#1a2a1a" : "#151915";
+                    if (isActive) ctx.fillStyle = "#2a1a1a";
+                    ctx.fill();
+
+                    ctx.strokeStyle = isActive
+                        ? "#d4944a"
+                        : isVisited
+                          ? "#7a9e7e"
+                          : "#5a7057";
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+
+                    ctx.fillStyle = "#c8d4c0";
+                    ctx.font = "14px DM Mono";
+                    ctx.fillText(n.label, n.x - 4, n.y + 4);
+
+                    ctx.fillStyle = st.dist[id] === "∞" ? "#5a7057" : "#7a9e7e";
+                    ctx.font = "10px DM Mono";
+                    ctx.fillText(`d:${st.dist[id]}`, n.x - 10, n.y + 35);
+                });
+            }
+
+            window.onload = init;
+        </script>
+    </body>
+</html>

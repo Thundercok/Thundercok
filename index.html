@@ -1,1688 +1,1376 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
-
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ông Năm Chèo · Lab</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link
-    href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:ital,wght@0,300;0,400;1,300&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
-    rel="stylesheet">
-  <style>
-    :root {
-      --sage: #7a9e7e;
-      --sage2: #5a7d5e;
-      --sage3: #3d5c40;
-      --cream: #f5f0e8;
-      --cream2: #ede5d5;
-      --cream3: #d4c9b4;
-      --bark: #8b6f47;
-      --bark2: #6b5237;
-      --moss: #4a6741;
-      --mist: #a8c4aa;
-      --bg: #1a1f1a;
-      --bg2: #1f251f;
-      --bg3: #242b24;
-      --border: #2a352a;
-      --text: #c8d4c0;
-      --muted: #5a7057;
-      --soft: #8aaa84;
-      --amber: #d4944a;
-      --rose: #c47a7a;
-      --lavender: #9a8ec4;
-      --sky: #6aacb8;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0
-    }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'DM Mono', monospace;
-      min-height: 100vh;
-      overflow: hidden;
-      position: relative;
-    }
-
-    /* ── CANVAS BACKGROUND ── */
-    #canvas-bg {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      opacity: 0.45;
-      pointer-events: none;
-    }
-
-    /* ── SOFT VIGNETTE ── */
-    body::after {
-      content: '';
-      position: fixed;
-      inset: 0;
-      z-index: 1;
-      pointer-events: none;
-      background: radial-gradient(ellipse at center, transparent 55%, rgba(16, 20, 16, 0.65) 100%);
-    }
-
-    /* ── BOOT ── */
-    #boot-screen {
-      position: fixed;
-      inset: 0;
-      background: var(--bg);
-      z-index: 9999;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      padding: 24px;
-      font-family: 'DM Mono', monospace;
-      color: var(--muted);
-      overflow: hidden;
-    }
-
-    .boot-line {
-      font-size: 12px;
-      margin-bottom: 2px;
-      white-space: nowrap;
-      overflow: hidden;
-    }
-
-    .boot-line.hl {
-      color: var(--sage);
-      font-size: 14px;
-    }
-
-    /* ── SHELL ── */
-    #shell {
-      position: relative;
-      z-index: 2;
-      width: 100vw;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      opacity: 0;
-      transition: opacity 0.4s;
-    }
-
-    #shell.visible {
-      opacity: 1;
-    }
-
-    /* ── TOPBAR ── */
-    #topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 24px;
-      border-bottom: 1px solid var(--border);
-      background: rgba(26, 31, 26, 0.85);
-      backdrop-filter: blur(8px);
-      flex-shrink: 0;
-      position: relative;
-    }
-
-    .logo {
-      font-family: 'Playfair Display', serif;
-      font-size: 18px;
-      font-style: italic;
-      color: var(--sage);
-      letter-spacing: 1px;
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-    }
-
-    .telemetry {
-      display: flex;
-      gap: 16px;
-      font-size: 10px;
-      color: var(--muted);
-    }
-
-    .telemetry span {
-      color: var(--soft);
-    }
-
-    .tb-right {
-      font-size: 10px;
-      color: var(--muted);
-      text-align: right;
-      line-height: 1.8;
-    }
-
-    .tb-right .live {
-      color: var(--sage);
-      animation: blink 2s step-end infinite;
-    }
-
-    /* ── TABS ── */
-    #tabs {
-      display: flex;
-      border-bottom: 1px solid var(--border);
-      background: rgba(26, 31, 26, 0.7);
-      flex-shrink: 0;
-      padding: 0 24px;
-    }
-
-    .tab {
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      color: var(--muted);
-      padding: 10px 18px;
-      cursor: pointer;
-      border-bottom: 2px solid transparent;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      transition: all .2s;
-    }
-
-    .tab.active {
-      color: var(--sage);
-      border-bottom-color: var(--sage);
-    }
-
-    .tab:hover:not(.active) {
-      color: var(--soft);
-    }
-
-    /* ── CONTENT ── */
-    #content {
-      flex: 1;
-      overflow: hidden;
-      position: relative;
-    }
-
-    @keyframes fadeUp {
-      from {
-        opacity: 0;
-        transform: translateY(8px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .pane {
-      display: none;
-      height: 100%;
-      padding: 24px;
-      overflow-y: auto;
-      scrollbar-width: thin;
-      scrollbar-color: var(--border) transparent;
-    }
-
-    .pane::-webkit-scrollbar {
-      width: 4px;
-    }
-
-    .pane::-webkit-scrollbar-thumb {
-      background: var(--border);
-      border-radius: 2px;
-    }
-
-    .pane.active {
-      display: flex;
-      animation: fadeUp 0.3s ease-out;
-    }
-
-    /* ── COMMAND PALETTE ── */
-    #cmd-palette {
-      position: fixed;
-      top: 18%;
-      left: 50%;
-      transform: translateX(-50%) translateY(-10px);
-      width: 480px;
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
-      z-index: 10000;
-      display: none;
-      flex-direction: column;
-      transition: all 0.2s;
-    }
-
-    #cmd-palette.visible {
-      display: flex;
-      transform: translateX(-50%) translateY(0);
-    }
-
-    #cmd-input {
-      border: none;
-      border-bottom: 1px solid var(--border);
-      font-size: 14px;
-      padding: 14px 16px;
-      font-family: 'DM Mono', monospace;
-      color: var(--text);
-      background: transparent;
-      outline: none;
-    }
-
-    #cmd-input::placeholder {
-      color: var(--muted);
-    }
-
-    .cmd-list {
-      max-height: 280px;
-      overflow-y: auto;
-    }
-
-    .cmd-item {
-      padding: 10px 16px;
-      font-size: 11px;
-      color: var(--muted);
-      cursor: pointer;
-      display: flex;
-      justify-content: space-between;
-      border-left: 2px solid transparent;
-      transition: all .15s;
-    }
-
-    .cmd-item.selected,
-    .cmd-item:hover {
-      background: rgba(122, 158, 126, 0.08);
-      color: var(--sage);
-      border-left-color: var(--sage);
-    }
-
-    /* ══════════════════════
-   HOME
-══════════════════════ */
-    #pane-home {
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-    }
-
-    .hero-box {
-      border: 1px solid var(--border);
-      padding: 48px 72px;
-      text-align: center;
-      background: rgba(26, 31, 26, 0.7);
-      backdrop-filter: blur(10px);
-      max-width: 600px;
-    }
-
-    .hero-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 56px;
-      font-weight: 400;
-      font-style: italic;
-      color: var(--sage);
-      letter-spacing: 3px;
-      line-height: 1;
-      margin-bottom: 8px;
-    }
-
-    .hero-sub {
-      font-size: 10px;
-      color: var(--muted);
-      letter-spacing: 4px;
-      text-transform: uppercase;
-    }
-
-    .hero-divider {
-      width: 120px;
-      height: 1px;
-      background: var(--border);
-      margin: 24px auto;
-      position: relative;
-    }
-
-    .hero-divider::before {
-      content: '✦';
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%) translateY(-50%);
-      color: var(--muted);
-      font-size: 10px;
-      background: var(--bg2);
-      padding: 0 6px;
-    }
-
-    .hero-prompt {
-      font-size: 13px;
-      color: var(--text);
-      font-family: 'Crimson Pro', serif;
-      font-style: italic;
-      line-height: 1.8;
-    }
-
-    .cursor-blink {
-      display: inline-block;
-      width: 8px;
-      height: 14px;
-      background: var(--sage);
-      margin-left: 4px;
-      vertical-align: middle;
-      animation: blink 1.2s step-end infinite;
-    }
-
-    .cmd-hint {
-      font-size: 10px;
-      color: var(--muted);
-      margin-top: 20px;
-      letter-spacing: 1px;
-    }
-
-    .cmd-hint kbd {
-      border: 1px solid var(--border);
-      padding: 1px 5px;
-      border-radius: 3px;
-      color: var(--soft);
-      font-family: 'DM Mono', monospace;
-    }
-
-    /* ══════════════════════
-   PAPERS
-══════════════════════ */
-    #pane-papers {
-      flex-direction: column;
-    }
-
-    .papers-layout {
-      display: grid;
-      grid-template-columns: 260px 1fr;
-      gap: 20px;
-      height: 100%;
-      width: 100%;
-    }
-
-    .papers-sidebar {
-      border-right: 1px solid var(--border);
-      padding-right: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      overflow-y: auto;
-    }
-
-    .pane-title {
-      font-family: 'Crimson Pro', serif;
-      font-size: 16px;
-      font-style: italic;
-      color: var(--soft);
-      letter-spacing: 1px;
-      padding-bottom: 6px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    #psearch {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--text);
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      padding: 8px 12px;
-      outline: none;
-      width: 100%;
-      transition: border .2s;
-    }
-
-    #psearch:focus {
-      border-color: var(--sage2);
-    }
-
-    #psearch::placeholder {
-      color: var(--muted);
-    }
-
-    .paper-list {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .pcard {
-      border: 1px solid var(--border);
-      padding: 10px 12px;
-      cursor: pointer;
-      background: rgba(0, 0, 0, 0.15);
-      transition: all .15s;
-    }
-
-    .pcard:hover,
-    .pcard.active {
-      border-color: var(--sage2);
-      background: rgba(122, 158, 126, 0.06);
-      padding-left: 16px;
-    }
-
-    .pcard.active .pc-title {
-      color: var(--sage);
-    }
-
-    .pc-tag {
-      font-size: 9px;
-      color: var(--sage2);
-      letter-spacing: 1px;
-      margin-bottom: 4px;
-    }
-
-    .pc-title {
-      font-size: 11px;
-      color: var(--text);
-      line-height: 1.4;
-    }
-
-    .iframe-wrap {
-      flex: 1;
-      border: 1px solid var(--border);
-      background: #fff;
-      display: flex;
-      flex-direction: column;
-      min-height: 0;
-    }
-
-    .viewer-toolbar {
-      padding: 8px 14px;
-      background: var(--bg3);
-      display: flex;
-      justify-content: space-between;
-      font-size: 10px;
-      color: var(--soft);
-      align-items: center;
-      flex-shrink: 0;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .btn-open {
-      cursor: pointer;
-      padding: 3px 8px;
-      border: 1px solid var(--border);
-      color: var(--muted);
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      background: transparent;
-      transition: all .2s;
-    }
-
-    .btn-open:hover {
-      border-color: var(--sage);
-      color: var(--sage);
-    }
-
-    /* ══════════════════════
-   ASTROLOGY
-══════════════════════ */
-    #pane-astro {
-      flex-direction: column;
-      gap: 0;
-    }
-
-    .astro-layout {
-      display: grid;
-      grid-template-columns: 320px 1fr;
-      gap: 24px;
-      height: 100%;
-      width: 100%;
-    }
-
-    /* Input panel */
-    .astro-input {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      border-right: 1px solid var(--border);
-      padding-right: 20px;
-      overflow-y: auto;
-    }
-
-    .field-group {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-    }
-
-    .field-label {
-      font-size: 9px;
-      color: var(--muted);
-      letter-spacing: 2px;
-      text-transform: uppercase;
-    }
-
-    .field-input {
-      background: rgba(0, 0, 0, 0.2);
-      border: 1px solid var(--border);
-      color: var(--text);
-      font-family: 'DM Mono', monospace;
-      font-size: 12px;
-      padding: 8px 12px;
-      outline: none;
-      width: 100%;
-      transition: border .2s;
-    }
-
-    .field-input:focus {
-      border-color: var(--sage2);
-    }
-
-    .field-input::placeholder {
-      color: var(--muted);
-      font-size: 11px;
-    }
-
-    .calc-btn {
-      background: rgba(122, 158, 126, 0.1);
-      border: 1px solid var(--sage2);
-      color: var(--sage);
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      letter-spacing: 2px;
-      padding: 12px;
-      cursor: pointer;
-      text-transform: uppercase;
-      transition: all .2s;
-      width: 100%;
-    }
-
-    .calc-btn:hover {
-      background: rgba(122, 158, 126, 0.2);
-      box-shadow: 0 0 20px rgba(122, 158, 126, 0.1);
-    }
-
-    .big-three {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-top: 4px;
-    }
-
-    .big-three-card {
-      border: 1px solid var(--border);
-      padding: 12px;
-      background: rgba(0, 0, 0, 0.15);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .btc-label {
-      font-size: 8px;
-      color: var(--muted);
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      margin-bottom: 4px;
-    }
-
-    .btc-sign {
-      font-family: 'Playfair Display', serif;
-      font-size: 20px;
-      font-style: italic;
-      color: var(--sage);
-    }
-
-    .btc-degree {
-      font-size: 10px;
-      color: var(--muted);
-      margin-top: 2px;
-    }
-
-    .btc-element {
-      position: absolute;
-      right: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 22px;
-      opacity: 0.4;
-    }
-
-    .btc-desc {
-      font-family: 'Crimson Pro', serif;
-      font-size: 12px;
-      font-style: italic;
-      color: var(--muted);
-      margin-top: 6px;
-      line-height: 1.5;
-      border-top: 1px solid var(--border);
-      padding-top: 6px;
-    }
-
-    .planet-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 6px;
-      margin-top: 4px;
-    }
-
-    .planet-item {
-      border: 1px solid var(--border);
-      padding: 8px 10px;
-      background: rgba(0, 0, 0, 0.1);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .planet-sym {
-      font-size: 16px;
-      opacity: 0.7;
-      width: 20px;
-      text-align: center;
-    }
-
-    .planet-info {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .planet-name {
-      font-size: 8px;
-      color: var(--muted);
-      letter-spacing: 1px;
-      text-transform: uppercase;
-    }
-
-    .planet-sign {
-      font-size: 11px;
-      color: var(--text);
-    }
-
-    .planet-deg {
-      font-size: 9px;
-      color: var(--muted);
-    }
-
-    /* Chart area */
-    .astro-chart-area {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      overflow-y: auto;
-      align-items: center;
-    }
-
-    #birth-chart-svg {
-      width: 100%;
-      max-width: 650px;
-      /* ENLARGED CHART */
-      display: block;
-      filter: drop-shadow(0 0 15px rgba(0, 0, 0, 0.3));
-    }
-
-    .aspect-list {
-      border: 1px solid var(--border);
-      padding: 14px;
-      background: rgba(0, 0, 0, 0.1);
-      width: 100%;
-      max-width: 650px;
-    }
-
-    .aspect-title {
-      font-size: 9px;
-      color: var(--muted);
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      margin-bottom: 10px;
-    }
-
-    .aspect-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 4px 0;
-      border-bottom: 1px solid var(--border);
-      font-size: 10px;
-    }
-
-    .aspect-row:last-child {
-      border-bottom: none;
-    }
-
-    .asp-planets {
-      color: var(--text);
-    }
-
-    .asp-type {
-      color: var(--muted);
-      font-size: 9px;
-    }
-
-    .asp-badge {
-      font-size: 9px;
-      padding: 1px 6px;
-      border: 1px solid;
-      border-radius: 2px;
-    }
-
-    .astro-placeholder {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
-      gap: 12px;
-      opacity: 0.4;
-    }
-
-    .astro-placeholder .big-sym {
-      font-size: 64px;
-      opacity: 0.3;
-    }
-
-    .astro-placeholder p {
-      font-family: 'Crimson Pro', serif;
-      font-style: italic;
-      font-size: 14px;
-      color: var(--muted);
-      text-align: center;
-    }
-
-    /* ══════════════════════
-   ARCADE
-══════════════════════ */
-    #pane-arcade {
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-    }
-
-    .arcade-machine {
-      border: 1px solid var(--border);
-      background: var(--bg2);
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-width: 340px;
-    }
-
-    .arcade-header {
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      color: var(--soft);
-      margin-bottom: 14px;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 10px;
-    }
-
-    .arcade-screen {
-      border: 1px solid var(--sage2);
-      background: #000;
-      position: relative;
-      width: 240px;
-      height: 400px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-    }
-
-    #arcade-menu {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      width: 100%;
-      padding: 20px;
-      text-align: center;
-      z-index: 10;
-    }
-
-    .menu-btn {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--soft);
-      font-family: 'DM Mono', monospace;
-      font-size: 13px;
-      padding: 10px;
-      cursor: pointer;
-      transition: all 0.2s;
-      letter-spacing: 2px;
-    }
-
-    .menu-btn:hover {
-      background: rgba(122, 158, 126, 0.1);
-      border-color: var(--sage);
-      color: var(--sage);
-    }
-
-    #game-canvas {
-      display: none;
-      background: #000;
-    }
-
-    .game-over-screen {
-      position: absolute;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.88);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s;
-      z-index: 20;
-    }
-
-    .game-over-screen.show {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .go-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 28px;
-      font-style: italic;
-      color: var(--rose);
-      margin-bottom: 8px;
-    }
-
-    .go-btn {
-      background: transparent;
-      border: 1px solid var(--sage);
-      color: var(--sage);
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      padding: 8px 16px;
-      cursor: pointer;
-      margin-top: 12px;
-      transition: all 0.2s;
-      letter-spacing: 1px;
-    }
-
-    .go-btn:hover {
-      background: rgba(122, 158, 126, 0.15);
-    }
-
-    .arcade-controls {
-      margin-top: 14px;
-      font-size: 10px;
-      color: var(--muted);
-      text-align: center;
-      line-height: 2;
-    }
-
-    .arcade-controls kbd {
-      border: 1px solid var(--border);
-      padding: 1px 5px;
-      margin: 0 2px;
-      color: var(--soft);
-    }
-
-    /* ── STATUS BAR ── */
-    #statusbar {
-      height: 24px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 24px;
-      background: rgba(26, 31, 26, 0.9);
-      flex-shrink: 0;
-      z-index: 2;
-      font-size: 9px;
-      color: var(--muted);
-      letter-spacing: 1px;
-    }
-
-    @keyframes blink {
-
-      0%,
-      100% {
-        opacity: 1
-      }
-
-      50% {
-        opacity: 0
-      }
-    }
-  </style>
-</head>
-
-<body>
-
-  <div id="boot-screen"></div>
-  <canvas id="canvas-bg"></canvas>
-
-  <div id="cmd-palette">
-    <input type="text" id="cmd-input" placeholder="✦  type a command..." autocomplete="off">
-    <div class="cmd-list" id="cmd-list"></div>
-  </div>
-
-  <div id="shell">
-    <div id="topbar">
-      <div class="tb-left" style="display:flex;align-items:center;gap:20px">
-        <div class="logo">Ông Năm Chèo</div>
-        <div class="telemetry">
-          <div id="date-gregorian">—</div>
-          <div>âm: <span id="date-lunar">—</span></div>
-        </div>
-      </div>
-      <div class="tb-right">
-        <span id="clock-display">--:--:--</span><br>
-        <span class="live">✦ uplink live</span>
-      </div>
-    </div>
-
-    <div id="tabs">
-      <div class="tab active" data-tab="home">home</div>
-      <div class="tab" data-tab="papers">papers</div>
-      <div class="tab" data-tab="astro">astrology</div>
-      <div class="tab" data-tab="arcade">arcade</div>
-    </div>
-
-    <div id="content">
-
-      <div id="pane-home" class="pane active">
-        <div class="hero-box">
-          <div class="hero-title">Ông Năm Chèo</div>
-          <div class="hero-sub">research laboratory</div>
-          <div class="hero-divider"></div>
-          <div class="hero-prompt">
-            <span style="color:var(--sage2)">guest@onc:~$</span>
-            đang cố học data hehe
-            <span class="cursor-blink"></span>
-          </div>
-          <div class="cmd-hint">press <kbd>ctrl</kbd>+<kbd>k</kbd> for command palette</div>
-        </div>
-      </div>
-
-      <div id="pane-papers" class="pane">
-        <div class="papers-layout">
-          <div class="papers-sidebar">
-            <div class="pane-title">document repository</div>
-            <input id="psearch" placeholder="filter papers..." oninput="renderPapers()" />
-            <div class="paper-list" id="plist"></div>
-          </div>
-          <div class="iframe-wrap">
-            <div class="viewer-toolbar">
-              <span id="viewer-title" style="font-family:'Crimson Pro',serif;font-style:italic">awaiting
-                selection...</span>
-              <button class="btn-open" onclick="openExternal()">open new tab ↗</button>
-            </div>
-            <iframe id="content-embed" style="width:100%;flex:1;border:none;" title="Viewer"></iframe>
-          </div>
-        </div>
-      </div>
-
-      <div id="pane-astro" class="pane">
-        <div class="astro-layout">
-
-          <div class="astro-input">
-            <div class="pane-title">birth chart calculator</div>
-
-            <div class="field-group">
-              <div class="field-label">date of birth</div>
-              <input class="field-input" type="date" id="a-dob" />
-            </div>
-            <div class="field-group">
-              <div class="field-label">time of birth</div>
-              <input class="field-input" type="time" id="a-tob" />
-            </div>
-            <div class="field-group">
-              <div class="field-label">place of birth</div>
-              <input class="field-input" type="text" id="a-pob" list="cities"
-                placeholder="Chọn hoặc gõ tên tỉnh/thành phố..." />
-              <datalist id="cities">
-                <option value="Hồ Chí Minh"></option>
-                <option value="Hà Nội"></option>
-                <option value="Đà Nẵng"></option>
-                <option value="Hải Phòng"></option>
-                <option value="Cần Thơ"></option>
-                <option value="Nha Trang"></option>
-                <option value="Huế"></option>
-                <option value="Vũng Tàu"></option>
-                <option value="Đà Lạt"></option>
-              </datalist>
-            </div>
-
-            <button class="calc-btn" onclick="calcChart()">✦ calculate chart</button>
-
-            <div id="big-three-wrap" style="display:none">
-              <div
-                style="font-size:9px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px">
-                the big three</div>
-              <div class="big-three" id="big-three-cards"></div>
-            </div>
-
-            <div id="planet-wrap" style="display:none">
-              <div
-                style="font-size:9px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin:12px 0 8px">
-                all planets</div>
-              <div class="planet-grid" id="planet-grid"></div>
-            </div>
-          </div>
-
-          <div class="astro-chart-area" id="chart-area">
-            <div class="astro-placeholder" id="astro-placeholder">
-              <div class="big-sym">☽</div>
-              <p>enter your birth details<br>to generate your natal chart</p>
-            </div>
-            <svg id="birth-chart-svg" style="display:none" viewBox="0 0 500 500"></svg>
-            <div class="aspect-list" id="aspect-list" style="display:none">
-              <div class="aspect-title">major aspects</div>
-              <div id="aspect-rows"></div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      <div id="pane-arcade" class="pane">
-        <div class="arcade-machine">
-          <div class="arcade-header">
-            <span id="game-title" style="font-family:'DM Mono',monospace">onc_arcade</span>
-            <span>score: <span id="score-display">0</span></span>
-          </div>
-          <div class="arcade-screen">
-            <div id="arcade-menu">
-              <button class="menu-btn" onclick="startSnake()">snake.exe</button>
-              <button class="menu-btn" onclick="startTetris()">tetris.exe</button>
-              <button class="menu-btn" onclick="startDoom()">doom.exe</button>
-            </div>
-            <canvas id="game-canvas" width="240" height="400"></canvas>
-            <div class="game-over-screen" id="go-screen">
-              <div class="go-title">game over</div>
-              <div style="font-size:11px;color:var(--muted)">score: <span id="final-score">0</span></div>
-              <button class="go-btn" onclick="retryGame()">retry</button>
-              <button class="go-btn" onclick="backToMenu()"
-                style="border-color:var(--border);color:var(--muted);margin-top:4px">menu</button>
-            </div>
-          </div>
-          <div class="arcade-controls">
-            <div><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> or <kbd>↑↓←→</kbd> move / rotate</div>
-            <div><kbd>space</kbd> shoot · hard drop (tetris)</div>
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-    <div id="statusbar">
-      <span>onc//lab · ho chi minh city</span>
-    </div>
-  </div>
-
-  <script>
-    // ═══════════════════════════════════════════
-    //  BOOT
-    // ═══════════════════════════════════════════
-    const baseLines = [
-      "initializing onc//lab...", "mounting research modules...",
-      "loading ephemeris tables...", "calibrating flow field renderer...",
-      "connecting to academic server...", "importing vrptw heuristics...",
-      "loading saigonride dataset...", "neural pathways optimized for data science"
-    ];
-    
-    const jokeLines = [
-      "ông năm chèo protocol engaged...",
-      "con mẫn mặt dầy trả nợ cho người ta đi...",
-      "certified loli hunter tracker enabled...",
-      "sudo apt install motivation... FAILED",
-      "compiling feelings.cpp... FATAL ERROR",
-      "brew install discipline... NO BREW FOUND",
-      "decrypting mắm tôm secrets...",
-      "tìm kiếm người yêu... 404 NOT FOUND"
-    ];
-
-    // Generate a massive, fast array of boot lines
-    let bootLines = [];
-    for(let i=0; i<40; i++) {
-       if (Math.random() > 0.75) bootLines.push(jokeLines[Math.floor(Math.random()*jokeLines.length)]);
-       else bootLines.push(`[SYS] loading module 0x${Math.floor(Math.random()*16777215).toString(16)}... OK`);
-    }
-    bootLines = [...baseLines.slice(0,4), ...bootLines, ...baseLines.slice(4), "✦ system ready"];
-
-    async function runBoot() {
-      const bs = document.getElementById('boot-screen');
-      const shell = document.getElementById('shell');
-      // Bumped to v9 to force the new boot sequence to play for you once
-      if (sessionStorage.getItem('onc_lab_v9')) {
-        bs.style.display = 'none'; shell.classList.add('visible'); return;
-      }
-      let i = 0;
-      const iv = setInterval(() => {
-        const el = document.createElement('div');
-        el.className = 'boot-line' + (i === bootLines.length - 1 ? ' hl' : '');
-        el.textContent = `[${(Math.random() * 1000).toFixed(3)}] ${bootLines[i]}`;
-        bs.appendChild(el); bs.scrollTop = bs.scrollHeight;
-        i++;
-        if (i >= bootLines.length) {
-          clearInterval(iv);
-          setTimeout(() => {
-            bs.style.display = 'none'; shell.classList.add('visible');
-            sessionStorage.setItem('onc_lab_v9', '1');
-          }, 400);
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Ông Năm Chèo · Lab</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:ital,wght@0,300;0,400;1,300&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
+            rel="stylesheet"
+        />
+        <link rel="stylesheet" href="./css/styles.css" />
+    </head>
+    <!-- Trong thẻ <style> của index.html -->
+    <style>
+        /* Container chứa nội dung Markdown */
+        #md-viewer {
+            display: none;
+            padding: 60px 40px;
+            max-width: 900px;
+            margin: 0 auto;
+            overflow-y: visible; /* Để container chính lo việc cuộn */
         }
-      }, 15); // SPED UP TO 15ms for matrix feel
-    }
-    runBoot();
 
-    // ═══════════════════════════════════════════
-    //  CLOCK + DATE
-    // ═══════════════════════════════════════════
-    function getLunarDate(date) {
-      try {
-        const parts = new Intl.DateTimeFormat('vi-VN-u-ca-chinese', { day: 'numeric', month: 'numeric', year: 'numeric' }).formatToParts(date);
-        let d = '', m = '', y = '';
-        for (let p of parts) {
-          if (p.type === 'day') d = p.value;
-          if (p.type === 'month') m = p.value;
-          if (p.type === 'relatedYear') y = p.value;
+        /* Ép Iframe simulator không được tràn màn hình */
+        .sim-container {
+            width: 100%;
+            height: 600px;
+            margin: 40px 0;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            background: var(--bg3);
         }
-        return `${d.padStart(2, '0')}/${m.padStart(2, '0')}/${y}`;
-      } catch (e) { return '--/--/----'; }
-    }
+    </style>
 
-    setInterval(() => {
-      const d = new Date(), p = n => String(n).padStart(2, '0');
-      document.getElementById('clock-display').textContent = `${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+    <!-- Trong HTML của tab Papers -->
+    <div class="iframe-wrap" style="flex: 1; overflow-y: auto;">
+        <div id="md-viewer"></div>
+        <iframe id="content-embed" style="display:none; width:100%; height:100%; border:none;"></iframe>
+    </div>
+    <body>
+        <div id="boot-screen"></div>
+        <canvas id="canvas-bg"></canvas>
 
-      const days = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
-      document.getElementById('date-gregorian').textContent = `${days[d.getDay()]}, ${p(d.getDate())}/${p(d.getMonth() + 1)}/${d.getFullYear()}`;
-      document.getElementById('date-lunar').textContent = getLunarDate(d);
-    }, 1000);
+        <div id="cmd-palette">
+            <input
+                type="text"
+                id="cmd-input"
+                placeholder="✦  type a command..."
+                autocomplete="off"
+            />
+            <div class="cmd-list" id="cmd-list"></div>
+        </div>
 
-    // ═══════════════════════════════════════════
-    //  TABS + COMMAND PALETTE
-    // ═══════════════════════════════════════════
-    let currentTab = 'home';
-    function switchTab(id) {
-      currentTab = id;
-      document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === id));
-      document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
-      const pane = document.getElementById('pane-' + id);
-      pane.style.animation = 'none'; pane.offsetHeight; pane.style.animation = null;
-      pane.classList.add('active');
-      if (id !== 'arcade' && currentGameInterval) { clearInterval(currentGameInterval); currentGameInterval = null; }
-    }
-    document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => switchTab(t.dataset.tab)));
+        <div id="shell">
+            <div id="topbar">
+                <div
+                    class="tb-left"
+                    style="display: flex; align-items: center; gap: 20px"
+                >
+                    <div class="logo">Ông Năm Chèo</div>
+                    <div class="telemetry">
+                        <div id="date-gregorian">—</div>
+                        <div>âm: <span id="date-lunar">—</span></div>
+                    </div>
+                </div>
+                <div class="tb-right">
+                    <span id="clock-display">--:--:--</span><br />
+                    <span class="live">✦ uplink live</span>
+                </div>
+            </div>
 
-    const palette = document.getElementById('cmd-palette');
-    const cmdInput = document.getElementById('cmd-input');
-    const cmdList = document.getElementById('cmd-list');
-    const commands = [
-      { cat: 'nav', name: 'home', action: () => switchTab('home') },
-      { cat: 'nav', name: 'papers', action: () => switchTab('papers') },
-      { cat: 'nav', name: 'astrology', action: () => switchTab('astro') },
-      { cat: 'nav', name: 'arcade', action: () => switchTab('arcade') },
-      { cat: 'sys', name: 'reboot', action: () => { sessionStorage.clear(); location.reload(); } },
-    ];
-    let selIdx = 0;
-    function renderCmds(f = '') {
-      cmdList.innerHTML = '';
-      const fl = commands.filter(c => c.name.includes(f.toLowerCase()));
-      if (selIdx >= fl.length) selIdx = 0;
-      fl.forEach((c, i) => {
-        const el = document.createElement('div');
-        el.className = 'cmd-item' + (i === selIdx ? ' selected' : '');
-        el.innerHTML = `<span>${c.name}</span><span style="color:var(--muted);font-size:9px">${c.cat}</span>`;
-        el.onmousedown = e => { e.preventDefault(); c.action(); hidePal(); };
-        el.onmouseover = () => { selIdx = i; renderCmds(cmdInput.value); };
-        cmdList.appendChild(el);
-      });
-    }
-    function showPal() { palette.classList.add('visible'); cmdInput.value = ''; selIdx = 0; renderCmds(); setTimeout(() => cmdInput.focus(), 30); }
-    function hidePal() { palette.classList.remove('visible'); }
-    cmdInput.addEventListener('blur', () => setTimeout(() => { if (palette.classList.contains('visible')) hidePal(); }, 120));
-    cmdInput.addEventListener('input', () => renderCmds(cmdInput.value));
-    document.addEventListener('keydown', e => {
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); palette.classList.contains('visible') ? hidePal() : showPal(); }
-      if (e.key === 'Escape') hidePal();
-      if (palette.classList.contains('visible')) {
-        const fl = commands.filter(c => c.name.includes(cmdInput.value.toLowerCase()));
-        if (e.key === 'ArrowDown') { e.preventDefault(); selIdx = (selIdx + 1) % fl.length; renderCmds(cmdInput.value); }
-        if (e.key === 'ArrowUp') { e.preventDefault(); selIdx = (selIdx - 1 + fl.length) % fl.length; renderCmds(cmdInput.value); }
-        if (e.key === 'Enter' && fl[selIdx]) { e.preventDefault(); fl[selIdx].action(); hidePal(); }
-      }
-    });
-    // ═══════════════════════════════════════════
-    //  FLOW FIELD (SUPER OPTIMIZED)
-    // ═══════════════════════════════════════════
-    const bgCvs = document.getElementById('canvas-bg');
-    const bgCtx = bgCvs.getContext('2d');
-    const C_CELL = 24; // (1) Tăng kích thước lưới
-    let ft = 0, mouse = { x: -9999, y: -9999, active: false }, ripples = [];
-    const MOUSE_R = 150, MOUSE_R2 = MOUSE_R * MOUSE_R;
-    const RIP_R = 300, BAND = 40;
+            <div id="tabs">
+                <div class="tab active" data-tab="home">home</div>
+                <div class="tab" data-tab="papers">papers</div>
+                <div class="tab" data-tab="astro">astrology</div>
+                <div class="tab" data-tab="arcade">arcade</div>
+            </div>
 
-    function resizeCvs() {
-      bgCvs.width = window.innerWidth;
-      bgCvs.height = window.innerHeight;
-    }
-    resizeCvs();
-    window.addEventListener('resize', resizeCvs);
+            <div id="content">
+                <div id="pane-home" class="pane active">
+                    <div class="hero-box">
+                        <div class="hero-title">Ông Năm Chèo</div>
+                        <div class="hero-sub">research laboratory</div>
+                        <div class="hero-divider"></div>
+                        <div class="hero-prompt">
+                            <span style="color: var(--sage2)"
+                                >guest@onc:~$</span
+                            >
+                            đang cố học data hehe
+                            <span class="cursor-blink"></span>
+                        </div>
+                        <div class="cmd-hint">
+                            press <kbd>ctrl</kbd>+<kbd>k</kbd> for command
+                            palette
+                        </div>
+                    </div>
+                </div>
 
-    document.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; mouse.active = true; });
-    document.addEventListener('mouseleave', () => { mouse.active = false; });
-    document.addEventListener('click', e => {
-      if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'BUTTON')
-        ripples.push({ x: e.clientX, y: e.clientY, age: 0, maxAge: 45 });
-    });
+                <div id="pane-papers" class="pane">
+                    <div class="papers-layout">
+                        <div class="papers-sidebar">
+                            <div class="pane-title">document repository</div>
+                            <input
+                                id="psearch"
+                                placeholder="filter papers..."
+                                oninput="renderPapers()"
+                            />
+                            <div class="paper-list" id="plist"></div>
+                        </div>
+                        <div class="iframe-wrap" style="overflow-y: auto; background: #151915;">
+                            <div class="viewer-toolbar">
+                                <span id="viewer-title" style="font-family:'Crimson Pro', serif; font-style: italic;">awaiting selection...</span>
+                                <button class="btn-open" onclick="openExternal()">open new tab ↗</button>
+                            </div>
 
-    const P = Array.from({ length: 512 }, () => Math.random() * Math.PI * 2);
-    function noise(x, y, z) {
-      const i = Math.floor(x), j = Math.floor(y), fx = x - i, fy = y - j;
-      const sx = fx * fx * (3 - 2 * fx), sy = fy * fy * (3 - 2 * fy);
-      const id = (a, b) => ((a & 255) + (b & 255) * 256) & 511;
-      const a = Math.sin(P[id(i, j)] + z), b = Math.sin(P[id(i + 1, j)] + z);
-      const c = Math.sin(P[id(i, j + 1)] + z), d = Math.sin(P[id(i + 1, j + 1)] + z);
-      return (a + (b - a) * sx + (c - a) * sy + (d + a - b - c) * sx * sy) * 0.5 + 0.5;
-    }
-    function lerpA(a, b, t) { let d = b - a; while (d > Math.PI) d -= Math.PI * 2; while (d < -Math.PI) d += Math.PI * 2; return a + d * t; }
+                            <!-- Container dành riêng cho Markdown Text -->
+                            <div id="md-viewer" style="display: none; padding: 30px; font-family: 'Crimson Pro', serif; font-size: 16px; line-height: 1.8; color: var(--text); max-width: 800px; margin: 0 auto;"></div>
 
-    // (2) Caching bộ màu sắc để chống tràn RAM / Garbage Collection
-    const colorCache = [];
-    const CACHE_STEPS = 40;
-    for (let i = 0; i <= CACHE_STEPS; i++) {
-      let s = i / CACHE_STEPS;
-      let light = Math.floor(18 + s * 35);
-      let alpha = 0.08 + s * 0.38;
-      colorCache.push(`hsla(125,${Math.floor(30 + s * 25)}%,${light}%,${alpha})`);
-    }
-    const getCachedColor = (s) => colorCache[Math.floor(Math.min(1, Math.max(0, s)) * CACHE_STEPS)];
+                            <!-- Container dành cho PDF hoặc full-screen Iframe -->
+                            <iframe id="content-embed" style="display: none; width: 100%; height: calc(100% - 30px); border: none;" title="Viewer"></iframe>
+                        </div>
+                            <iframe
+                                id="content-embed"
+                                style="width: 100%; flex: 1; border: none"
+                                title="Viewer"
+                            ></iframe>
+                        </div>
+                    </div>
+                </div>
 
-    const charSets = [
-      ['—', '\\', '|', '/', '—', '\\', '|', '/'],
-      ['+', '×', '*', '+', '×', '*', '+', '×'],
-      ['#', '@', '$', '%', '#', '@', '$', '%']
-    ];
+                <div id="pane-astro" class="pane">
+                    <div class="astro-layout">
+                        <div class="astro-input">
+                            <div class="pane-title">birth chart calculator</div>
 
-    // (3) Giới hạn Framerate (24 FPS)
-    let lastDrawTime = 0;
-    const TARGET_FPS = 24;
-    const FRAME_INTERVAL = 1000 / TARGET_FPS;
+                            <div class="field-group">
+                                <div class="field-label">date of birth</div>
+                                <input
+                                    class="field-input"
+                                    type="date"
+                                    id="a-dob"
+                                />
+                            </div>
+                            <div class="field-group">
+                                <div class="field-label">time of birth</div>
+                                <input
+                                    class="field-input"
+                                    type="time"
+                                    id="a-tob"
+                                />
+                            </div>
+                            <div class="field-group">
+                                <div class="field-label">place of birth</div>
+                                <input
+                                    class="field-input"
+                                    type="text"
+                                    id="a-pob"
+                                    list="cities"
+                                    placeholder="Chọn hoặc gõ tên tỉnh/thành phố..."
+                                />
+                                <datalist id="cities">
+                                    <option value="Hồ Chí Minh"></option>
+                                    <option value="Hà Nội"></option>
+                                    <option value="Đà Nẵng"></option>
+                                    <option value="Hải Phòng"></option>
+                                    <option value="Cần Thơ"></option>
+                                    <option value="Nha Trang"></option>
+                                    <option value="Huế"></option>
+                                    <option value="Vũng Tàu"></option>
+                                    <option value="Đà Lạt"></option>
+                                </datalist>
+                            </div>
 
-    function drawFlow(currentTime) {
-      requestAnimationFrame(drawFlow);
+                            <button class="calc-btn" onclick="calcChart()">
+                                ✦ calculate chart
+                            </button>
 
-      if (document.hidden) return;
+                            <div id="big-three-wrap" style="display: none">
+                                <div
+                                    style="
+                                        font-size: 9px;
+                                        color: var(--muted);
+                                        letter-spacing: 2px;
+                                        text-transform: uppercase;
+                                        margin-bottom: 8px;
+                                    "
+                                >
+                                    the big three
+                                </div>
+                                <div
+                                    class="big-three"
+                                    id="big-three-cards"
+                                ></div>
+                            </div>
 
-      const deltaTime = currentTime - lastDrawTime;
-      if (deltaTime < FRAME_INTERVAL) return; // Bỏ qua frame nếu chưa đến lúc
-      lastDrawTime = currentTime - (deltaTime % FRAME_INTERVAL);
+                            <div id="planet-wrap" style="display: none">
+                                <div
+                                    style="
+                                        font-size: 9px;
+                                        color: var(--muted);
+                                        letter-spacing: 2px;
+                                        text-transform: uppercase;
+                                        margin: 12px 0 8px;
+                                    "
+                                >
+                                    all planets
+                                </div>
+                                <div class="planet-grid" id="planet-grid"></div>
+                            </div>
+                        </div>
 
-      ft += 0.02; // Chạy nhanh hơn một chút để bù cho việc tụt FPS
+                        <div class="astro-chart-area" id="chart-area">
+                            <div
+                                class="astro-placeholder"
+                                id="astro-placeholder"
+                            >
+                                <div class="big-sym">☽</div>
+                                <p>
+                                    enter your birth details<br />to generate
+                                    your natal chart
+                                </p>
+                            </div>
+                            <svg
+                                id="birth-chart-svg"
+                                style="display: none"
+                                viewBox="0 0 500 500"
+                            ></svg>
+                            <div
+                                class="aspect-list"
+                                id="aspect-list"
+                                style="display: none"
+                            >
+                                <div class="aspect-title">major aspects</div>
+                                <div id="aspect-rows"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-      ripples = ripples.filter(r => r.age < r.maxAge);
-      ripples.forEach(r => r.age++);
+                <div id="pane-arcade" class="pane">
+                    <div class="arcade-machine">
+                        <div class="arcade-header">
+                            <span
+                                id="game-title"
+                                style="
+                                    font-family: &quot;DM Mono&quot;, monospace;
+                                "
+                                >onc_arcade</span
+                            >
+                            <span
+                                >score: <span id="score-display">0</span></span
+                            >
+                        </div>
+                        <div class="arcade-screen">
+                            <div id="arcade-menu">
+                                <button class="menu-btn" onclick="startSnake()">
+                                    snake.exe
+                                </button>
+                                <button
+                                    class="menu-btn"
+                                    onclick="startTetris()"
+                                >
+                                    tetris.exe
+                                </button>
+                                <button class="menu-btn" onclick="startDoom()">
+                                    doom.exe
+                                </button>
+                            </div>
+                            <canvas
+                                id="game-canvas"
+                                width="240"
+                                height="400"
+                            ></canvas>
+                            <div class="game-over-screen" id="go-screen">
+                                <div class="go-title">game over</div>
+                                <div
+                                    style="font-size: 11px; color: var(--muted)"
+                                >
+                                    score: <span id="final-score">0</span>
+                                </div>
+                                <button class="go-btn" onclick="retryGame()">
+                                    retry
+                                </button>
+                                <button
+                                    class="go-btn"
+                                    onclick="backToMenu()"
+                                    style="
+                                        border-color: var(--border);
+                                        color: var(--muted);
+                                        margin-top: 4px;
+                                    "
+                                >
+                                    menu
+                                </button>
+                            </div>
+                        </div>
+                        <div class="arcade-controls">
+                            <div>
+                                <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd
+                                ><kbd>D</kbd> or <kbd>↑↓←→</kbd> move / rotate
+                            </div>
+                            <div>
+                                <kbd>space</kbd> shoot · hard drop (tetris)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-      bgCtx.clearRect(0, 0, bgCvs.width, bgCvs.height);
-      bgCtx.font = `${C_CELL - 4}px 'DM Mono',monospace`;
-      const cols = Math.ceil(bgCvs.width / C_CELL), rows = Math.ceil(bgCvs.height / C_CELL);
+            <div id="statusbar">
+                <span>onc//lab · ho chi minh city</span>
+            </div>
+        </div>
 
-      for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-          const px = c * C_CELL + C_CELL / 2, py = r * C_CELL + C_CELL / 2;
-          const nx = c / cols, ny = r / rows;
-          let angle = noise(nx * 3, ny * 3, ft * 0.35) * Math.PI * 4;
-          let speed = noise(nx * 4 + 10, ny * 4 + 10, ft * 0.25 + 5);
+        <script>
+            // ═══════════════════════════════════════════
+            //  BOOT
+            // ═══════════════════════════════════════════
+            const baseLines = [
+                "initializing onc//lab...",
+                "mounting research modules...",
+                "loading ephemeris tables...",
+                "calibrating flow field renderer...",
+                "connecting to academic server...",
+                "importing vrptw heuristics...",
+                "loading saigonride dataset...",
+                "neural pathways optimized for data science",
+            ];
 
-          if (mouse.active) {
-            const dx = px - mouse.x, dy = py - mouse.y, d2 = dx * dx + dy * dy;
-            if (d2 < MOUSE_R2) {
-              const dist = Math.sqrt(d2);
-              const inf = Math.pow(1 - dist / MOUSE_R, 2) * 0.9;
-              angle = lerpA(angle, Math.atan2(dy, dx) + Math.PI, inf);
-              speed = Math.min(1, speed + inf * 0.4);
+            const jokeLines = [
+                "ông năm chèo protocol engaged...",
+                "con mẫn mặt dầy trả nợ cho người ta đi...",
+                "certified loli hunter tracker enabled...",
+                "sudo apt install motivation... FAILED",
+                "compiling feelings.cpp... FATAL ERROR",
+                "brew install discipline... NO BREW FOUND",
+                "decrypting mắm tôm secrets...",
+                "tìm kiếm người yêu... 404 NOT FOUND",
+            ];
+
+            // Generate a massive, fast array of boot lines
+            let bootLines = [];
+            for (let i = 0; i < 40; i++) {
+                if (Math.random() > 0.75)
+                    bootLines.push(
+                        jokeLines[Math.floor(Math.random() * jokeLines.length)],
+                    );
+                else
+                    bootLines.push(
+                        `[SYS] loading module 0x${Math.floor(Math.random() * 16777215).toString(16)}... OK`,
+                    );
             }
-          }
+            bootLines = [
+                ...baseLines.slice(0, 4),
+                ...bootLines,
+                ...baseLines.slice(4),
+                "✦ system ready",
+            ];
 
-          if (ripples.length > 0) {
-            ripples.forEach(rip => {
-              const dx = px - rip.x, dy = py - rip.y;
-              const dist = Math.sqrt(dx * dx + dy * dy);
-              const wf = (rip.age / rip.maxAge) * RIP_R;
-              const diff = Math.abs(dist - wf);
-              if (diff < BAND) {
-                const ri = (1 - diff / BAND) * (1 - rip.age / rip.maxAge) * 0.75;
-                angle = lerpA(angle, Math.atan2(dy, dx), ri);
-                speed = Math.min(1, speed + ri * 0.5);
-              }
+            async function runBoot() {
+                const bs = document.getElementById("boot-screen");
+                const shell = document.getElementById("shell");
+                // Bumped to v9 to force the new boot sequence to play for you once
+                if (sessionStorage.getItem("onc_lab_v9")) {
+                    bs.style.display = "none";
+                    shell.classList.add("visible");
+                    return;
+                }
+                let i = 0;
+                const iv = setInterval(() => {
+                    const el = document.createElement("div");
+                    el.className =
+                        "boot-line" + (i === bootLines.length - 1 ? " hl" : "");
+                    el.textContent = `[${(Math.random() * 1000).toFixed(3)}] ${bootLines[i]}`;
+                    bs.appendChild(el);
+                    bs.scrollTop = bs.scrollHeight;
+                    i++;
+                    if (i >= bootLines.length) {
+                        clearInterval(iv);
+                        setTimeout(() => {
+                            bs.style.display = "none";
+                            shell.classList.add("visible");
+                            sessionStorage.setItem("onc_lab_v9", "1");
+                        }, 400);
+                    }
+                }, 15); // SPED UP TO 15ms for matrix feel
+            }
+            runBoot();
+
+            // ═══════════════════════════════════════════
+            //  CLOCK + DATE
+            // ═══════════════════════════════════════════
+            function getLunarDate(date) {
+                try {
+                    const parts = new Intl.DateTimeFormat(
+                        "vi-VN-u-ca-chinese",
+                        { day: "numeric", month: "numeric", year: "numeric" },
+                    ).formatToParts(date);
+                    let d = "",
+                        m = "",
+                        y = "";
+                    for (let p of parts) {
+                        if (p.type === "day") d = p.value;
+                        if (p.type === "month") m = p.value;
+                        if (p.type === "relatedYear") y = p.value;
+                    }
+                    return `${d.padStart(2, "0")}/${m.padStart(2, "0")}/${y}`;
+                } catch (e) {
+                    return "--/--/----";
+                }
+            }
+
+            setInterval(() => {
+                const d = new Date(),
+                    p = (n) => String(n).padStart(2, "0");
+                document.getElementById("clock-display").textContent =
+                    `${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+
+                const days = ["CN", "T2", "T3", "T4", "T5", "T6", "T7"];
+                document.getElementById("date-gregorian").textContent =
+                    `${days[d.getDay()]}, ${p(d.getDate())}/${p(d.getMonth() + 1)}/${d.getFullYear()}`;
+                document.getElementById("date-lunar").textContent =
+                    getLunarDate(d);
+            }, 1000);
+
+            // ═══════════════════════════════════════════
+            //  TABS + COMMAND PALETTE
+            // ═══════════════════════════════════════════
+            let currentTab = "home";
+            function switchTab(id) {
+                currentTab = id;
+                document
+                    .querySelectorAll(".tab")
+                    .forEach((t) =>
+                        t.classList.toggle("active", t.dataset.tab === id),
+                    );
+                document
+                    .querySelectorAll(".pane")
+                    .forEach((p) => p.classList.remove("active"));
+                const pane = document.getElementById("pane-" + id);
+                pane.style.animation = "none";
+                pane.offsetHeight;
+                pane.style.animation = null;
+                pane.classList.add("active");
+                if (id !== "arcade" && currentGameInterval) {
+                    clearInterval(currentGameInterval);
+                    currentGameInterval = null;
+                }
+            }
+            document
+                .querySelectorAll(".tab")
+                .forEach((t) =>
+                    t.addEventListener("click", () => switchTab(t.dataset.tab)),
+                );
+
+            const palette = document.getElementById("cmd-palette");
+            const cmdInput = document.getElementById("cmd-input");
+            const cmdList = document.getElementById("cmd-list");
+            const commands = [
+                { cat: "nav", name: "home", action: () => switchTab("home") },
+                {
+                    cat: "nav",
+                    name: "papers",
+                    action: () => switchTab("papers"),
+                },
+                {
+                    cat: "nav",
+                    name: "astrology",
+                    action: () => switchTab("astro"),
+                },
+                {
+                    cat: "nav",
+                    name: "arcade",
+                    action: () => switchTab("arcade"),
+                },
+                {
+                    cat: "sys",
+                    name: "reboot",
+                    action: () => {
+                        sessionStorage.clear();
+                        location.reload();
+                    },
+                },
+            ];
+            let selIdx = 0;
+            function renderCmds(f = "") {
+                cmdList.innerHTML = "";
+                const fl = commands.filter((c) =>
+                    c.name.includes(f.toLowerCase()),
+                );
+                if (selIdx >= fl.length) selIdx = 0;
+                fl.forEach((c, i) => {
+                    const el = document.createElement("div");
+                    el.className =
+                        "cmd-item" + (i === selIdx ? " selected" : "");
+                    el.innerHTML = `<span>${c.name}</span><span style="color:var(--muted);font-size:9px">${c.cat}</span>`;
+                    el.onmousedown = (e) => {
+                        e.preventDefault();
+                        c.action();
+                        hidePal();
+                    };
+                    el.onmouseover = () => {
+                        selIdx = i;
+                        renderCmds(cmdInput.value);
+                    };
+                    cmdList.appendChild(el);
+                });
+            }
+            function showPal() {
+                palette.classList.add("visible");
+                cmdInput.value = "";
+                selIdx = 0;
+                renderCmds();
+                setTimeout(() => cmdInput.focus(), 30);
+            }
+            function hidePal() {
+                palette.classList.remove("visible");
+            }
+            cmdInput.addEventListener("blur", () =>
+                setTimeout(() => {
+                    if (palette.classList.contains("visible")) hidePal();
+                }, 120),
+            );
+            cmdInput.addEventListener("input", () =>
+                renderCmds(cmdInput.value),
+            );
+            document.addEventListener("keydown", (e) => {
+                if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+                    e.preventDefault();
+                    palette.classList.contains("visible")
+                        ? hidePal()
+                        : showPal();
+                }
+                if (e.key === "Escape") hidePal();
+                if (palette.classList.contains("visible")) {
+                    const fl = commands.filter((c) =>
+                        c.name.includes(cmdInput.value.toLowerCase()),
+                    );
+                    if (e.key === "ArrowDown") {
+                        e.preventDefault();
+                        selIdx = (selIdx + 1) % fl.length;
+                        renderCmds(cmdInput.value);
+                    }
+                    if (e.key === "ArrowUp") {
+                        e.preventDefault();
+                        selIdx = (selIdx - 1 + fl.length) % fl.length;
+                        renderCmds(cmdInput.value);
+                    }
+                    if (e.key === "Enter" && fl[selIdx]) {
+                        e.preventDefault();
+                        fl[selIdx].action();
+                        hidePal();
+                    }
+                }
             });
-          }
+            // ═══════════════════════════════════════════
+            //  FLOW FIELD (SUPER OPTIMIZED)
+            // ═══════════════════════════════════════════
+            const bgCvs = document.getElementById("canvas-bg");
+            const bgCtx = bgCvs.getContext("2d");
+            const C_CELL = 24; // (1) Tăng kích thước lưới
+            let ft = 0,
+                mouse = { x: -9999, y: -9999, active: false },
+                ripples = [];
+            const MOUSE_R = 150,
+                MOUSE_R2 = MOUSE_R * MOUSE_R;
+            const RIP_R = 300,
+                BAND = 40;
 
-          if (speed < 0.28) continue;
+            function resizeCvs() {
+                bgCvs.width = window.innerWidth;
+                bgCvs.height = window.innerHeight;
+            }
+            resizeCvs();
+            window.addEventListener("resize", resizeCvs);
 
-          const seg = Math.floor((((angle % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2)) / (Math.PI * 2) * 8);
-          let charSetIdx = 0;
-          if (speed > 0.55) charSetIdx = 1;
-          if (speed > 0.78) charSetIdx = 2;
-          let ch = charSets[charSetIdx][seg];
+            document.addEventListener("mousemove", (e) => {
+                mouse.x = e.clientX;
+                mouse.y = e.clientY;
+                mouse.active = true;
+            });
+            document.addEventListener("mouseleave", () => {
+                mouse.active = false;
+            });
+            document.addEventListener("click", (e) => {
+                if (
+                    e.target.tagName !== "INPUT" &&
+                    e.target.tagName !== "BUTTON"
+                )
+                    ripples.push({
+                        x: e.clientX,
+                        y: e.clientY,
+                        age: 0,
+                        maxAge: 45,
+                    });
+            });
 
-          // Nếu chuột ở gần, vẽ màu dynamic sáng lên, nếu không thì xài màu cache siêu nhẹ
-          let isHovered = false;
-          if (mouse.active) {
-            const dx = px - mouse.x, dy = py - mouse.y;
-            if ((dx * dx + dy * dy) < 40000) isHovered = true;
-          }
+            const P = Array.from(
+                { length: 512 },
+                () => Math.random() * Math.PI * 2,
+            );
+            function noise(x, y, z) {
+                const i = Math.floor(x),
+                    j = Math.floor(y),
+                    fx = x - i,
+                    fy = y - j;
+                const sx = fx * fx * (3 - 2 * fx),
+                    sy = fy * fy * (3 - 2 * fy);
+                const id = (a, b) => ((a & 255) + (b & 255) * 256) & 511;
+                const a = Math.sin(P[id(i, j)] + z),
+                    b = Math.sin(P[id(i + 1, j)] + z);
+                const c = Math.sin(P[id(i, j + 1)] + z),
+                    d = Math.sin(P[id(i + 1, j + 1)] + z);
+                return (
+                    (a +
+                        (b - a) * sx +
+                        (c - a) * sy +
+                        (d + a - b - c) * sx * sy) *
+                        0.5 +
+                    0.5
+                );
+            }
+            function lerpA(a, b, t) {
+                let d = b - a;
+                while (d > Math.PI) d -= Math.PI * 2;
+                while (d < -Math.PI) d += Math.PI * 2;
+                return a + d * t;
+            }
 
-          if (isHovered) {
-            let light = Math.floor(18 + speed * 35);
-            let alpha = Math.min(0.75, (0.08 + speed * 0.38) * 1.5);
-            bgCtx.fillStyle = `hsla(125,${Math.floor(30 + speed * 25)}%,${light}%,${alpha})`;
-          } else {
-            bgCtx.fillStyle = getCachedColor(speed);
-          }
+            // (2) Caching bộ màu sắc để chống tràn RAM / Garbage Collection
+            const colorCache = [];
+            const CACHE_STEPS = 40;
+            for (let i = 0; i <= CACHE_STEPS; i++) {
+                let s = i / CACHE_STEPS;
+                let light = Math.floor(18 + s * 35);
+                let alpha = 0.08 + s * 0.38;
+                colorCache.push(
+                    `hsla(125,${Math.floor(30 + s * 25)}%,${light}%,${alpha})`,
+                );
+            }
+            const getCachedColor = (s) =>
+                colorCache[
+                    Math.floor(Math.min(1, Math.max(0, s)) * CACHE_STEPS)
+                ];
 
-          bgCtx.fillText(ch, c * C_CELL, r * C_CELL + C_CELL);
-        }
-      }
-    }
-    requestAnimationFrame(drawFlow);
-    // ═══════════════════════════════════════════
-    //  PAPERS
-    // ═══════════════════════════════════════════
-    const papers = [
-      { id: 'vrptw-alns', title: 'Adaptive Large Neighborhood Search for VRPTW', tags: ['vrptw'], url: 'papers/vrptw-alns.pdf' },
-      { id: 'metro-tft', title: 'Demand Forecasting for HCMC Metro Line 1', tags: ['metro'], url: 'papers/metro-tft.pdf' },
-      { id: 'rl-mdvrp', title: 'Reinforcement Learning for Multi-Depot VRP', tags: ['ml'], url: 'papers/rl-mdvrp.pdf' },
-    ];
-    let activePaper = null;
-    function renderPapers() {
-      const q = document.getElementById('psearch').value.toLowerCase();
-      const el = document.getElementById('plist'); el.innerHTML = '';
-      papers.filter(p => !q || p.title.toLowerCase().includes(q)).forEach(p => {
-        const d = document.createElement('div');
-        d.className = 'pcard' + (activePaper === p.id ? ' active' : '');
-        d.innerHTML = `<div class="pc-tag">[${p.tags[0]}]</div><div class="pc-title">${p.title}</div>`;
-        d.onclick = () => loadPaper(p);
-        el.appendChild(d);
-      });
-    }
-    function loadPaper(p) {
-      activePaper = p.id; renderPapers();
-      document.getElementById('viewer-title').textContent = p.title;
-      document.getElementById('content-embed').src = p.url;
-    }
-    function openExternal() { const p = papers.find(x => x.id === activePaper); if (p) window.open(p.url, '_blank'); }
-    renderPapers();
-    if (papers.length > 0) loadPaper(papers[0]);
+            const charSets = [
+                ["—", "\\", "|", "/", "—", "\\", "|", "/"],
+                ["+", "×", "*", "+", "×", "*", "+", "×"],
+                ["#", "@", "$", "%", "#", "@", "$", "%"],
+            ];
 
-    // ═══════════════════════════════════════════
-    //  ASTROLOGY ENGINE
-    // ═══════════════════════════════════════════
-    const SIGNS = ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'];
-    const SIGN_SYMS = ['♈', '♉', '♊', '♋', '♌', '♍', '♎', '♏', '♐', '♑', '♒', '♓'];
-    const ELEMENTS = { Aries: '🜂', Taurus: '🜃', Gemini: '🜁', Cancer: '🜄', Leo: '🜂', Virgo: '🜃', Libra: '🜁', Scorpio: '🜄', Sagittarius: '🜂', Capricorn: '🜃', Aquarius: '🜁', Pisces: '🜄' };
-    const ELEMENT_NAMES = { Aries: 'Fire', Taurus: 'Earth', Gemini: 'Air', Cancer: 'Water', Leo: 'Fire', Virgo: 'Earth', Libra: 'Air', Scorpio: 'Water', Sagittarius: 'Fire', Capricorn: 'Earth', Aquarius: 'Air', Pisces: 'Water' };
-    const MODALITIES = { Aries: 'Cardinal', Taurus: 'Fixed', Gemini: 'Mutable', Cancer: 'Cardinal', Leo: 'Fixed', Virgo: 'Mutable', Libra: 'Cardinal', Scorpio: 'Fixed', Sagittarius: 'Mutable', Capricorn: 'Cardinal', Aquarius: 'Fixed', Pisces: 'Mutable' };
-    const PLANET_SYMS = { Sun: '☉', Moon: '☽', Mercury: '☿', Venus: '♀', Mars: '♂', Jupiter: '♃', Saturn: '♄', Uranus: '♅', Neptune: '♆', Pluto: '♇' };
-    const SIGN_DESCS = {
-      Aries: 'bold, pioneering, energetic', Taurus: 'grounded, sensual, persistent',
-      Gemini: 'curious, adaptable, witty', Cancer: 'intuitive, nurturing, emotional',
-      Leo: 'creative, generous, dramatic', Virgo: 'analytical, precise, helpful',
-      Libra: 'balanced, charming, diplomatic', Scorpio: 'intense, transformative, deep',
-      Sagittarius: 'adventurous, philosophical, free', Capricorn: 'ambitious, disciplined, strategic',
-      Aquarius: 'innovative, humanitarian, eccentric', Pisces: 'dreamy, empathetic, mystical'
-    };
+            // (3) Giới hạn Framerate (24 FPS)
+            let lastDrawTime = 0;
+            const TARGET_FPS = 24;
+            const FRAME_INTERVAL = 1000 / TARGET_FPS;
 
-    // Simple City coordinates mapping
-    const CITY_DATA = {
-      "hà nội": { lat: 21.0285, lng: 105.8542, tz: 7 },
-      "hồ chí minh": { lat: 10.8231, lng: 106.6297, tz: 7 },
-      "hcm": { lat: 10.8231, lng: 106.6297, tz: 7 },
-      "đà nẵng": { lat: 16.0471, lng: 108.2068, tz: 7 },
-      "hải phòng": { lat: 20.8449, lng: 106.6881, tz: 7 },
-      "cần thơ": { lat: 10.0452, lng: 105.7469, tz: 7 },
-      "nha trang": { lat: 12.2388, lng: 109.1967, tz: 7 },
-      "huế": { lat: 16.4637, lng: 107.5909, tz: 7 },
-      "vũng tàu": { lat: 10.3460, lng: 107.0843, tz: 7 },
-      "đà lạt": { lat: 11.9404, lng: 108.4583, tz: 7 }
-    };
+            function drawFlow(currentTime) {
+                requestAnimationFrame(drawFlow);
 
-    function getCoords(city) {
-      const c = city.toLowerCase().trim();
-      for (let k in CITY_DATA) {
-        if (c.includes(k)) return CITY_DATA[k];
-      }
-      return { lat: 10.8231, lng: 106.6297, tz: 7 }; // Default HCM
-    }
+                if (document.hidden) return;
 
-    // Julian Day Number
-    function toJD(year, month, day, hour = 12) {
-      if (month <= 2) { year--; month += 12; }
-      const A = Math.floor(year / 100), B = 2 - A + Math.floor(A / 4);
-      return Math.floor(365.25 * (year + 4716)) + Math.floor(30.6001 * (month + 1)) + day + hour / 24 + B - 1524.5;
-    }
+                const deltaTime = currentTime - lastDrawTime;
+                if (deltaTime < FRAME_INTERVAL) return; // Bỏ qua frame nếu chưa đến lúc
+                lastDrawTime = currentTime - (deltaTime % FRAME_INTERVAL);
 
-    // Degrees to radians
-    const D2R = Math.PI / 180, R2D = 180 / Math.PI;
-    function norm360(x) { return ((x % 360) + 360) % 360; }
-    function normRad(x) { return ((x % (2 * Math.PI)) + (2 * Math.PI)) % (2 * Math.PI); }
+                ft += 0.02; // Chạy nhanh hơn một chút để bù cho việc tụt FPS
 
-    // Sun longitude (accurate to ~0.01°)
-    function sunLon(jd) {
-      const T = (jd - 2451545.0) / 36525;
-      const L0 = norm360(280.46646 + 36000.76983 * T + 0.0003032 * T * T);
-      const M = norm360(357.52911 + 35999.05029 * T - 0.0001537 * T * T) * D2R;
-      const C = (1.914602 - 0.004817 * T - 0.000014 * T * T) * Math.sin(M)
-        + (0.019993 - 0.000101 * T) * Math.sin(2 * M)
-        + 0.000289 * Math.sin(3 * M);
-      const sunLon = norm360(L0 + C);
-      const omega = norm360(125.04 - 1934.136 * T);
-      return norm360(sunLon - 0.00569 - 0.00478 * Math.sin(omega * D2R));
-    }
+                ripples = ripples.filter((r) => r.age < r.maxAge);
+                ripples.forEach((r) => r.age++);
 
-    // Moon longitude (simplified ELP2000, accurate to ~1°)
-    function moonLon(jd) {
-      const T = (jd - 2451545.0) / 36525;
-      const D = norm360(297.85036 + 445267.111480 * T - 0.0019142 * T * T) * D2R;
-      const M = norm360(357.52772 + 35999.050340 * T - 0.0001603 * T * T) * D2R;
-      const Mp = norm360(134.96298 + 477198.867398 * T + 0.0086972 * T * T) * D2R;
-      const F = norm360(93.27191 + 483202.017538 * T - 0.0036825 * T * T) * D2R;
-      const L0 = norm360(218.3165 + 481267.8813 * T);
-      let lon = L0;
-      lon += 6.289 * Math.sin(Mp);
-      lon += 1.274 * Math.sin(2 * D - Mp);
-      lon += 0.658 * Math.sin(2 * D);
-      lon += 0.214 * Math.sin(2 * Mp);
-      lon -= 0.186 * Math.sin(M);
-      lon -= 0.114 * Math.sin(2 * F);
-      lon += 0.059 * Math.sin(2 * D - 2 * Mp);
-      lon += 0.057 * Math.sin(2 * D - M - Mp);
-      lon += 0.053 * Math.sin(2 * D + Mp);
-      lon += 0.046 * Math.sin(2 * D - M);
-      lon += 0.041 * Math.sin(Mp - M);
-      lon -= 0.035 * Math.sin(D);
-      lon -= 0.031 * Math.sin(Mp + M);
-      lon -= 0.015 * Math.sin(2 * F - 2 * D);
-      lon += 0.011 * Math.sin(Mp - 4 * D);
-      return norm360(lon);
-    }
+                bgCtx.clearRect(0, 0, bgCvs.width, bgCvs.height);
+                bgCtx.font = `${C_CELL - 4}px 'DM Mono',monospace`;
+                const cols = Math.ceil(bgCvs.width / C_CELL),
+                    rows = Math.ceil(bgCvs.height / C_CELL);
 
-    // Mercury longitude
-    function mercuryLon(jd) {
-      const T = (jd - 2451545) / 36525;
-      const L = norm360(252.250906 + 149472.6746358 * T);
-      const M = norm360(357.529 + 35999.050 * T) * D2R;
-      const Mp = norm360(L) * D2R;
-      return norm360(L + 23.4400 * Math.sin(Mp) + 2.9818 * Math.sin(2 * Mp) + 0.5255 * Math.sin(3 * Mp)
-        + 0.1058 * Math.sin(4 * Mp) - 2.0441 * Math.sin(M) + 0.3230 * Math.sin(M - Mp));
-    }
+                for (let r = 0; r < rows; r++) {
+                    for (let c = 0; c < cols; c++) {
+                        const px = c * C_CELL + C_CELL / 2,
+                            py = r * C_CELL + C_CELL / 2;
+                        const nx = c / cols,
+                            ny = r / rows;
+                        let angle =
+                            noise(nx * 3, ny * 3, ft * 0.35) * Math.PI * 4;
+                        let speed = noise(
+                            nx * 4 + 10,
+                            ny * 4 + 10,
+                            ft * 0.25 + 5,
+                        );
 
-    // Venus longitude
-    function venusLon(jd) {
-      const T = (jd - 2451545) / 36525;
-      const L = norm360(181.979801 + 58517.8156760 * T);
-      const M = norm360(212.448 + 58517.804 * T) * D2R;
-      return norm360(L + 0.7758 * Math.sin(M) + 0.0033 * Math.sin(2 * M));
-    }
+                        if (mouse.active) {
+                            const dx = px - mouse.x,
+                                dy = py - mouse.y,
+                                d2 = dx * dx + dy * dy;
+                            if (d2 < MOUSE_R2) {
+                                const dist = Math.sqrt(d2);
+                                const inf =
+                                    Math.pow(1 - dist / MOUSE_R, 2) * 0.9;
+                                angle = lerpA(
+                                    angle,
+                                    Math.atan2(dy, dx) + Math.PI,
+                                    inf,
+                                );
+                                speed = Math.min(1, speed + inf * 0.4);
+                            }
+                        }
 
-    // Mars longitude
-    function marsLon(jd) {
-      const T = (jd - 2451545) / 36525;
-      const L = norm360(355.433 + 19140.2993313 * T);
-      const M = norm360(19.373 + 19140.299 * T) * D2R;
-      return norm360(L + 10.6912 * Math.sin(M) + 0.6228 * Math.sin(2 * M) + 0.0503 * Math.sin(3 * M));
-    }
+                        if (ripples.length > 0) {
+                            ripples.forEach((rip) => {
+                                const dx = px - rip.x,
+                                    dy = py - rip.y;
+                                const dist = Math.sqrt(dx * dx + dy * dy);
+                                const wf = (rip.age / rip.maxAge) * RIP_R;
+                                const diff = Math.abs(dist - wf);
+                                if (diff < BAND) {
+                                    const ri =
+                                        (1 - diff / BAND) *
+                                        (1 - rip.age / rip.maxAge) *
+                                        0.75;
+                                    angle = lerpA(
+                                        angle,
+                                        Math.atan2(dy, dx),
+                                        ri,
+                                    );
+                                    speed = Math.min(1, speed + ri * 0.5);
+                                }
+                            });
+                        }
 
-    // Jupiter longitude
-    function jupiterLon(jd) {
-      const T = (jd - 2451545) / 36525;
-      const L = norm360(34.351519 + 3034.9056606 * T);
-      const M = norm360(20.020 + 3034.906 * T) * D2R;
-      return norm360(L + 5.5549 * Math.sin(M) + 0.1683 * Math.sin(2 * M) + 0.0071 * Math.sin(3 * M));
-    }
+                        if (speed < 0.28) continue;
 
-    // Saturn longitude
-    function saturnLon(jd) {
-      const T = (jd - 2451545) / 36525;
-      const L = norm360(50.077444 + 1222.1138488 * T);
-      const M = norm360(317.020 + 1222.114 * T) * D2R;
-      const Mp = norm360(20.020 + 3034.906 * T) * D2R; // Jupiter
-      return norm360(L + 6.3585 * Math.sin(M) - 0.2556 * Math.sin(2 * M)
-        + 0.0437 * Math.sin(M + Mp) - 0.0132 * Math.sin(M - Mp));
-    }
+                        const seg = Math.floor(
+                            ((((angle % (Math.PI * 2)) + Math.PI * 2) %
+                                (Math.PI * 2)) /
+                                (Math.PI * 2)) *
+                                8,
+                        );
+                        let charSetIdx = 0;
+                        if (speed > 0.55) charSetIdx = 1;
+                        if (speed > 0.78) charSetIdx = 2;
+                        let ch = charSets[charSetIdx][seg];
 
-    // Uranus longitude
-    function uranusLon(jd) {
-      const T = (jd - 2451545) / 36525;
-      const L = norm360(314.055005 + 429.8640561 * T);
-      const M = norm360(141.050 + 429.864 * T) * D2R;
-      return norm360(L + 5.3042 * Math.sin(M) + 0.1534 * Math.sin(2 * M) + 0.0062 * Math.sin(3 * M));
-    }
+                        // Nếu chuột ở gần, vẽ màu dynamic sáng lên, nếu không thì xài màu cache siêu nhẹ
+                        let isHovered = false;
+                        if (mouse.active) {
+                            const dx = px - mouse.x,
+                                dy = py - mouse.y;
+                            if (dx * dx + dy * dy < 40000) isHovered = true;
+                        }
 
-    // Neptune longitude
-    function neptuneLon(jd) {
-      const T = (jd - 2451545) / 36525;
-      const L = norm360(304.348665 + 219.8833092 * T);
-      const M = norm360(256.225 + 219.883 * T) * D2R;
-      return norm360(L + 1.0898 * Math.sin(M) + 0.0252 * Math.sin(2 * M));
-    }
+                        if (isHovered) {
+                            let light = Math.floor(18 + speed * 35);
+                            let alpha = Math.min(
+                                0.75,
+                                (0.08 + speed * 0.38) * 1.5,
+                            );
+                            bgCtx.fillStyle = `hsla(125,${Math.floor(30 + speed * 25)}%,${light}%,${alpha})`;
+                        } else {
+                            bgCtx.fillStyle = getCachedColor(speed);
+                        }
 
-    // Pluto (approximation 1800-2100)
-    function plutoLon(jd) {
-      const T = (jd - 2451545) / 36525;
-      const Ja = norm360(34.35 + 3034.9057 * T) * D2R;
-      const Sa = norm360(50.08 + 1222.1138 * T) * D2R;
-      const Pa = norm360(238.96 + 144.9600 * T) * D2R;
-      let L = 238.9508 + 144.9600 * T;
-      L += -19.799 * Math.sin(Pa) + 19.848 * Math.cos(Pa)
-        + 0.897 * Math.sin(2 * Pa) - 4.956 * Math.cos(2 * Pa)
-        + 0.610 * Math.sin(3 * Pa) + 1.211 * Math.cos(3 * Pa)
-        - 0.341 * Math.sin(4 * Pa) - 0.190 * Math.cos(4 * Pa)
-        + 0.128 * Math.sin(5 * Pa) - 0.034 * Math.cos(5 * Pa)
-        - 0.038 * Math.sin(Ja) + 0.019 * Math.cos(Ja);
-      return norm360(L);
-    }
+                        bgCtx.fillText(ch, c * C_CELL, r * C_CELL + C_CELL);
+                    }
+                }
+            }
+            requestAnimationFrame(drawFlow);
+            // ═══════════════════════════════════════════
+            //  PAPERS
+            // ═══════════════════════════════════════════
+            // ==========================================
+            // HỆ THỐNG ĐỌC TÀI LIỆU (DOCUMENT ENGINE)
+            const papers = [
+                {
+                    id: "doc-linked-list",
+                    title: "📖 Docs: Cấu trúc Singly Linked List",
+                    tags: ["docs", "dsa"],
+                    type: "markdown",
+                    url: "papers/dsa/linked-lists/linked-list-doc.md" // <--- Trỏ đến file .md riêng
+                },
+                {
+                    id: "dsa-dijkstra",
+                    title: "[App] Dijkstra State Machine",
+                    tags: ["dsa"],
+                    type: "iframe",
+                    url: "papers/dijkstra-state.html",
+                },
+                {
+                    id: "vrptw-alns",
+                    title: "Adaptive Large Neighborhood Search for VRPTW",
+                    tags: ["vrptw"],
+                    type: "iframe",
+                    url: "papers/vrptw-alns.pdf",
+                }
+            ];
 
-    // Ascendant from LST + latitude
-    function calcAscendant(jd, latDeg, lngDeg) {
-      const T = (jd - 2451545) / 36525;
-      // Greenwich Mean Sidereal Time
-      let GMST = 280.46061837 + 360.98564736629 * (jd - 2451545) + 0.000387933 * T * T - T * T * T / 38710000;
-      GMST = norm360(GMST);
-      const LST = norm360(GMST + lngDeg);
-      const lat = latDeg * D2R, e = 23.4393 * D2R;
-      const RAMC = LST * D2R;
-      const y = -Math.cos(RAMC);
-      const x = Math.sin(RAMC) * Math.cos(e) + Math.tan(lat) * Math.sin(e);
-      return norm360(Math.atan2(y, x) * R2D);
-    }
+            let activePaper = null;
 
-    // House cusps (Placidus approximation — whole sign fallback)
-    function calcHouses(asc) {
-      // Whole sign system for simplicity (most ancient, still widely used)
-      const ascSign = Math.floor(asc / 30);
-      const cusps = [];
-      for (let i = 0; i < 12; i++) cusps.push(norm360((ascSign + i) * 30));
-      return cusps;
-    }
+            function renderPapers() {
+                const q = document.getElementById("psearch").value.toLowerCase();
+                const el = document.getElementById("plist");
+                el.innerHTML = "";
+                papers
+                    .filter((p) => !q || p.title.toLowerCase().includes(q))
+                    .forEach((p) => {
+                        const d = document.createElement("div");
+                        d.className = "pcard" + (activePaper === p.id ? " active" : "");
 
-    function lonToSign(lon) {
-      const sign = SIGNS[Math.floor(lon / 30)];
-      const deg = lon % 30;
-      return { sign, deg, full: `${Math.floor(deg)}°${Math.floor((deg % 1) * 60)}'` };
-    }
+                        // Đã fix lỗi string template ở dòng này
+                        d.innerHTML = `<div class="pc-tag">[${p.tags[0]}]</div><div class="pc-title">${p.title}</div>`;
 
-    // Aspects
-    const ASPECT_DEFS = [
-      { name: 'Conjunction', sym: '☌', angle: 0, orb: 8, type: 'major' },
-      { name: 'Opposition', sym: '☍', angle: 180, orb: 8, type: 'major' },
-      { name: 'Trine', sym: '△', angle: 120, orb: 6, type: 'major' },
-      { name: 'Square', sym: '□', angle: 90, orb: 6, type: 'major' },
-      { name: 'Sextile', sym: '⚹', angle: 60, orb: 4, type: 'major' },
-      { name: 'Quincunx', sym: '⚻', angle: 150, orb: 3, type: 'minor' },
-    ];
+                        d.onclick = () => loadPaper(p);
+                        el.appendChild(d);
+                    });
+            }
 
-    function findAspects(planets) {
-      const aspects = [];
-      const names = Object.keys(planets);
-      for (let i = 0; i < names.length; i++) {
-        for (let j = i + 1; j < names.length; j++) {
-          const diff = Math.abs(planets[names[i]] - planets[names[j]]);
-          const angle = diff > 180 ? 360 - diff : diff;
-          ASPECT_DEFS.forEach(a => {
-            const orb = Math.abs(angle - a.angle);
-            if (orb <= a.orb) aspects.push({ p1: names[i], p2: names[j], asp: a, orb: orb.toFixed(1) });
-          });
-        }
-      }
-      return aspects;
-    }
+            async function loadPaper(p) {
+                activePaper = p.id;
+                renderPapers();
 
-    // Main calculator
-    function calcChart() {
-      const dob = document.getElementById('a-dob').value;
-      const tob = document.getElementById('a-tob').value;
-      const pob = document.getElementById('a-pob').value;
+                const mdViewer = document.getElementById("md-viewer");
+                const iframeViewer = document.getElementById("content-embed");
 
-      if (!dob || !tob) {
-        alert('Please fill in date and time of birth.');
-        return;
-      }
+                if (p.type === 'markdown') {
+                    iframeViewer.style.display = 'none';
+                    mdViewer.style.display = 'block';
 
-      const coords = getCoords(pob);
-      const lat = coords.lat;
-      const lng = coords.lng;
-      const tz = coords.tz;
+                    try {
+                        const response = await fetch(p.url);
+                        const rawText = await response.text();
 
-      const [y, mo, d] = dob.split('-').map(Number);
-      const [h, m] = tob.split(':').map(Number);
-      const utcHour = h + m / 60 - tz;
-      const jd = toJD(y, mo, d, utcHour);
+                        // 1. Dọn dẹp tab thừa tránh biến thành code block
+                        let cleanContent = rawText.replace(/^[ \t]+/gm, '');
+                        let html = marked.parse(cleanContent);
 
-      const planets = {
-        Sun: sunLon(jd),
-        Moon: moonLon(jd),
-        Mercury: mercuryLon(jd),
-        Venus: venusLon(jd),
-        Mars: marsLon(jd),
-        Jupiter: jupiterLon(jd),
-        Saturn: saturnLon(jd),
-        Uranus: uranusLon(jd),
-        Neptune: neptuneLon(jd),
-        Pluto: plutoLon(jd),
-      };
-      const asc = calcAscendant(jd, lat, lng);
-      const houses = calcHouses(asc);
+                        // 2. Render Simulator theo cấu trúc Container mới
+                        html = html.replace(/::SIMULATOR\[(.*?)\]::/g, `
+                            <div class="sim-container">
+                                <iframe src="$1" style="width:100%; height:100%; border:none;"></iframe>
+                            </div>
+                        `);
 
-      renderBigThree(planets, asc);
-      renderPlanetGrid(planets, asc);
-      renderChartWheel(planets, asc, houses);
-      renderAspects(planets);
+                        // 3. Inject Style cho các thẻ con của Markdown
+                        // Dùng template string để gán style trực tiếp
+                        mdViewer.innerHTML = html;
 
-      document.getElementById('big-three-wrap').style.display = 'block';
-      document.getElementById('planet-wrap').style.display = 'block';
-      document.getElementById('astro-placeholder').style.display = 'none';
-      document.getElementById('birth-chart-svg').style.display = 'block';
-      document.getElementById('aspect-list').style.display = 'block';
-    }
+                        // Áp dụng các quy tắc typography cho tài liệu
+                        mdViewer.querySelectorAll('h1').forEach(el => {
+                            el.style = "font-family:'Playfair Display',serif; font-style:italic; color:var(--sage); font-size:42px; margin-bottom:30px; border-bottom:1px solid var(--border); padding-bottom:10px;";
+                        });
+                        mdViewer.querySelectorAll('h2').forEach(el => {
+                            el.style = "font-family:'DM Mono',monospace; color:var(--soft); font-size:20px; margin-top:50px; text-transform:uppercase; letter-spacing:2px;";
+                        });
+                        mdViewer.querySelectorAll('p').forEach(el => {
+                            el.style = "font-family:'Crimson Pro',serif; font-size:19px; margin-bottom:25px; opacity:0.9; line-height:1.8;";
+                        });
+                        mdViewer.querySelectorAll('code').forEach(el => {
+                            if (el.parentElement.tagName !== 'PRE') {
+                                el.style = "background:rgba(0,0,0,0.3); color:var(--amber); padding:2px 6px; border-radius:4px; font-family:'DM Mono',monospace; font-size:0.9em; border:1px solid var(--border);";
+                            }
+                        });
 
-    const PLANET_COLORS = {
-      Sun: '#d4944a', Moon: '#c8d4c0', Mercury: '#6aacb8', Venus: '#c47a7a',
-      Mars: '#c47a7a', Jupiter: '#d4b44a', Saturn: '#a8c4aa', Uranus: '#9a8ec4',
-      Neptune: '#7aa4c4', Pluto: '#8a6a8a'
-    };
+                    } catch (e) {
+                        mdViewer.innerHTML = `<div style="color:var(--rose)">[SYS_ERR] File not found or CORS blocked.</div>`;
+                    }
+                } else {
+                    mdViewer.style.display = 'none';
+                    iframeViewer.style.display = 'block';
+                    iframeViewer.src = p.url;
+                }
+            }
 
-    function renderBigThree(planets, asc) {
-      const sun = lonToSign(planets.Sun);
-      const moon = lonToSign(planets.Moon);
-      const rising = lonToSign(asc);
-      const el = document.getElementById('big-three-cards');
-      el.innerHTML = [
-        { label: '☉ sun', data: sun, col: PLANET_COLORS.Sun },
-        { label: '☽ moon', data: moon, col: PLANET_COLORS.Moon },
-        { label: '↑ rising', data: rising, col: PLANET_COLORS.Uranus },
-      ].map(({ label, data, col }) => `
+
+            function openExternal() {
+                const p = papers.find((x) => x.id === activePaper);
+                if (p && p.url) window.open(p.url, "_blank");
+            }
+
+            // Khởi chạy
+            renderPapers();
+            if (papers.length > 0) loadPaper(papers[0]);
+
+            // ═══════════════════════════════════════════
+            //  ASTROLOGY ENGINE
+            // ═══════════════════════════════════════════
+            const SIGNS = [
+                "Aries",
+                "Taurus",
+                "Gemini",
+                "Cancer",
+                "Leo",
+                "Virgo",
+                "Libra",
+                "Scorpio",
+                "Sagittarius",
+                "Capricorn",
+                "Aquarius",
+                "Pisces",
+            ];
+            const SIGN_SYMS = [
+                "♈",
+                "♉",
+                "♊",
+                "♋",
+                "♌",
+                "♍",
+                "♎",
+                "♏",
+                "♐",
+                "♑",
+                "♒",
+                "♓",
+            ];
+            const ELEMENTS = {
+                Aries: "🜂",
+                Taurus: "🜃",
+                Gemini: "🜁",
+                Cancer: "🜄",
+                Leo: "🜂",
+                Virgo: "🜃",
+                Libra: "🜁",
+                Scorpio: "🜄",
+                Sagittarius: "🜂",
+                Capricorn: "🜃",
+                Aquarius: "🜁",
+                Pisces: "🜄",
+            };
+            const ELEMENT_NAMES = {
+                Aries: "Fire",
+                Taurus: "Earth",
+                Gemini: "Air",
+                Cancer: "Water",
+                Leo: "Fire",
+                Virgo: "Earth",
+                Libra: "Air",
+                Scorpio: "Water",
+                Sagittarius: "Fire",
+                Capricorn: "Earth",
+                Aquarius: "Air",
+                Pisces: "Water",
+            };
+            const MODALITIES = {
+                Aries: "Cardinal",
+                Taurus: "Fixed",
+                Gemini: "Mutable",
+                Cancer: "Cardinal",
+                Leo: "Fixed",
+                Virgo: "Mutable",
+                Libra: "Cardinal",
+                Scorpio: "Fixed",
+                Sagittarius: "Mutable",
+                Capricorn: "Cardinal",
+                Aquarius: "Fixed",
+                Pisces: "Mutable",
+            };
+            const PLANET_SYMS = {
+                Sun: "☉",
+                Moon: "☽",
+                Mercury: "☿",
+                Venus: "♀",
+                Mars: "♂",
+                Jupiter: "♃",
+                Saturn: "♄",
+                Uranus: "♅",
+                Neptune: "♆",
+                Pluto: "♇",
+            };
+            const SIGN_DESCS = {
+                Aries: "bold, pioneering, energetic",
+                Taurus: "grounded, sensual, persistent",
+                Gemini: "curious, adaptable, witty",
+                Cancer: "intuitive, nurturing, emotional",
+                Leo: "creative, generous, dramatic",
+                Virgo: "analytical, precise, helpful",
+                Libra: "balanced, charming, diplomatic",
+                Scorpio: "intense, transformative, deep",
+                Sagittarius: "adventurous, philosophical, free",
+                Capricorn: "ambitious, disciplined, strategic",
+                Aquarius: "innovative, humanitarian, eccentric",
+                Pisces: "dreamy, empathetic, mystical",
+            };
+
+            // Simple City coordinates mapping
+            const CITY_DATA = {
+                "hà nội": { lat: 21.0285, lng: 105.8542, tz: 7 },
+                "hồ chí minh": { lat: 10.8231, lng: 106.6297, tz: 7 },
+                hcm: { lat: 10.8231, lng: 106.6297, tz: 7 },
+                "đà nẵng": { lat: 16.0471, lng: 108.2068, tz: 7 },
+                "hải phòng": { lat: 20.8449, lng: 106.6881, tz: 7 },
+                "cần thơ": { lat: 10.0452, lng: 105.7469, tz: 7 },
+                "nha trang": { lat: 12.2388, lng: 109.1967, tz: 7 },
+                huế: { lat: 16.4637, lng: 107.5909, tz: 7 },
+                "vũng tàu": { lat: 10.346, lng: 107.0843, tz: 7 },
+                "đà lạt": { lat: 11.9404, lng: 108.4583, tz: 7 },
+            };
+
+            function getCoords(city) {
+                const c = city.toLowerCase().trim();
+                for (let k in CITY_DATA) {
+                    if (c.includes(k)) return CITY_DATA[k];
+                }
+                return { lat: 10.8231, lng: 106.6297, tz: 7 }; // Default HCM
+            }
+
+            // Julian Day Number
+            function toJD(year, month, day, hour = 12) {
+                if (month <= 2) {
+                    year--;
+                    month += 12;
+                }
+                const A = Math.floor(year / 100),
+                    B = 2 - A + Math.floor(A / 4);
+                return (
+                    Math.floor(365.25 * (year + 4716)) +
+                    Math.floor(30.6001 * (month + 1)) +
+                    day +
+                    hour / 24 +
+                    B -
+                    1524.5
+                );
+            }
+
+            // Degrees to radians
+            const D2R = Math.PI / 180,
+                R2D = 180 / Math.PI;
+            function norm360(x) {
+                return ((x % 360) + 360) % 360;
+            }
+            function normRad(x) {
+                return ((x % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+            }
+
+            // Sun longitude (accurate to ~0.01°)
+            function sunLon(jd) {
+                const T = (jd - 2451545.0) / 36525;
+                const L0 = norm360(
+                    280.46646 + 36000.76983 * T + 0.0003032 * T * T,
+                );
+                const M =
+                    norm360(357.52911 + 35999.05029 * T - 0.0001537 * T * T) *
+                    D2R;
+                const C =
+                    (1.914602 - 0.004817 * T - 0.000014 * T * T) * Math.sin(M) +
+                    (0.019993 - 0.000101 * T) * Math.sin(2 * M) +
+                    0.000289 * Math.sin(3 * M);
+                const sunLon = norm360(L0 + C);
+                const omega = norm360(125.04 - 1934.136 * T);
+                return norm360(
+                    sunLon - 0.00569 - 0.00478 * Math.sin(omega * D2R),
+                );
+            }
+
+            // Moon longitude (simplified ELP2000, accurate to ~1°)
+            function moonLon(jd) {
+                const T = (jd - 2451545.0) / 36525;
+                const D =
+                    norm360(297.85036 + 445267.11148 * T - 0.0019142 * T * T) *
+                    D2R;
+                const M =
+                    norm360(357.52772 + 35999.05034 * T - 0.0001603 * T * T) *
+                    D2R;
+                const Mp =
+                    norm360(134.96298 + 477198.867398 * T + 0.0086972 * T * T) *
+                    D2R;
+                const F =
+                    norm360(93.27191 + 483202.017538 * T - 0.0036825 * T * T) *
+                    D2R;
+                const L0 = norm360(218.3165 + 481267.8813 * T);
+                let lon = L0;
+                lon += 6.289 * Math.sin(Mp);
+                lon += 1.274 * Math.sin(2 * D - Mp);
+                lon += 0.658 * Math.sin(2 * D);
+                lon += 0.214 * Math.sin(2 * Mp);
+                lon -= 0.186 * Math.sin(M);
+                lon -= 0.114 * Math.sin(2 * F);
+                lon += 0.059 * Math.sin(2 * D - 2 * Mp);
+                lon += 0.057 * Math.sin(2 * D - M - Mp);
+                lon += 0.053 * Math.sin(2 * D + Mp);
+                lon += 0.046 * Math.sin(2 * D - M);
+                lon += 0.041 * Math.sin(Mp - M);
+                lon -= 0.035 * Math.sin(D);
+                lon -= 0.031 * Math.sin(Mp + M);
+                lon -= 0.015 * Math.sin(2 * F - 2 * D);
+                lon += 0.011 * Math.sin(Mp - 4 * D);
+                return norm360(lon);
+            }
+
+            // Mercury longitude
+            function mercuryLon(jd) {
+                const T = (jd - 2451545) / 36525;
+                const L = norm360(252.250906 + 149472.6746358 * T);
+                const M = norm360(357.529 + 35999.05 * T) * D2R;
+                const Mp = norm360(L) * D2R;
+                return norm360(
+                    L +
+                        23.44 * Math.sin(Mp) +
+                        2.9818 * Math.sin(2 * Mp) +
+                        0.5255 * Math.sin(3 * Mp) +
+                        0.1058 * Math.sin(4 * Mp) -
+                        2.0441 * Math.sin(M) +
+                        0.323 * Math.sin(M - Mp),
+                );
+            }
+
+            // Venus longitude
+            function venusLon(jd) {
+                const T = (jd - 2451545) / 36525;
+                const L = norm360(181.979801 + 58517.815676 * T);
+                const M = norm360(212.448 + 58517.804 * T) * D2R;
+                return norm360(
+                    L + 0.7758 * Math.sin(M) + 0.0033 * Math.sin(2 * M),
+                );
+            }
+
+            // Mars longitude
+            function marsLon(jd) {
+                const T = (jd - 2451545) / 36525;
+                const L = norm360(355.433 + 19140.2993313 * T);
+                const M = norm360(19.373 + 19140.299 * T) * D2R;
+                return norm360(
+                    L +
+                        10.6912 * Math.sin(M) +
+                        0.6228 * Math.sin(2 * M) +
+                        0.0503 * Math.sin(3 * M),
+                );
+            }
+
+            // Jupiter longitude
+            function jupiterLon(jd) {
+                const T = (jd - 2451545) / 36525;
+                const L = norm360(34.351519 + 3034.9056606 * T);
+                const M = norm360(20.02 + 3034.906 * T) * D2R;
+                return norm360(
+                    L +
+                        5.5549 * Math.sin(M) +
+                        0.1683 * Math.sin(2 * M) +
+                        0.0071 * Math.sin(3 * M),
+                );
+            }
+
+            // Saturn longitude
+            function saturnLon(jd) {
+                const T = (jd - 2451545) / 36525;
+                const L = norm360(50.077444 + 1222.1138488 * T);
+                const M = norm360(317.02 + 1222.114 * T) * D2R;
+                const Mp = norm360(20.02 + 3034.906 * T) * D2R; // Jupiter
+                return norm360(
+                    L +
+                        6.3585 * Math.sin(M) -
+                        0.2556 * Math.sin(2 * M) +
+                        0.0437 * Math.sin(M + Mp) -
+                        0.0132 * Math.sin(M - Mp),
+                );
+            }
+
+            // Uranus longitude
+            function uranusLon(jd) {
+                const T = (jd - 2451545) / 36525;
+                const L = norm360(314.055005 + 429.8640561 * T);
+                const M = norm360(141.05 + 429.864 * T) * D2R;
+                return norm360(
+                    L +
+                        5.3042 * Math.sin(M) +
+                        0.1534 * Math.sin(2 * M) +
+                        0.0062 * Math.sin(3 * M),
+                );
+            }
+
+            // Neptune longitude
+            function neptuneLon(jd) {
+                const T = (jd - 2451545) / 36525;
+                const L = norm360(304.348665 + 219.8833092 * T);
+                const M = norm360(256.225 + 219.883 * T) * D2R;
+                return norm360(
+                    L + 1.0898 * Math.sin(M) + 0.0252 * Math.sin(2 * M),
+                );
+            }
+
+            // Pluto (approximation 1800-2100)
+            function plutoLon(jd) {
+                const T = (jd - 2451545) / 36525;
+                const Ja = norm360(34.35 + 3034.9057 * T) * D2R;
+                const Sa = norm360(50.08 + 1222.1138 * T) * D2R;
+                const Pa = norm360(238.96 + 144.96 * T) * D2R;
+                let L = 238.9508 + 144.96 * T;
+                L +=
+                    -19.799 * Math.sin(Pa) +
+                    19.848 * Math.cos(Pa) +
+                    0.897 * Math.sin(2 * Pa) -
+                    4.956 * Math.cos(2 * Pa) +
+                    0.61 * Math.sin(3 * Pa) +
+                    1.211 * Math.cos(3 * Pa) -
+                    0.341 * Math.sin(4 * Pa) -
+                    0.19 * Math.cos(4 * Pa) +
+                    0.128 * Math.sin(5 * Pa) -
+                    0.034 * Math.cos(5 * Pa) -
+                    0.038 * Math.sin(Ja) +
+                    0.019 * Math.cos(Ja);
+                return norm360(L);
+            }
+
+            // Ascendant from LST + latitude
+            function calcAscendant(jd, latDeg, lngDeg) {
+                const T = (jd - 2451545) / 36525;
+                // Greenwich Mean Sidereal Time
+                let GMST =
+                    280.46061837 +
+                    360.98564736629 * (jd - 2451545) +
+                    0.000387933 * T * T -
+                    (T * T * T) / 38710000;
+                GMST = norm360(GMST);
+                const LST = norm360(GMST + lngDeg);
+                const lat = latDeg * D2R,
+                    e = 23.4393 * D2R;
+                const RAMC = LST * D2R;
+                const y = -Math.cos(RAMC);
+                const x =
+                    Math.sin(RAMC) * Math.cos(e) + Math.tan(lat) * Math.sin(e);
+                return norm360(Math.atan2(y, x) * R2D);
+            }
+
+            // House cusps (Placidus approximation — whole sign fallback)
+            function calcHouses(asc) {
+                // Whole sign system for simplicity (most ancient, still widely used)
+                const ascSign = Math.floor(asc / 30);
+                const cusps = [];
+                for (let i = 0; i < 12; i++)
+                    cusps.push(norm360((ascSign + i) * 30));
+                return cusps;
+            }
+
+            function lonToSign(lon) {
+                const sign = SIGNS[Math.floor(lon / 30)];
+                const deg = lon % 30;
+                return {
+                    sign,
+                    deg,
+                    full: `${Math.floor(deg)}°${Math.floor((deg % 1) * 60)}'`,
+                };
+            }
+
+            // Aspects
+            const ASPECT_DEFS = [
+                {
+                    name: "Conjunction",
+                    sym: "☌",
+                    angle: 0,
+                    orb: 8,
+                    type: "major",
+                },
+                {
+                    name: "Opposition",
+                    sym: "☍",
+                    angle: 180,
+                    orb: 8,
+                    type: "major",
+                },
+                { name: "Trine", sym: "△", angle: 120, orb: 6, type: "major" },
+                { name: "Square", sym: "□", angle: 90, orb: 6, type: "major" },
+                { name: "Sextile", sym: "⚹", angle: 60, orb: 4, type: "major" },
+                {
+                    name: "Quincunx",
+                    sym: "⚻",
+                    angle: 150,
+                    orb: 3,
+                    type: "minor",
+                },
+            ];
+
+            function findAspects(planets) {
+                const aspects = [];
+                const names = Object.keys(planets);
+                for (let i = 0; i < names.length; i++) {
+                    for (let j = i + 1; j < names.length; j++) {
+                        const diff = Math.abs(
+                            planets[names[i]] - planets[names[j]],
+                        );
+                        const angle = diff > 180 ? 360 - diff : diff;
+                        ASPECT_DEFS.forEach((a) => {
+                            const orb = Math.abs(angle - a.angle);
+                            if (orb <= a.orb)
+                                aspects.push({
+                                    p1: names[i],
+                                    p2: names[j],
+                                    asp: a,
+                                    orb: orb.toFixed(1),
+                                });
+                        });
+                    }
+                }
+                return aspects;
+            }
+
+            // Main calculator
+            function calcChart() {
+                const dob = document.getElementById("a-dob").value;
+                const tob = document.getElementById("a-tob").value;
+                const pob = document.getElementById("a-pob").value;
+
+                if (!dob || !tob) {
+                    alert("Please fill in date and time of birth.");
+                    return;
+                }
+
+                const coords = getCoords(pob);
+                const lat = coords.lat;
+                const lng = coords.lng;
+                const tz = coords.tz;
+
+                const [y, mo, d] = dob.split("-").map(Number);
+                const [h, m] = tob.split(":").map(Number);
+                const utcHour = h + m / 60 - tz;
+                const jd = toJD(y, mo, d, utcHour);
+
+                const planets = {
+                    Sun: sunLon(jd),
+                    Moon: moonLon(jd),
+                    Mercury: mercuryLon(jd),
+                    Venus: venusLon(jd),
+                    Mars: marsLon(jd),
+                    Jupiter: jupiterLon(jd),
+                    Saturn: saturnLon(jd),
+                    Uranus: uranusLon(jd),
+                    Neptune: neptuneLon(jd),
+                    Pluto: plutoLon(jd),
+                };
+                const asc = calcAscendant(jd, lat, lng);
+                const houses = calcHouses(asc);
+
+                renderBigThree(planets, asc);
+                renderPlanetGrid(planets, asc);
+                renderChartWheel(planets, asc, houses);
+                renderAspects(planets);
+
+                document.getElementById("big-three-wrap").style.display =
+                    "block";
+                document.getElementById("planet-wrap").style.display = "block";
+                document.getElementById("astro-placeholder").style.display =
+                    "none";
+                document.getElementById("birth-chart-svg").style.display =
+                    "block";
+                document.getElementById("aspect-list").style.display = "block";
+            }
+
+            const PLANET_COLORS = {
+                Sun: "#d4944a",
+                Moon: "#c8d4c0",
+                Mercury: "#6aacb8",
+                Venus: "#c47a7a",
+                Mars: "#c47a7a",
+                Jupiter: "#d4b44a",
+                Saturn: "#a8c4aa",
+                Uranus: "#9a8ec4",
+                Neptune: "#7aa4c4",
+                Pluto: "#8a6a8a",
+            };
+
+            function renderBigThree(planets, asc) {
+                const sun = lonToSign(planets.Sun);
+                const moon = lonToSign(planets.Moon);
+                const rising = lonToSign(asc);
+                const el = document.getElementById("big-three-cards");
+                el.innerHTML = [
+                    { label: "☉ sun", data: sun, col: PLANET_COLORS.Sun },
+                    { label: "☽ moon", data: moon, col: PLANET_COLORS.Moon },
+                    {
+                        label: "↑ rising",
+                        data: rising,
+                        col: PLANET_COLORS.Uranus,
+                    },
+                ]
+                    .map(
+                        ({ label, data, col }) => `
     <div class="big-three-card">
       <div class="btc-label">${label}</div>
       <div class="btc-sign" style="color:${col}">${data.sign} <span style="font-size:14px">${SIGN_SYMS[SIGNS.indexOf(data.sign)]}</span></div>
@@ -1690,480 +1378,1015 @@
       <div class="btc-element">${ELEMENTS[data.sign]}</div>
       <div class="btc-desc">${SIGN_DESCS[data.sign]}</div>
     </div>
-  `).join('');
-    }
+  `,
+                    )
+                    .join("");
+            }
 
-    function renderPlanetGrid(planets, asc) {
-      const el = document.getElementById('planet-grid');
-      el.innerHTML = Object.entries(planets).map(([name, lon]) => {
-        const s = lonToSign(lon);
-        return `<div class="planet-item">
-      <div class="planet-sym" style="color:${PLANET_COLORS[name] || 'var(--soft)'}">${PLANET_SYMS[name] || '●'}</div>
+            function renderPlanetGrid(planets, asc) {
+                const el = document.getElementById("planet-grid");
+                el.innerHTML = Object.entries(planets)
+                    .map(([name, lon]) => {
+                        const s = lonToSign(lon);
+                        return `<div class="planet-item">
+      <div class="planet-sym" style="color:${PLANET_COLORS[name] || "var(--soft)"}">${PLANET_SYMS[name] || "●"}</div>
       <div class="planet-info">
         <div class="planet-name">${name}</div>
         <div class="planet-sign">${s.sign}</div>
         <div class="planet-deg">${s.full}</div>
       </div>
     </div>`;
-      }).join('');
-    }
+                    })
+                    .join("");
+            }
 
-    // ── SVG BIRTH CHART WHEEL ──
-    function renderChartWheel(planets, asc, houses) {
-      const svg = document.getElementById('birth-chart-svg');
-      const cx = 250, cy = 250, R = 220;
-      const rings = { outer: R, inner: R - 25, mid: R - 50, core: R - 90 };
+            // ── SVG BIRTH CHART WHEEL ──
+            function renderChartWheel(planets, asc, houses) {
+                const svg = document.getElementById("birth-chart-svg");
+                const cx = 250,
+                    cy = 250,
+                    R = 220;
+                const rings = {
+                    outer: R,
+                    inner: R - 25,
+                    mid: R - 50,
+                    core: R - 90,
+                };
 
-      let s = ``;
+                let s = ``;
 
-      // Background
-      s += `<circle cx="${cx}" cy="${cy}" r="${R}" fill="rgba(26,31,26,0.9)" stroke="var(--border)" stroke-width="0.5"/>`;
+                // Background
+                s += `<circle cx="${cx}" cy="${cy}" r="${R}" fill="rgba(26,31,26,0.9)" stroke="var(--border)" stroke-width="0.5"/>`;
 
-      // Element quadrant shading
-      const elemColors = { 'Fire': 'rgba(212,148,74,0.06)', 'Earth': 'rgba(122,158,126,0.06)', 'Air': 'rgba(106,172,184,0.06)', 'Water': 'rgba(154,142,196,0.06)' };
-      houses.forEach((cusp, i) => {
-        const next = houses[(i + 1) % 12];
-        const elem = ELEMENT_NAMES[SIGNS[Math.floor(cusp / 30)]];
-        const a1 = (cusp - asc - 90) * D2R, a2 = (next - asc - 90) * D2R;
-        const x1 = cx + rings.mid * Math.cos(a1), y1 = cy + rings.mid * Math.sin(a1);
-        const x2 = cx + rings.mid * Math.cos(a2), y2 = cy + rings.mid * Math.sin(a2);
-        const xi1 = cx + rings.core * Math.cos(a1), yi1 = cy + rings.core * Math.sin(a1);
-        const xi2 = cx + rings.core * Math.cos(a2), yi2 = cy + rings.core * Math.sin(a2);
-        s += `<path d="M${xi1},${yi1} L${x1},${y1} A${rings.mid},${rings.mid} 0 0,1 ${x2},${y2} L${xi2},${yi2} A${rings.core},${rings.core} 0 0,0 ${xi1},${yi1}" fill="${elemColors[elem] || 'none'}"/>`;
-      });
+                // Element quadrant shading
+                const elemColors = {
+                    Fire: "rgba(212,148,74,0.06)",
+                    Earth: "rgba(122,158,126,0.06)",
+                    Air: "rgba(106,172,184,0.06)",
+                    Water: "rgba(154,142,196,0.06)",
+                };
+                houses.forEach((cusp, i) => {
+                    const next = houses[(i + 1) % 12];
+                    const elem = ELEMENT_NAMES[SIGNS[Math.floor(cusp / 30)]];
+                    const a1 = (cusp - asc - 90) * D2R,
+                        a2 = (next - asc - 90) * D2R;
+                    const x1 = cx + rings.mid * Math.cos(a1),
+                        y1 = cy + rings.mid * Math.sin(a1);
+                    const x2 = cx + rings.mid * Math.cos(a2),
+                        y2 = cy + rings.mid * Math.sin(a2);
+                    const xi1 = cx + rings.core * Math.cos(a1),
+                        yi1 = cy + rings.core * Math.sin(a1);
+                    const xi2 = cx + rings.core * Math.cos(a2),
+                        yi2 = cy + rings.core * Math.sin(a2);
+                    s += `<path d="M${xi1},${yi1} L${x1},${y1} A${rings.mid},${rings.mid} 0 0,1 ${x2},${y2} L${xi2},${yi2} A${rings.core},${rings.core} 0 0,0 ${xi1},${yi1}" fill="${elemColors[elem] || "none"}"/>`;
+                });
 
-      // Ring circles
-      [rings.outer, rings.inner, rings.mid, rings.core, rings.core - 10].forEach(r => {
-        s += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--border)" stroke-width="0.5"/>`;
-      });
+                // Ring circles
+                [
+                    rings.outer,
+                    rings.inner,
+                    rings.mid,
+                    rings.core,
+                    rings.core - 10,
+                ].forEach((r) => {
+                    s += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--border)" stroke-width="0.5"/>`;
+                });
 
-      // House cusps + numbers
-      houses.forEach((cusp, i) => {
-        const ang = (cusp - asc - 90) * D2R;
-        const x1 = cx + rings.inner * Math.cos(ang), y1 = cy + rings.inner * Math.sin(ang);
-        const x2 = cx + (rings.core - 12) * Math.cos(ang), y2 = cy + (rings.core - 12) * Math.sin(ang);
-        const isMajor = [0, 3, 6, 9].includes(i);
-        s += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${isMajor ? 'var(--sage2)' : 'var(--border)'}" stroke-width="${isMajor ? 1 : 0.5}"/>`;
-        // house number
-        const h1ang = (cusp - asc - 90) * D2R;
-        const h2 = houses[(i + 1) % 12]; const h2ang = (h2 - asc - 90) * D2R;
-        const midAng = (h1ang + h2ang) / 2;
-        const nr = rings.core - 18;
-        s += `<text x="${cx + nr * Math.cos(midAng)}" y="${cy + nr * Math.sin(midAng)}" fill="var(--muted)" font-size="7" text-anchor="middle" dominant-baseline="middle" style="font-family:'DM Mono',monospace">${i + 1}</text>`;
-      });
+                // House cusps + numbers
+                houses.forEach((cusp, i) => {
+                    const ang = (cusp - asc - 90) * D2R;
+                    const x1 = cx + rings.inner * Math.cos(ang),
+                        y1 = cy + rings.inner * Math.sin(ang);
+                    const x2 = cx + (rings.core - 12) * Math.cos(ang),
+                        y2 = cy + (rings.core - 12) * Math.sin(ang);
+                    const isMajor = [0, 3, 6, 9].includes(i);
+                    s += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${isMajor ? "var(--sage2)" : "var(--border)"}" stroke-width="${isMajor ? 1 : 0.5}"/>`;
+                    // house number
+                    const h1ang = (cusp - asc - 90) * D2R;
+                    const h2 = houses[(i + 1) % 12];
+                    const h2ang = (h2 - asc - 90) * D2R;
+                    const midAng = (h1ang + h2ang) / 2;
+                    const nr = rings.core - 18;
+                    s += `<text x="${cx + nr * Math.cos(midAng)}" y="${cy + nr * Math.sin(midAng)}" fill="var(--muted)" font-size="7" text-anchor="middle" dominant-baseline="middle" style="font-family:'DM Mono',monospace">${i + 1}</text>`;
+                });
 
-      // Zodiac signs in outer ring
-      for (let i = 0; i < 12; i++) {
-        const signStart = (i * 30 - asc - 90) * D2R;
-        const signMid = ((i * 30 + 15) - asc - 90) * D2R;
-        const sr = rings.outer - 12;
-        s += `<text x="${cx + sr * Math.cos(signMid)}" y="${cy + sr * Math.sin(signMid)}" fill="var(--muted)" font-size="10" text-anchor="middle" dominant-baseline="middle">${SIGN_SYMS[i]}</text>`;
-        // sign divider
-        const x1 = cx + rings.outer * Math.cos(signStart), y1 = cy + rings.outer * Math.sin(signStart);
-        const x2 = cx + rings.inner * Math.cos(signStart), y2 = cy + rings.inner * Math.sin(signStart);
-        s += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="var(--border)" stroke-width="0.5"/>`;
-      }
+                // Zodiac signs in outer ring
+                for (let i = 0; i < 12; i++) {
+                    const signStart = (i * 30 - asc - 90) * D2R;
+                    const signMid = (i * 30 + 15 - asc - 90) * D2R;
+                    const sr = rings.outer - 12;
+                    s += `<text x="${cx + sr * Math.cos(signMid)}" y="${cy + sr * Math.sin(signMid)}" fill="var(--muted)" font-size="10" text-anchor="middle" dominant-baseline="middle">${SIGN_SYMS[i]}</text>`;
+                    // sign divider
+                    const x1 = cx + rings.outer * Math.cos(signStart),
+                        y1 = cy + rings.outer * Math.sin(signStart);
+                    const x2 = cx + rings.inner * Math.cos(signStart),
+                        y2 = cy + rings.inner * Math.sin(signStart);
+                    s += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="var(--border)" stroke-width="0.5"/>`;
+                }
 
-      // Aspect lines (draw first so planets overlay)
-      const aspects = findAspects(Object.fromEntries(Object.entries(planets)));
-      const aspColors = { Conjunction: 'var(--sage)', Opposition: 'var(--rose)', Trine: 'var(--sky)', Square: 'var(--rose)', Sextile: 'var(--amber)', Quincunx: 'var(--lavender)' };
-      aspects.slice(0, 20).forEach(asp => {
-        const a1 = (planets[asp.p1] - asc - 90) * D2R;
-        const a2 = (planets[asp.p2] - asc - 90) * D2R;
-        const r = rings.core - 22;
-        const x1 = cx + r * Math.cos(a1), y1 = cy + r * Math.sin(a1);
-        const x2 = cx + r * Math.cos(a2), y2 = cy + r * Math.sin(a2);
-        s += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${aspColors[asp.asp.name] || 'var(--muted)'}" stroke-width="0.5" opacity="0.35"/>`;
-      });
+                // Aspect lines (draw first so planets overlay)
+                const aspects = findAspects(
+                    Object.fromEntries(Object.entries(planets)),
+                );
+                const aspColors = {
+                    Conjunction: "var(--sage)",
+                    Opposition: "var(--rose)",
+                    Trine: "var(--sky)",
+                    Square: "var(--rose)",
+                    Sextile: "var(--amber)",
+                    Quincunx: "var(--lavender)",
+                };
+                aspects.slice(0, 20).forEach((asp) => {
+                    const a1 = (planets[asp.p1] - asc - 90) * D2R;
+                    const a2 = (planets[asp.p2] - asc - 90) * D2R;
+                    const r = rings.core - 22;
+                    const x1 = cx + r * Math.cos(a1),
+                        y1 = cy + r * Math.sin(a1);
+                    const x2 = cx + r * Math.cos(a2),
+                        y2 = cy + r * Math.sin(a2);
+                    s += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${aspColors[asp.asp.name] || "var(--muted)"}" stroke-width="0.5" opacity="0.35"/>`;
+                });
 
-      // Planets
-      Object.entries(planets).forEach(([name, lon]) => {
-        const ang = (lon - asc - 90) * D2R;
-        const pr = rings.mid - 12;
-        const px2 = cx + pr * Math.cos(ang), py2 = cy + pr * Math.sin(ang);
-        // tick line
-        const ti1 = cx + rings.inner * Math.cos(ang), ti1y = cy + rings.inner * Math.sin(ang);
-        const ti2 = cx + (rings.inner + 8) * Math.cos(ang), ti2y = cy + (rings.inner + 8) * Math.sin(ang);
-        s += `<line x1="${ti1}" y1="${ti1y}" x2="${ti2}" y2="${ti2y}" stroke="${PLANET_COLORS[name]}" stroke-width="1.5"/>`;
-        // planet dot
-        s += `<circle cx="${px2}" cy="${py2}" r="9" fill="rgba(26,31,26,0.9)" stroke="${PLANET_COLORS[name]}" stroke-width="1"/>`;
-        s += `<text x="${px2}" y="${py2}" fill="${PLANET_COLORS[name]}" font-size="10" text-anchor="middle" dominant-baseline="middle">${PLANET_SYMS[name]}</text>`;
-      });
+                // Planets
+                Object.entries(planets).forEach(([name, lon]) => {
+                    const ang = (lon - asc - 90) * D2R;
+                    const pr = rings.mid - 12;
+                    const px2 = cx + pr * Math.cos(ang),
+                        py2 = cy + pr * Math.sin(ang);
+                    // tick line
+                    const ti1 = cx + rings.inner * Math.cos(ang),
+                        ti1y = cy + rings.inner * Math.sin(ang);
+                    const ti2 = cx + (rings.inner + 8) * Math.cos(ang),
+                        ti2y = cy + (rings.inner + 8) * Math.sin(ang);
+                    s += `<line x1="${ti1}" y1="${ti1y}" x2="${ti2}" y2="${ti2y}" stroke="${PLANET_COLORS[name]}" stroke-width="1.5"/>`;
+                    // planet dot
+                    s += `<circle cx="${px2}" cy="${py2}" r="9" fill="rgba(26,31,26,0.9)" stroke="${PLANET_COLORS[name]}" stroke-width="1"/>`;
+                    s += `<text x="${px2}" y="${py2}" fill="${PLANET_COLORS[name]}" font-size="10" text-anchor="middle" dominant-baseline="middle">${PLANET_SYMS[name]}</text>`;
+                });
 
-      // Ascendant line
-      s += `<line x1="${cx}" y1="${cy}" x2="${cx + rings.mid * Math.cos(-90 * D2R)}" y2="${cy + rings.mid * Math.sin(-90 * D2R)}" stroke="var(--sage)" stroke-width="1.5" opacity="0.7"/>`;
-      s += `<text x="${cx + 2}" y="${cy - rings.mid + 16}" fill="var(--sage)" font-size="9" text-anchor="middle" style="font-family:'DM Mono',monospace">ASC</text>`;
+                // Ascendant line
+                s += `<line x1="${cx}" y1="${cy}" x2="${cx + rings.mid * Math.cos(-90 * D2R)}" y2="${cy + rings.mid * Math.sin(-90 * D2R)}" stroke="var(--sage)" stroke-width="1.5" opacity="0.7"/>`;
+                s += `<text x="${cx + 2}" y="${cy - rings.mid + 16}" fill="var(--sage)" font-size="9" text-anchor="middle" style="font-family:'DM Mono',monospace">ASC</text>`;
 
-      // Center
-      s += `<circle cx="${cx}" cy="${cy}" r="6" fill="var(--sage2)" opacity="0.4"/>`;
+                // Center
+                s += `<circle cx="${cx}" cy="${cy}" r="6" fill="var(--sage2)" opacity="0.4"/>`;
 
-      svg.innerHTML = s;
-    }
+                svg.innerHTML = s;
+            }
 
-    function renderAspects(planets) {
-      const aspects = findAspects(planets);
-      const aspColors = { Conjunction: 'var(--sage)', Opposition: 'var(--rose)', Trine: 'var(--sky)', Square: 'var(--rose)', Sextile: 'var(--amber)', Quincunx: 'var(--lavender)' };
-      const el = document.getElementById('aspect-rows');
-      if (!aspects.length) { el.innerHTML = '<div style="color:var(--muted);font-size:10px">no major aspects found</div>'; return; }
-      el.innerHTML = aspects.slice(0, 15).map(a => `
+            function renderAspects(planets) {
+                const aspects = findAspects(planets);
+                const aspColors = {
+                    Conjunction: "var(--sage)",
+                    Opposition: "var(--rose)",
+                    Trine: "var(--sky)",
+                    Square: "var(--rose)",
+                    Sextile: "var(--amber)",
+                    Quincunx: "var(--lavender)",
+                };
+                const el = document.getElementById("aspect-rows");
+                if (!aspects.length) {
+                    el.innerHTML =
+                        '<div style="color:var(--muted);font-size:10px">no major aspects found</div>';
+                    return;
+                }
+                el.innerHTML = aspects
+                    .slice(0, 15)
+                    .map(
+                        (a) => `
     <div class="aspect-row">
       <span class="asp-planets">${PLANET_SYMS[a.p1] || a.p1} ${a.p1} — ${PLANET_SYMS[a.p2] || a.p2} ${a.p2}</span>
       <span class="asp-type">${a.asp.sym} ${a.asp.name}</span>
-      <span class="asp-badge" style="color:${aspColors[a.asp.name] || 'var(--muted)'};border-color:${aspColors[a.asp.name] || 'var(--border)'}">±${a.orb}°</span>
+      <span class="asp-badge" style="color:${aspColors[a.asp.name] || "var(--muted)"};border-color:${aspColors[a.asp.name] || "var(--border)"}">±${a.orb}°</span>
     </div>
-  `).join('');
-    }
-
-    // ═══════════════════════════════════════════
-    //  ARCADE (SNAKE & TETRIS)
-    // ═══════════════════════════════════════════
-    const gcvs = document.getElementById('game-canvas');
-    const gctx = gcvs.getContext('2d');
-    const block = 20;
-    let currentGame = null, currentGameInterval = null, score = 0, isGameOver = false;
-    function gc() { return { main: getComputedStyle(document.body).getPropertyValue('--sage').trim(), main2: getComputedStyle(document.body).getPropertyValue('--sage2').trim(), bg: '#000' }; }
-    function backToMenu() { if (currentGameInterval) clearInterval(currentGameInterval); currentGame = null; isGameOver = false; document.getElementById('go-screen').classList.remove('show'); gcvs.style.display = 'none'; document.getElementById('arcade-menu').style.display = 'flex'; document.getElementById('game-title').textContent = 'onc_arcade'; document.getElementById('score-display').textContent = '0'; }
-    function triggerGO() { clearInterval(currentGameInterval); currentGameInterval = null; isGameOver = true; document.getElementById('final-score').textContent = score; document.getElementById('go-screen').classList.add('show'); }
-    
-    // RETRY GAME UPDATED HERE
-    function retryGame() {
-      document.getElementById('go-screen').classList.remove('show');
-      if (currentGame === 'snake') startSnake();
-      else if (currentGame === 'doom') startDoom();
-      else startTetris();
-    }
-
-    let snake, food, sDir;
-    function startSnake() { document.getElementById('arcade-menu').style.display = 'none'; gcvs.style.display = 'block'; document.getElementById('game-title').textContent = 'snake.exe'; currentGame = 'snake'; score = 0; document.getElementById('score-display').textContent = score; isGameOver = false; snake = [{ x: 5 * block, y: 10 * block }]; food = { x: Math.floor(Math.random() * (gcvs.width / block)) * block, y: Math.floor(Math.random() * (gcvs.height / block)) * block }; sDir = "RIGHT"; if (currentGameInterval) clearInterval(currentGameInterval); currentGameInterval = setInterval(updateSnake, 100); }
-    function updateSnake() { const c = gc(); gctx.fillStyle = c.bg; gctx.fillRect(0, 0, gcvs.width, gcvs.height); for (let i = 0; i < snake.length; i++) { gctx.fillStyle = i === 0 ? c.main : c.main2; gctx.fillRect(snake[i].x, snake[i].y, block, block); gctx.strokeStyle = c.bg; gctx.strokeRect(snake[i].x, snake[i].y, block, block); } gctx.fillStyle = c.main; gctx.beginPath(); gctx.arc(food.x + block / 2, food.y + block / 2, block / 2 - 2, 0, Math.PI * 2); gctx.fill(); let hX = snake[0].x, hY = snake[0].y; if (sDir === "LEFT") hX -= block; if (sDir === "UP") hY -= block; if (sDir === "RIGHT") hX += block; if (sDir === "DOWN") hY += block; if (hX < 0) hX = gcvs.width - block; else if (hX >= gcvs.width) hX = 0; if (hY < 0) hY = gcvs.height - block; else if (hY >= gcvs.height) hY = 0; if (hX === food.x && hY === food.y) { score += 10; document.getElementById('score-display').textContent = score; food = { x: Math.floor(Math.random() * (gcvs.width / block)) * block, y: Math.floor(Math.random() * (gcvs.height / block)) * block }; } else { snake.pop(); } let nh = { x: hX, y: hY }; for (let i = 0; i < snake.length; i++) { if (hX === snake[i].x && hY === snake[i].y) { triggerGO(); return; } } snake.unshift(nh); }
-
-    const COLS = 12, ROWS = 20; let board = [], piece;
-    const TETS = [[], [[0, 0, 0, 0], [1, 1, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0]], [[2, 0, 0], [2, 2, 2], [0, 0, 0]], [[0, 0, 3], [3, 3, 3], [0, 0, 0]], [[4, 4], [4, 4]], [[0, 5, 5], [5, 5, 0], [0, 0, 0]], [[0, 6, 0], [6, 6, 6], [0, 0, 0]], [[7, 7, 0], [0, 7, 7], [0, 0, 0]]];
-    function newPiece() { const t = Math.floor(Math.random() * 7) + 1; piece = { matrix: TETS[t], x: Math.floor(COLS / 2) - 1, y: 0 }; }
-    function collide(m, px, py) { for (let r = 0; r < m.length; r++)for (let c = 0; c < m[r].length; c++)if (m[r][c] !== 0 && (board[py + r] && board[py + r][px + c]) !== 0) return true; return false; }
-    function merge() { piece.matrix.forEach((row, y) => row.forEach((v, x) => { if (v !== 0) board[piece.y + y][piece.x + x] = v; })); }
-    function clearLines() { let cl = 0; outer: for (let y = ROWS - 1; y >= 0; y--) { for (let x = 0; x < COLS; x++)if (board[y][x] === 0) continue outer; board.splice(y, 1)[0].fill(0); board.unshift(new Array(COLS).fill(0)); y++; cl++; } if (cl > 0) { score += cl * 100; document.getElementById('score-display').textContent = score; } }
-    function dropPiece() { piece.y++; if (collide(piece.matrix, piece.x, piece.y)) { piece.y--; merge(); clearLines(); newPiece(); if (collide(piece.matrix, piece.x, piece.y)) triggerGO(); } }
-    function rotMat(m) { const r = []; for (let i = 0; i < m[0].length; i++)r.push(m.map(e => e[i]).reverse()); return r; }
-    function startTetris() { document.getElementById('arcade-menu').style.display = 'none'; gcvs.style.display = 'block'; document.getElementById('game-title').textContent = 'tetris.exe'; currentGame = 'tetris'; score = 0; document.getElementById('score-display').textContent = score; isGameOver = false; board = []; for (let r = 0; r < ROWS; r++)board.push(new Array(COLS).fill(0)); newPiece(); if (currentGameInterval) clearInterval(currentGameInterval); currentGameInterval = setInterval(() => { drawTetris(); dropPiece(); }, 400); requestAnimationFrame(drawTetris); }
-    function drawTetris() { if (currentGame !== 'tetris') return; const c = gc(); gctx.fillStyle = c.bg; gctx.fillRect(0, 0, gcvs.width, gcvs.height); for (let r = 0; r < ROWS; r++)for (let cc = 0; cc < COLS; cc++)if (board[r][cc] !== 0) { gctx.fillStyle = c.main2; gctx.fillRect(cc * block, r * block, block, block); gctx.strokeStyle = c.bg; gctx.strokeRect(cc * block, r * block, block, block); } if (piece) piece.matrix.forEach((row, y) => row.forEach((v, x) => { if (v !== 0) { gctx.fillStyle = c.main; gctx.fillRect((piece.x + x) * block, (piece.y + y) * block, block, block); gctx.strokeStyle = c.bg; gctx.strokeRect((piece.x + x) * block, (piece.y + y) * block, block, block); } })); }
-
-    document.addEventListener('keydown', e => {
-      if (currentTab !== 'arcade' || isGameOver || !currentGame || document.activeElement === cmdInput) return;
-      const k = e.key.toLowerCase();
-      if (currentGame === 'snake') { if ((k === 'arrowleft' || k === 'a') && sDir !== "RIGHT") sDir = "LEFT"; else if ((k === 'arrowup' || k === 'w') && sDir !== "DOWN") sDir = "UP"; else if ((k === 'arrowright' || k === 'd') && sDir !== "LEFT") sDir = "RIGHT"; else if ((k === 'arrowdown' || k === 's') && sDir !== "UP") sDir = "DOWN"; }
-      else if (currentGame === 'tetris') { if (k === 'arrowleft' || k === 'a') { piece.x--; if (collide(piece.matrix, piece.x, piece.y)) piece.x++; } else if (k === 'arrowright' || k === 'd') { piece.x++; if (collide(piece.matrix, piece.x, piece.y)) piece.x--; } else if (k === 'arrowdown' || k === 's') dropPiece(); else if (k === 'arrowup' || k === 'w') { const rot = rotMat(piece.matrix); if (!collide(rot, piece.x, piece.y)) piece.matrix = rot; } else if (k === ' ') { e.preventDefault(); while (!collide(piece.matrix, piece.x, piece.y)) piece.y++; piece.y--; dropPiece(); } }
-    });
-
-    // ═══════════════════════════════════════════
-    //  DOOM
-    // ═══════════════════════════════════════════
-    const DOOM_MAP = [
-      [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-      [1,0,0,0,0,0,1,1,0,0,0,0,0,0,0,1],
-      [1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1],
-      [1,0,0,1,0,0,0,0,0,0,1,1,1,0,0,1],
-      [1,0,0,1,0,0,0,0,0,0,1,0,1,0,0,1],
-      [1,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1],
-      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-      [1,0,0,0,0,1,1,0,0,1,1,0,0,0,0,1],
-      [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
-      [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
-      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-      [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-    ];
-    const DM_W = 16, DM_H = 16;
-    let dPlayer, dEnemies, dKeys = {}, dShootCD = 0, dFlash = 0, dWave = 1;
-
-    function dmap(y, x) { return (y<0||y>=DM_H||x<0||x>=DM_W) ? 1 : DOOM_MAP[y][x]; }
-
-    function spawnWave(wave) {
-      const pos = [[8,8],[12,3],[3,12],[10,10],[6,11],[13,7],[7,13],[4,4],[11,5],[5,11],[13,2],[2,13]];
-      const count = Math.min(3 + wave * 2, pos.length);
-      return pos.slice(0, count).map((p, i) => ({
-        x: p[0] + 0.5, y: p[1] + 0.5,
-        health: 2 + Math.floor(wave / 2),
-        alive: true, type: i % 2
-      }));
-    }
-
-    function startDoom() {
-      document.getElementById('arcade-menu').style.display = 'none';
-      gcvs.style.display = 'block';
-      document.getElementById('game-title').textContent = 'doom.exe';
-      currentGame = 'doom';
-      score = 0; dWave = 1;
-      document.getElementById('score-display').textContent = 0;
-      isGameOver = false;
-      dPlayer = { x: 1.5, y: 1.5, angle: 0.6, health: 100 };
-      dEnemies = spawnWave(1);
-      dKeys = {}; dShootCD = 0; dFlash = 0;
-      if (currentGameInterval) clearInterval(currentGameInterval);
-      currentGameInterval = setInterval(updateDoom, 33);
-    }
-
-    function updateDoom() {
-      if (currentGame !== 'doom') return;
-      const SPEED = 0.065, ROTSPD = 0.058;
-      const ca = Math.cos(dPlayer.angle), sa = Math.sin(dPlayer.angle);
-
-      if (dKeys['w'] || dKeys['arrowup']) {
-        const nx = dPlayer.x + ca*SPEED, ny = dPlayer.y + sa*SPEED;
-        if (!dmap(Math.floor(dPlayer.y), Math.floor(nx))) dPlayer.x = nx;
-        if (!dmap(Math.floor(ny), Math.floor(dPlayer.x))) dPlayer.y = ny;
-      }
-      if (dKeys['s'] || dKeys['arrowdown']) {
-        const nx = dPlayer.x - ca*SPEED, ny = dPlayer.y - sa*SPEED;
-        if (!dmap(Math.floor(dPlayer.y), Math.floor(nx))) dPlayer.x = nx;
-        if (!dmap(Math.floor(ny), Math.floor(dPlayer.x))) dPlayer.y = ny;
-      }
-      if (dKeys['a'] || dKeys['arrowleft'])  dPlayer.angle -= ROTSPD;
-      if (dKeys['d'] || dKeys['arrowright']) dPlayer.angle += ROTSPD;
-      if (dKeys[' ']) doomShoot();
-
-      dEnemies.forEach(e => {
-        if (!e.alive) return;
-        const dx = dPlayer.x - e.x, dy = dPlayer.y - e.y;
-        const dist = Math.sqrt(dx*dx + dy*dy);
-        if (dist > 0.65 && dist < 13) {
-          const spd = 0.013 + dWave * 0.002;
-          const nx = e.x + (dx/dist)*spd, ny = e.y + (dy/dist)*spd;
-          if (!dmap(Math.floor(e.y), Math.floor(nx))) e.x = nx;
-          if (!dmap(Math.floor(ny), Math.floor(e.x))) e.y = ny;
-        }
-        if (dist < 0.65 && Math.random() < 0.025) {
-          dPlayer.health -= 8;
-          if (dPlayer.health <= 0) { dPlayer.health = 0; triggerGO(); }
-        }
-      });
-
-      if (dEnemies.every(e => !e.alive)) {
-        score += dWave * 200;
-        dWave++;
-        dEnemies = spawnWave(dWave);
-        dPlayer.health = Math.min(100, dPlayer.health + 25);
-        document.getElementById('score-display').textContent = score;
-      }
-
-      if (dShootCD > 0) dShootCD--;
-      if (dFlash > 0) dFlash--;
-      drawDoom();
-    }
-
-    function doomShoot() {
-      if (dShootCD > 0) return;
-      dShootCD = 13; dFlash = 4;
-      let hit = false;
-      dEnemies.forEach(e => {
-        if (!e.alive || hit) return;
-        const dx = e.x - dPlayer.x, dy = e.y - dPlayer.y;
-        const dist = Math.sqrt(dx*dx + dy*dy);
-        let ang = Math.atan2(dy, dx) - dPlayer.angle;
-        while (ang >  Math.PI) ang -= Math.PI*2;
-        while (ang < -Math.PI) ang += Math.PI*2;
-        if (Math.abs(ang) < (0.1 + 0.07/dist) && dist < 15) {
-          hit = true;
-          e.health--;
-          if (e.health <= 0) {
-            e.alive = false;
-            score += 100;
-            document.getElementById('score-display').textContent = score;
-          }
-        }
-      });
-    }
-
-    function drawDoom() {
-      const W = gcvs.width, H = gcvs.height;
-      const FOV = Math.PI / 3, HF = FOV / 2;
-      const zBuf = new Array(W);
-
-      // Ceiling / floor gradient bands
-      for (let y = 0; y < H/2; y++) {
-        const t = y / (H/2);
-        const v = Math.floor(8 + t*7);
-        gctx.fillStyle = `rgb(${Math.floor(v*0.4)},${v},${Math.floor(v*0.4)})`;
-        gctx.fillRect(0, y, W, 1);
-      }
-      for (let y = H/2; y < H; y++) {
-        const t = (y - H/2) / (H/2);
-        const v = Math.floor(10 - t*4);
-        gctx.fillStyle = `rgb(${Math.floor(v*0.3)},${v},${Math.floor(v*0.3)})`;
-        gctx.fillRect(0, y, W, 1);
-      }
-
-      // Walls — DDA
-      for (let col = 0; col < W; col++) {
-        const ra = dPlayer.angle - HF + (col/W)*FOV;
-        const cosA = Math.cos(ra), sinA = Math.sin(ra);
-        let mx = Math.floor(dPlayer.x), my = Math.floor(dPlayer.y);
-        const ddx = Math.abs(1/cosA), ddy = Math.abs(1/sinA);
-        let sx, sy, sdx, sdy;
-        if (cosA < 0) { sx = -1; sdx = (dPlayer.x-mx)*ddx; } else { sx = 1; sdx = (mx+1-dPlayer.x)*ddx; }
-        if (sinA < 0) { sy = -1; sdy = (dPlayer.y-my)*ddy; } else { sy = 1; sdy = (my+1-dPlayer.y)*ddy; }
-        let hit = false, side = 0, iter = 0;
-        while (!hit && iter++ < 32) {
-          if (sdx < sdy) { sdx += ddx; mx += sx; side = 0; }
-          else            { sdy += ddy; my += sy; side = 1; }
-          if (dmap(my, mx)) hit = true;
-        }
-        const perp = Math.max(0.001, side === 0 ? sdx-ddx : sdy-ddy);
-        zBuf[col] = perp;
-        const wh = Math.min(H*2, Math.floor(H/perp));
-        const wt = (H-wh) >> 1;
-        const br = Math.max(0.05, Math.min(1, 1/(perp*0.3+0.18))) * (side ? 0.5 : 1.0);
-        const r = Math.floor(br*50), g = Math.floor(br*115), b = Math.floor(br*50);
-        gctx.fillStyle = `rgb(${r},${g},${b})`;
-        gctx.fillRect(col, wt, 1, wh);
-        // scanline texture suggestion — darkened stripe every 20px
-        if (wh > 4) {
-          gctx.fillStyle = 'rgba(0,0,0,0.07)';
-          for (let sy2 = wt; sy2 < wt+wh; sy2 += 6) gctx.fillRect(col, sy2, 1, 1);
-        }
-      }
-
-      // Sprites
-      dEnemies
-        .filter(e => e.alive)
-        .map(e => { const dx=e.x-dPlayer.x, dy=e.y-dPlayer.y; return {...e,dx,dy,dist2:dx*dx+dy*dy}; })
-        .sort((a,b) => b.dist2 - a.dist2)
-        .forEach(e => {
-          const dist = Math.sqrt(e.dist2);
-          let sa = Math.atan2(e.dy, e.dx) - dPlayer.angle;
-          while (sa >  Math.PI) sa -= Math.PI*2;
-          while (sa < -Math.PI) sa += Math.PI*2;
-          if (Math.abs(sa) > HF + 0.5) return;
-
-          const scx = Math.floor(W/2 * (1 + sa/HF));
-          const sh = Math.min(H*1.5, Math.floor(H/Math.max(0.25, dist)));
-          const sw = Math.floor(sh * 0.75);
-          const st = (H - sh) >> 1;
-          const sl = scx - (sw >> 1);
-          const body = e.type ? [155,45,15] : [175,30,30];
-          const dark = e.type ? [80,22,8] : [90,15,15];
-
-          for (let c = 0; c < sw; c++) {
-            const sc = sl + c;
-            if (sc < 0 || sc >= W || dist >= zBuf[sc]) continue;
-            const tx = c / sw;
-            if (tx < 0.08 || tx > 0.92) continue;
-            const bodyH = Math.floor(sh * 0.84);
-            const bodyY = st + Math.floor(sh * 0.08);
-
-            // shadow side
-            const col2 = tx < 0.15 || tx > 0.85 ? dark : body;
-            gctx.fillStyle = `rgb(${col2[0]},${col2[1]},${col2[2]})`;
-            gctx.fillRect(sc, bodyY, 1, bodyH);
-
-            // glowing eyes
-            const ey = bodyY + Math.floor(sh*0.18), eh = Math.max(1, Math.floor(sh*0.16));
-            if ((tx>0.18&&tx<0.36)||(tx>0.64&&tx<0.82)) {
-              gctx.fillStyle = '#ffdd00';
-              gctx.fillRect(sc, ey, 1, eh);
+  `,
+                    )
+                    .join("");
             }
-            // legs suggestion
-            if (sh > 30 && ty_fn(c,sw) > 0.78) {
-              gctx.fillStyle = `rgb(${Math.floor(col2[0]*0.7)},${Math.floor(col2[1]*0.7)},${Math.floor(col2[2]*0.7)})`;
-              gctx.fillRect(sc, bodyY+bodyH-Math.floor(sh*0.14), 1, Math.floor(sh*0.14));
+
+            // ═══════════════════════════════════════════
+            //  ARCADE (SNAKE & TETRIS)
+            // ═══════════════════════════════════════════
+            const gcvs = document.getElementById("game-canvas");
+            const gctx = gcvs.getContext("2d");
+            const block = 20;
+            let currentGame = null,
+                currentGameInterval = null,
+                score = 0,
+                isGameOver = false;
+            function gc() {
+                return {
+                    main: getComputedStyle(document.body)
+                        .getPropertyValue("--sage")
+                        .trim(),
+                    main2: getComputedStyle(document.body)
+                        .getPropertyValue("--sage2")
+                        .trim(),
+                    bg: "#000",
+                };
             }
-          }
-        });
+            function backToMenu() {
+                if (currentGameInterval) clearInterval(currentGameInterval);
+                currentGame = null;
+                isGameOver = false;
+                document.getElementById("go-screen").classList.remove("show");
+                gcvs.style.display = "none";
+                document.getElementById("arcade-menu").style.display = "flex";
+                document.getElementById("game-title").textContent =
+                    "onc_arcade";
+                document.getElementById("score-display").textContent = "0";
+            }
+            function triggerGO() {
+                clearInterval(currentGameInterval);
+                currentGameInterval = null;
+                isGameOver = true;
+                document.getElementById("final-score").textContent = score;
+                document.getElementById("go-screen").classList.add("show");
+            }
 
-      // Gun
-      const now = Date.now();
-      const bob = (dKeys['w']||dKeys['arrowup']||dKeys['s']||dKeys['arrowdown']) ? Math.sin(now/140)*3 : 0;
-      const gx = W/2 - 8, gy = H - 52 + bob;
-      gctx.fillStyle = '#344834';
-      gctx.fillRect(gx, gy+4, 16, 42);
-      gctx.fillStyle = '#253425';
-      gctx.fillRect(gx+2, gy, 12, 7);
-      gctx.fillStyle = '#1a2a1a';
-      gctx.fillRect(gx+5, gy-2, 6, 3);
-      if (dFlash > 0) {
-        const fi = dFlash / 4;
-        gctx.fillStyle = `rgba(255,180,50,${fi*0.35})`;
-        gctx.fillRect(0, H*0.45, W, H*0.55);
-        gctx.fillStyle = '#ffcc44';
-        gctx.fillRect(gx+4, gy-8, 8, 7);
-        gctx.fillStyle = `rgba(255,220,100,${fi*0.5})`;
-        gctx.beginPath();
-        gctx.arc(W/2, H/2, 12*fi, 0, Math.PI*2);
-        gctx.fill();
-      }
+            // RETRY GAME UPDATED HERE
+            function retryGame() {
+                document.getElementById("go-screen").classList.remove("show");
+                if (currentGame === "snake") startSnake();
+                else if (currentGame === "doom") startDoom();
+                else startTetris();
+            }
 
-      // Crosshair
-      gctx.strokeStyle = dFlash > 0 ? '#ffaa00' : 'rgba(180,220,180,0.75)';
-      gctx.lineWidth = 1;
-      gctx.beginPath();
-      gctx.moveTo(W/2-7, H/2); gctx.lineTo(W/2-2, H/2);
-      gctx.moveTo(W/2+2, H/2); gctx.lineTo(W/2+7, H/2);
-      gctx.moveTo(W/2, H/2-7); gctx.lineTo(W/2, H/2-2);
-      gctx.moveTo(W/2, H/2+2); gctx.lineTo(W/2, H/2+7);
-      gctx.stroke();
+            let snake, food, sDir;
+            function startSnake() {
+                document.getElementById("arcade-menu").style.display = "none";
+                gcvs.style.display = "block";
+                document.getElementById("game-title").textContent = "snake.exe";
+                currentGame = "snake";
+                score = 0;
+                document.getElementById("score-display").textContent = score;
+                isGameOver = false;
+                snake = [{ x: 5 * block, y: 10 * block }];
+                food = {
+                    x: Math.floor(Math.random() * (gcvs.width / block)) * block,
+                    y:
+                        Math.floor(Math.random() * (gcvs.height / block)) *
+                        block,
+                };
+                sDir = "RIGHT";
+                if (currentGameInterval) clearInterval(currentGameInterval);
+                currentGameInterval = setInterval(updateSnake, 100);
+            }
+            function updateSnake() {
+                const c = gc();
+                gctx.fillStyle = c.bg;
+                gctx.fillRect(0, 0, gcvs.width, gcvs.height);
+                for (let i = 0; i < snake.length; i++) {
+                    gctx.fillStyle = i === 0 ? c.main : c.main2;
+                    gctx.fillRect(snake[i].x, snake[i].y, block, block);
+                    gctx.strokeStyle = c.bg;
+                    gctx.strokeRect(snake[i].x, snake[i].y, block, block);
+                }
+                gctx.fillStyle = c.main;
+                gctx.beginPath();
+                gctx.arc(
+                    food.x + block / 2,
+                    food.y + block / 2,
+                    block / 2 - 2,
+                    0,
+                    Math.PI * 2,
+                );
+                gctx.fill();
+                let hX = snake[0].x,
+                    hY = snake[0].y;
+                if (sDir === "LEFT") hX -= block;
+                if (sDir === "UP") hY -= block;
+                if (sDir === "RIGHT") hX += block;
+                if (sDir === "DOWN") hY += block;
+                if (hX < 0) hX = gcvs.width - block;
+                else if (hX >= gcvs.width) hX = 0;
+                if (hY < 0) hY = gcvs.height - block;
+                else if (hY >= gcvs.height) hY = 0;
+                if (hX === food.x && hY === food.y) {
+                    score += 10;
+                    document.getElementById("score-display").textContent =
+                        score;
+                    food = {
+                        x:
+                            Math.floor(Math.random() * (gcvs.width / block)) *
+                            block,
+                        y:
+                            Math.floor(Math.random() * (gcvs.height / block)) *
+                            block,
+                    };
+                } else {
+                    snake.pop();
+                }
+                let nh = { x: hX, y: hY };
+                for (let i = 0; i < snake.length; i++) {
+                    if (hX === snake[i].x && hY === snake[i].y) {
+                        triggerGO();
+                        return;
+                    }
+                }
+                snake.unshift(nh);
+            }
 
-      // HUD
-      gctx.fillStyle = 'rgba(0,0,0,0.7)';
-      gctx.fillRect(0, H-17, W, 17);
-      const hp = Math.max(0, dPlayer.health)/100;
-      gctx.fillStyle = hp>0.5 ? '#2a7a3a' : hp>0.25 ? '#7a7a20' : '#8a2020';
-      gctx.fillRect(3, H-13, Math.floor((W*0.38)*hp), 9);
-      gctx.strokeStyle = '#2a3a2a'; gctx.lineWidth = 1;
-      gctx.strokeRect(3, H-13, W*0.38, 9);
-      gctx.fillStyle = '#7a9e7e'; gctx.font = '8px DM Mono';
-      gctx.textAlign = 'left';
-      gctx.fillText(`♥ ${dPlayer.health}`, 5, H-4);
-      gctx.fillStyle = '#5a7a5a';
-      gctx.textAlign = 'right';
-      const alive = dEnemies.filter(e=>e.alive).length;
-      gctx.fillText(`w${dWave} · ${alive} ☠`, W-4, H-4);
-      gctx.textAlign = 'left';
+            const COLS = 12,
+                ROWS = 20;
+            let board = [],
+                piece;
+            const TETS = [
+                [],
+                [
+                    [0, 0, 0, 0],
+                    [1, 1, 1, 1],
+                    [0, 0, 0, 0],
+                    [0, 0, 0, 0],
+                ],
+                [
+                    [2, 0, 0],
+                    [2, 2, 2],
+                    [0, 0, 0],
+                ],
+                [
+                    [0, 0, 3],
+                    [3, 3, 3],
+                    [0, 0, 0],
+                ],
+                [
+                    [4, 4],
+                    [4, 4],
+                ],
+                [
+                    [0, 5, 5],
+                    [5, 5, 0],
+                    [0, 0, 0],
+                ],
+                [
+                    [0, 6, 0],
+                    [6, 6, 6],
+                    [0, 0, 0],
+                ],
+                [
+                    [7, 7, 0],
+                    [0, 7, 7],
+                    [0, 0, 0],
+                ],
+            ];
+            function newPiece() {
+                const t = Math.floor(Math.random() * 7) + 1;
+                piece = { matrix: TETS[t], x: Math.floor(COLS / 2) - 1, y: 0 };
+            }
+            function collide(m, px, py) {
+                for (let r = 0; r < m.length; r++)
+                    for (let c = 0; c < m[r].length; c++)
+                        if (
+                            m[r][c] !== 0 &&
+                            (board[py + r] && board[py + r][px + c]) !== 0
+                        )
+                            return true;
+                return false;
+            }
+            function merge() {
+                piece.matrix.forEach((row, y) =>
+                    row.forEach((v, x) => {
+                        if (v !== 0) board[piece.y + y][piece.x + x] = v;
+                    }),
+                );
+            }
+            function clearLines() {
+                let cl = 0;
+                outer: for (let y = ROWS - 1; y >= 0; y--) {
+                    for (let x = 0; x < COLS; x++)
+                        if (board[y][x] === 0) continue outer;
+                    board.splice(y, 1)[0].fill(0);
+                    board.unshift(new Array(COLS).fill(0));
+                    y++;
+                    cl++;
+                }
+                if (cl > 0) {
+                    score += cl * 100;
+                    document.getElementById("score-display").textContent =
+                        score;
+                }
+            }
+            function dropPiece() {
+                piece.y++;
+                if (collide(piece.matrix, piece.x, piece.y)) {
+                    piece.y--;
+                    merge();
+                    clearLines();
+                    newPiece();
+                    if (collide(piece.matrix, piece.x, piece.y)) triggerGO();
+                }
+            }
+            function rotMat(m) {
+                const r = [];
+                for (let i = 0; i < m[0].length; i++)
+                    r.push(m.map((e) => e[i]).reverse());
+                return r;
+            }
+            function startTetris() {
+                document.getElementById("arcade-menu").style.display = "none";
+                gcvs.style.display = "block";
+                document.getElementById("game-title").textContent =
+                    "tetris.exe";
+                currentGame = "tetris";
+                score = 0;
+                document.getElementById("score-display").textContent = score;
+                isGameOver = false;
+                board = [];
+                for (let r = 0; r < ROWS; r++)
+                    board.push(new Array(COLS).fill(0));
+                newPiece();
+                if (currentGameInterval) clearInterval(currentGameInterval);
+                currentGameInterval = setInterval(() => {
+                    drawTetris();
+                    dropPiece();
+                }, 400);
+                requestAnimationFrame(drawTetris);
+            }
+            function drawTetris() {
+                if (currentGame !== "tetris") return;
+                const c = gc();
+                gctx.fillStyle = c.bg;
+                gctx.fillRect(0, 0, gcvs.width, gcvs.height);
+                for (let r = 0; r < ROWS; r++)
+                    for (let cc = 0; cc < COLS; cc++)
+                        if (board[r][cc] !== 0) {
+                            gctx.fillStyle = c.main2;
+                            gctx.fillRect(cc * block, r * block, block, block);
+                            gctx.strokeStyle = c.bg;
+                            gctx.strokeRect(
+                                cc * block,
+                                r * block,
+                                block,
+                                block,
+                            );
+                        }
+                if (piece)
+                    piece.matrix.forEach((row, y) =>
+                        row.forEach((v, x) => {
+                            if (v !== 0) {
+                                gctx.fillStyle = c.main;
+                                gctx.fillRect(
+                                    (piece.x + x) * block,
+                                    (piece.y + y) * block,
+                                    block,
+                                    block,
+                                );
+                                gctx.strokeStyle = c.bg;
+                                gctx.strokeRect(
+                                    (piece.x + x) * block,
+                                    (piece.y + y) * block,
+                                    block,
+                                    block,
+                                );
+                            }
+                        }),
+                    );
+            }
 
-      // Minimap
-      const ms = 3, mo = 4;
-      const mmx = W - DM_W*ms - mo, mmy = mo;
-      gctx.fillStyle = 'rgba(0,0,0,0.45)';
-      gctx.fillRect(mmx-1, mmy-1, DM_W*ms+2, DM_H*ms+2);
-      DOOM_MAP.forEach((row,y) => row.forEach((cell,x) => {
-        gctx.fillStyle = cell ? 'rgba(90,120,90,0.7)' : 'rgba(20,30,20,0.5)';
-        gctx.fillRect(mmx+x*ms, mmy+y*ms, ms-1, ms-1);
-      }));
-      // FOV cone
-      const fL = dPlayer.angle - HF, fR = dPlayer.angle + HF;
-      gctx.strokeStyle = 'rgba(212,148,74,0.4)'; gctx.lineWidth = 1;
-      gctx.beginPath();
-      gctx.moveTo(mmx+dPlayer.x*ms, mmy+dPlayer.y*ms);
-      gctx.lineTo(mmx+(dPlayer.x+Math.cos(fL)*5)*ms, mmy+(dPlayer.y+Math.sin(fL)*5)*ms);
-      gctx.moveTo(mmx+dPlayer.x*ms, mmy+dPlayer.y*ms);
-      gctx.lineTo(mmx+(dPlayer.x+Math.cos(fR)*5)*ms, mmy+(dPlayer.y+Math.sin(fR)*5)*ms);
-      gctx.stroke();
-      // Player dot
-      gctx.fillStyle = '#d4944a';
-      gctx.fillRect(mmx+dPlayer.x*ms-1, mmy+dPlayer.y*ms-1, 3, 3);
-      // Enemy dots
-      dEnemies.filter(e=>e.alive).forEach(e => {
-        gctx.fillStyle = '#c47a7a';
-        gctx.fillRect(mmx+e.x*ms-1, mmy+e.y*ms-1, 2, 2);
-      });
-    }
+            document.addEventListener("keydown", (e) => {
+                if (
+                    currentTab !== "arcade" ||
+                    isGameOver ||
+                    !currentGame ||
+                    document.activeElement === cmdInput
+                )
+                    return;
+                const k = e.key.toLowerCase();
+                if (currentGame === "snake") {
+                    if ((k === "arrowleft" || k === "a") && sDir !== "RIGHT")
+                        sDir = "LEFT";
+                    else if ((k === "arrowup" || k === "w") && sDir !== "DOWN")
+                        sDir = "UP";
+                    else if (
+                        (k === "arrowright" || k === "d") &&
+                        sDir !== "LEFT"
+                    )
+                        sDir = "RIGHT";
+                    else if ((k === "arrowdown" || k === "s") && sDir !== "UP")
+                        sDir = "DOWN";
+                } else if (currentGame === "tetris") {
+                    if (k === "arrowleft" || k === "a") {
+                        piece.x--;
+                        if (collide(piece.matrix, piece.x, piece.y)) piece.x++;
+                    } else if (k === "arrowright" || k === "d") {
+                        piece.x++;
+                        if (collide(piece.matrix, piece.x, piece.y)) piece.x--;
+                    } else if (k === "arrowdown" || k === "s") dropPiece();
+                    else if (k === "arrowup" || k === "w") {
+                        const rot = rotMat(piece.matrix);
+                        if (!collide(rot, piece.x, piece.y)) piece.matrix = rot;
+                    } else if (k === " ") {
+                        e.preventDefault();
+                        while (!collide(piece.matrix, piece.x, piece.y))
+                            piece.y++;
+                        piece.y--;
+                        dropPiece();
+                    }
+                }
+            });
 
-    // dummy helper used in sprite legs — avoids inline computation
-    function ty_fn(c, sw) { return c / sw; }
+            // ═══════════════════════════════════════════
+            //  DOOM
+            // ═══════════════════════════════════════════
+            const DOOM_MAP = [
+                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                [1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1],
+                [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1],
+                [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1],
+                [1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                [1, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 1],
+                [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+                [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+                [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            ];
+            const DM_W = 16,
+                DM_H = 16;
+            let dPlayer,
+                dEnemies,
+                dKeys = {},
+                dShootCD = 0,
+                dFlash = 0,
+                dWave = 1;
 
-    // Doom key tracking (separate from arcade handler so held-keys work)
-    document.addEventListener('keydown', e => {
-      if (currentGame !== 'doom') return;
-      const k = e.key.toLowerCase();
-      dKeys[k] = true;
-      if ([' ','arrowup','arrowdown','arrowleft','arrowright'].includes(k)) e.preventDefault();
-    });
-    document.addEventListener('keyup', e => {
-      if (currentGame === 'doom') dKeys[e.key.toLowerCase()] = false;
-    });
-  </script>
-</body>
+            function dmap(y, x) {
+                return y < 0 || y >= DM_H || x < 0 || x >= DM_W
+                    ? 1
+                    : DOOM_MAP[y][x];
+            }
 
+            function spawnWave(wave) {
+                const pos = [
+                    [8, 8],
+                    [12, 3],
+                    [3, 12],
+                    [10, 10],
+                    [6, 11],
+                    [13, 7],
+                    [7, 13],
+                    [4, 4],
+                    [11, 5],
+                    [5, 11],
+                    [13, 2],
+                    [2, 13],
+                ];
+                const count = Math.min(3 + wave * 2, pos.length);
+                return pos.slice(0, count).map((p, i) => ({
+                    x: p[0] + 0.5,
+                    y: p[1] + 0.5,
+                    health: 2 + Math.floor(wave / 2),
+                    alive: true,
+                    type: i % 2,
+                }));
+            }
+
+            function startDoom() {
+                document.getElementById("arcade-menu").style.display = "none";
+                gcvs.style.display = "block";
+                document.getElementById("game-title").textContent = "doom.exe";
+                currentGame = "doom";
+                score = 0;
+                dWave = 1;
+                document.getElementById("score-display").textContent = 0;
+                isGameOver = false;
+                dPlayer = { x: 1.5, y: 1.5, angle: 0.6, health: 100 };
+                dEnemies = spawnWave(1);
+                dKeys = {};
+                dShootCD = 0;
+                dFlash = 0;
+                if (currentGameInterval) clearInterval(currentGameInterval);
+                currentGameInterval = setInterval(updateDoom, 33);
+            }
+
+            function updateDoom() {
+                if (currentGame !== "doom") return;
+                const SPEED = 0.065,
+                    ROTSPD = 0.058;
+                const ca = Math.cos(dPlayer.angle),
+                    sa = Math.sin(dPlayer.angle);
+
+                if (dKeys["w"] || dKeys["arrowup"]) {
+                    const nx = dPlayer.x + ca * SPEED,
+                        ny = dPlayer.y + sa * SPEED;
+                    if (!dmap(Math.floor(dPlayer.y), Math.floor(nx)))
+                        dPlayer.x = nx;
+                    if (!dmap(Math.floor(ny), Math.floor(dPlayer.x)))
+                        dPlayer.y = ny;
+                }
+                if (dKeys["s"] || dKeys["arrowdown"]) {
+                    const nx = dPlayer.x - ca * SPEED,
+                        ny = dPlayer.y - sa * SPEED;
+                    if (!dmap(Math.floor(dPlayer.y), Math.floor(nx)))
+                        dPlayer.x = nx;
+                    if (!dmap(Math.floor(ny), Math.floor(dPlayer.x)))
+                        dPlayer.y = ny;
+                }
+                if (dKeys["a"] || dKeys["arrowleft"]) dPlayer.angle -= ROTSPD;
+                if (dKeys["d"] || dKeys["arrowright"]) dPlayer.angle += ROTSPD;
+                if (dKeys[" "]) doomShoot();
+
+                dEnemies.forEach((e) => {
+                    if (!e.alive) return;
+                    const dx = dPlayer.x - e.x,
+                        dy = dPlayer.y - e.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist > 0.65 && dist < 13) {
+                        const spd = 0.013 + dWave * 0.002;
+                        const nx = e.x + (dx / dist) * spd,
+                            ny = e.y + (dy / dist) * spd;
+                        if (!dmap(Math.floor(e.y), Math.floor(nx))) e.x = nx;
+                        if (!dmap(Math.floor(ny), Math.floor(e.x))) e.y = ny;
+                    }
+                    if (dist < 0.65 && Math.random() < 0.025) {
+                        dPlayer.health -= 8;
+                        if (dPlayer.health <= 0) {
+                            dPlayer.health = 0;
+                            triggerGO();
+                        }
+                    }
+                });
+
+                if (dEnemies.every((e) => !e.alive)) {
+                    score += dWave * 200;
+                    dWave++;
+                    dEnemies = spawnWave(dWave);
+                    dPlayer.health = Math.min(100, dPlayer.health + 25);
+                    document.getElementById("score-display").textContent =
+                        score;
+                }
+
+                if (dShootCD > 0) dShootCD--;
+                if (dFlash > 0) dFlash--;
+                drawDoom();
+            }
+
+            function doomShoot() {
+                if (dShootCD > 0) return;
+                dShootCD = 13;
+                dFlash = 4;
+                let hit = false;
+                dEnemies.forEach((e) => {
+                    if (!e.alive || hit) return;
+                    const dx = e.x - dPlayer.x,
+                        dy = e.y - dPlayer.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    let ang = Math.atan2(dy, dx) - dPlayer.angle;
+                    while (ang > Math.PI) ang -= Math.PI * 2;
+                    while (ang < -Math.PI) ang += Math.PI * 2;
+                    if (Math.abs(ang) < 0.1 + 0.07 / dist && dist < 15) {
+                        hit = true;
+                        e.health--;
+                        if (e.health <= 0) {
+                            e.alive = false;
+                            score += 100;
+                            document.getElementById(
+                                "score-display",
+                            ).textContent = score;
+                        }
+                    }
+                });
+            }
+
+            function drawDoom() {
+                const W = gcvs.width,
+                    H = gcvs.height;
+                const FOV = Math.PI / 3,
+                    HF = FOV / 2;
+                const zBuf = new Array(W);
+
+                // Ceiling / floor gradient bands
+                for (let y = 0; y < H / 2; y++) {
+                    const t = y / (H / 2);
+                    const v = Math.floor(8 + t * 7);
+                    gctx.fillStyle = `rgb(${Math.floor(v * 0.4)},${v},${Math.floor(v * 0.4)})`;
+                    gctx.fillRect(0, y, W, 1);
+                }
+                for (let y = H / 2; y < H; y++) {
+                    const t = (y - H / 2) / (H / 2);
+                    const v = Math.floor(10 - t * 4);
+                    gctx.fillStyle = `rgb(${Math.floor(v * 0.3)},${v},${Math.floor(v * 0.3)})`;
+                    gctx.fillRect(0, y, W, 1);
+                }
+
+                // Walls — DDA
+                for (let col = 0; col < W; col++) {
+                    const ra = dPlayer.angle - HF + (col / W) * FOV;
+                    const cosA = Math.cos(ra),
+                        sinA = Math.sin(ra);
+                    let mx = Math.floor(dPlayer.x),
+                        my = Math.floor(dPlayer.y);
+                    const ddx = Math.abs(1 / cosA),
+                        ddy = Math.abs(1 / sinA);
+                    let sx, sy, sdx, sdy;
+                    if (cosA < 0) {
+                        sx = -1;
+                        sdx = (dPlayer.x - mx) * ddx;
+                    } else {
+                        sx = 1;
+                        sdx = (mx + 1 - dPlayer.x) * ddx;
+                    }
+                    if (sinA < 0) {
+                        sy = -1;
+                        sdy = (dPlayer.y - my) * ddy;
+                    } else {
+                        sy = 1;
+                        sdy = (my + 1 - dPlayer.y) * ddy;
+                    }
+                    let hit = false,
+                        side = 0,
+                        iter = 0;
+                    while (!hit && iter++ < 32) {
+                        if (sdx < sdy) {
+                            sdx += ddx;
+                            mx += sx;
+                            side = 0;
+                        } else {
+                            sdy += ddy;
+                            my += sy;
+                            side = 1;
+                        }
+                        if (dmap(my, mx)) hit = true;
+                    }
+                    const perp = Math.max(
+                        0.001,
+                        side === 0 ? sdx - ddx : sdy - ddy,
+                    );
+                    zBuf[col] = perp;
+                    const wh = Math.min(H * 2, Math.floor(H / perp));
+                    const wt = (H - wh) >> 1;
+                    const br =
+                        Math.max(0.05, Math.min(1, 1 / (perp * 0.3 + 0.18))) *
+                        (side ? 0.5 : 1.0);
+                    const r = Math.floor(br * 50),
+                        g = Math.floor(br * 115),
+                        b = Math.floor(br * 50);
+                    gctx.fillStyle = `rgb(${r},${g},${b})`;
+                    gctx.fillRect(col, wt, 1, wh);
+                    // scanline texture suggestion — darkened stripe every 20px
+                    if (wh > 4) {
+                        gctx.fillStyle = "rgba(0,0,0,0.07)";
+                        for (let sy2 = wt; sy2 < wt + wh; sy2 += 6)
+                            gctx.fillRect(col, sy2, 1, 1);
+                    }
+                }
+
+                // Sprites
+                dEnemies
+                    .filter((e) => e.alive)
+                    .map((e) => {
+                        const dx = e.x - dPlayer.x,
+                            dy = e.y - dPlayer.y;
+                        return { ...e, dx, dy, dist2: dx * dx + dy * dy };
+                    })
+                    .sort((a, b) => b.dist2 - a.dist2)
+                    .forEach((e) => {
+                        const dist = Math.sqrt(e.dist2);
+                        let sa = Math.atan2(e.dy, e.dx) - dPlayer.angle;
+                        while (sa > Math.PI) sa -= Math.PI * 2;
+                        while (sa < -Math.PI) sa += Math.PI * 2;
+                        if (Math.abs(sa) > HF + 0.5) return;
+
+                        const scx = Math.floor((W / 2) * (1 + sa / HF));
+                        const sh = Math.min(
+                            H * 1.5,
+                            Math.floor(H / Math.max(0.25, dist)),
+                        );
+                        const sw = Math.floor(sh * 0.75);
+                        const st = (H - sh) >> 1;
+                        const sl = scx - (sw >> 1);
+                        const body = e.type ? [155, 45, 15] : [175, 30, 30];
+                        const dark = e.type ? [80, 22, 8] : [90, 15, 15];
+
+                        for (let c = 0; c < sw; c++) {
+                            const sc = sl + c;
+                            if (sc < 0 || sc >= W || dist >= zBuf[sc]) continue;
+                            const tx = c / sw;
+                            if (tx < 0.08 || tx > 0.92) continue;
+                            const bodyH = Math.floor(sh * 0.84);
+                            const bodyY = st + Math.floor(sh * 0.08);
+
+                            // shadow side
+                            const col2 = tx < 0.15 || tx > 0.85 ? dark : body;
+                            gctx.fillStyle = `rgb(${col2[0]},${col2[1]},${col2[2]})`;
+                            gctx.fillRect(sc, bodyY, 1, bodyH);
+
+                            // glowing eyes
+                            const ey = bodyY + Math.floor(sh * 0.18),
+                                eh = Math.max(1, Math.floor(sh * 0.16));
+                            if (
+                                (tx > 0.18 && tx < 0.36) ||
+                                (tx > 0.64 && tx < 0.82)
+                            ) {
+                                gctx.fillStyle = "#ffdd00";
+                                gctx.fillRect(sc, ey, 1, eh);
+                            }
+                            // legs suggestion
+                            if (sh > 30 && ty_fn(c, sw) > 0.78) {
+                                gctx.fillStyle = `rgb(${Math.floor(col2[0] * 0.7)},${Math.floor(col2[1] * 0.7)},${Math.floor(col2[2] * 0.7)})`;
+                                gctx.fillRect(
+                                    sc,
+                                    bodyY + bodyH - Math.floor(sh * 0.14),
+                                    1,
+                                    Math.floor(sh * 0.14),
+                                );
+                            }
+                        }
+                    });
+
+                // Gun
+                const now = Date.now();
+                const bob =
+                    dKeys["w"] ||
+                    dKeys["arrowup"] ||
+                    dKeys["s"] ||
+                    dKeys["arrowdown"]
+                        ? Math.sin(now / 140) * 3
+                        : 0;
+                const gx = W / 2 - 8,
+                    gy = H - 52 + bob;
+                gctx.fillStyle = "#344834";
+                gctx.fillRect(gx, gy + 4, 16, 42);
+                gctx.fillStyle = "#253425";
+                gctx.fillRect(gx + 2, gy, 12, 7);
+                gctx.fillStyle = "#1a2a1a";
+                gctx.fillRect(gx + 5, gy - 2, 6, 3);
+                if (dFlash > 0) {
+                    const fi = dFlash / 4;
+                    gctx.fillStyle = `rgba(255,180,50,${fi * 0.35})`;
+                    gctx.fillRect(0, H * 0.45, W, H * 0.55);
+                    gctx.fillStyle = "#ffcc44";
+                    gctx.fillRect(gx + 4, gy - 8, 8, 7);
+                    gctx.fillStyle = `rgba(255,220,100,${fi * 0.5})`;
+                    gctx.beginPath();
+                    gctx.arc(W / 2, H / 2, 12 * fi, 0, Math.PI * 2);
+                    gctx.fill();
+                }
+
+                // Crosshair
+                gctx.strokeStyle =
+                    dFlash > 0 ? "#ffaa00" : "rgba(180,220,180,0.75)";
+                gctx.lineWidth = 1;
+                gctx.beginPath();
+                gctx.moveTo(W / 2 - 7, H / 2);
+                gctx.lineTo(W / 2 - 2, H / 2);
+                gctx.moveTo(W / 2 + 2, H / 2);
+                gctx.lineTo(W / 2 + 7, H / 2);
+                gctx.moveTo(W / 2, H / 2 - 7);
+                gctx.lineTo(W / 2, H / 2 - 2);
+                gctx.moveTo(W / 2, H / 2 + 2);
+                gctx.lineTo(W / 2, H / 2 + 7);
+                gctx.stroke();
+
+                // HUD
+                gctx.fillStyle = "rgba(0,0,0,0.7)";
+                gctx.fillRect(0, H - 17, W, 17);
+                const hp = Math.max(0, dPlayer.health) / 100;
+                gctx.fillStyle =
+                    hp > 0.5 ? "#2a7a3a" : hp > 0.25 ? "#7a7a20" : "#8a2020";
+                gctx.fillRect(3, H - 13, Math.floor(W * 0.38 * hp), 9);
+                gctx.strokeStyle = "#2a3a2a";
+                gctx.lineWidth = 1;
+                gctx.strokeRect(3, H - 13, W * 0.38, 9);
+                gctx.fillStyle = "#7a9e7e";
+                gctx.font = "8px DM Mono";
+                gctx.textAlign = "left";
+                gctx.fillText(`♥ ${dPlayer.health}`, 5, H - 4);
+                gctx.fillStyle = "#5a7a5a";
+                gctx.textAlign = "right";
+                const alive = dEnemies.filter((e) => e.alive).length;
+                gctx.fillText(`w${dWave} · ${alive} ☠`, W - 4, H - 4);
+                gctx.textAlign = "left";
+
+                // Minimap
+                const ms = 3,
+                    mo = 4;
+                const mmx = W - DM_W * ms - mo,
+                    mmy = mo;
+                gctx.fillStyle = "rgba(0,0,0,0.45)";
+                gctx.fillRect(mmx - 1, mmy - 1, DM_W * ms + 2, DM_H * ms + 2);
+                DOOM_MAP.forEach((row, y) =>
+                    row.forEach((cell, x) => {
+                        gctx.fillStyle = cell
+                            ? "rgba(90,120,90,0.7)"
+                            : "rgba(20,30,20,0.5)";
+                        gctx.fillRect(
+                            mmx + x * ms,
+                            mmy + y * ms,
+                            ms - 1,
+                            ms - 1,
+                        );
+                    }),
+                );
+                // FOV cone
+                const fL = dPlayer.angle - HF,
+                    fR = dPlayer.angle + HF;
+                gctx.strokeStyle = "rgba(212,148,74,0.4)";
+                gctx.lineWidth = 1;
+                gctx.beginPath();
+                gctx.moveTo(mmx + dPlayer.x * ms, mmy + dPlayer.y * ms);
+                gctx.lineTo(
+                    mmx + (dPlayer.x + Math.cos(fL) * 5) * ms,
+                    mmy + (dPlayer.y + Math.sin(fL) * 5) * ms,
+                );
+                gctx.moveTo(mmx + dPlayer.x * ms, mmy + dPlayer.y * ms);
+                gctx.lineTo(
+                    mmx + (dPlayer.x + Math.cos(fR) * 5) * ms,
+                    mmy + (dPlayer.y + Math.sin(fR) * 5) * ms,
+                );
+                gctx.stroke();
+                // Player dot
+                gctx.fillStyle = "#d4944a";
+                gctx.fillRect(
+                    mmx + dPlayer.x * ms - 1,
+                    mmy + dPlayer.y * ms - 1,
+                    3,
+                    3,
+                );
+                // Enemy dots
+                dEnemies
+                    .filter((e) => e.alive)
+                    .forEach((e) => {
+                        gctx.fillStyle = "#c47a7a";
+                        gctx.fillRect(
+                            mmx + e.x * ms - 1,
+                            mmy + e.y * ms - 1,
+                            2,
+                            2,
+                        );
+                    });
+            }
+
+            // dummy helper used in sprite legs — avoids inline computation
+            function ty_fn(c, sw) {
+                return c / sw;
+            }
+
+            // Doom key tracking (separate from arcade handler so held-keys work)
+            document.addEventListener("keydown", (e) => {
+                if (currentGame !== "doom") return;
+                const k = e.key.toLowerCase();
+                dKeys[k] = true;
+                if (
+                    [
+                        " ",
+                        "arrowup",
+                        "arrowdown",
+                        "arrowleft",
+                        "arrowright",
+                    ].includes(k)
+                )
+                    e.preventDefault();
+            });
+            document.addEventListener("keyup", (e) => {
+                if (currentGame === "doom") dKeys[e.key.toLowerCase()] = false;
+            });
+            // Hàm sinh địa chỉ Hex mô phỏng RAM (vd: 0x2F8A1C)
+            function getHexAddr() {
+                return (
+                    "0x" +
+                    Math.floor(Math.random() * 16777215)
+                        .toString(16)
+                        .toUpperCase()
+                        .padStart(6, "0")
+                );
+            }
+
+            // Cập nhật hàm Render
+            function renderBaseList() {
+                document
+                    .querySelectorAll(".node-wrap")
+                    .forEach((el) => el.remove());
+
+                list.forEach((val, idx) => {
+                    const wrap = document.createElement("div");
+                    wrap.className = "node-wrap";
+                    wrap.id = "wrap-" + idx;
+
+                    const addr = getHexAddr(); // Cấp phát tọa độ ảo
+
+                    wrap.innerHTML = `
+                  <div class="node" id="node-${idx}" data-addr="${addr}">${val}</div>
+                  ${idx < list.length - 1 ? `<div class="arrow" id="arr-${idx}"></div>` : `<div class="arrow" id="arr-${idx}" style="opacity:0"></div>`}
+                `;
+                    arena.appendChild(wrap);
+                });
+
+                const nullWrap = document.createElement("div");
+                nullWrap.className = "node-wrap";
+                nullWrap.id = "wrap-null";
+                nullWrap.innerHTML = `<div class="node null-node">null</div>`;
+                arena.appendChild(nullWrap);
+
+                setTimeout(updateLabels, 50);
+            }
+        </script>
+        <!-- Kéo động cơ dịch Markdown siêu tốc -->
+        <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    </body>
 </html>

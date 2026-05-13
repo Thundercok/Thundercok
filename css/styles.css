@@ -18,12 +18,12 @@
     margin: 0;
     padding: 0;
 }
-
 body {
     background: var(--bg);
     color: var(--text);
     font-family: "DM Mono", monospace;
-    overflow: hidden; /* Giữ Dashboard cố định, chỉ cuộn nội dung bên trong */
     height: 100vh;
-    width: 100vw;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
 }

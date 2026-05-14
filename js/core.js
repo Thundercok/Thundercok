@@ -2,7 +2,7 @@
 // js/core.js - HỆ ĐIỀU HÀNH & GIAO DIỆN CỐT LÕI
 // ==========================================
 
-// --- BOOT SEQUENCE ---
+// --- 1. BOOT SEQUENCE ---
 const baseLines = [
   "initializing onc//lab...",
   "mounting research modules...",
@@ -23,6 +23,7 @@ const jokeLines = [
   "decrypting mắm tôm secrets...",
   "tìm kiếm người yêu... 404 NOT FOUND",
 ];
+
 let bootLines = [];
 for (let i = 0; i < 40; i++) {
   if (Math.random() > 0.75)
@@ -42,11 +43,14 @@ bootLines = [
 async function runBoot() {
   const bs = document.getElementById("boot-screen"),
     shell = document.getElementById("shell");
+  if (!bs || !shell) return;
+
   if (sessionStorage.getItem("onc_lab_v9")) {
     bs.style.display = "none";
     shell.classList.add("visible");
     return;
   }
+
   let i = 0;
   const iv = setInterval(() => {
     const el = document.createElement("div");
@@ -55,6 +59,7 @@ async function runBoot() {
     bs.appendChild(el);
     bs.scrollTop = bs.scrollHeight;
     i++;
+
     if (i >= bootLines.length) {
       clearInterval(iv);
       setTimeout(() => {
@@ -65,9 +70,8 @@ async function runBoot() {
     }
   }, 15);
 }
-document.addEventListener("DOMContentLoaded", runBoot);
 
-// --- CLOCK + DATE ---
+// --- 2. CLOCK + DATE ---
 function getLunarDate(date) {
   try {
     const parts = new Intl.DateTimeFormat("vi-VN-u-ca-chinese", {
@@ -88,25 +92,31 @@ function getLunarDate(date) {
     return "--/--/----";
   }
 }
+
 setInterval(() => {
   const d = new Date(),
     p = (n) => String(n).padStart(2, "0");
-  document.getElementById("clock-display").textContent =
-    `${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+  const clockEl = document.getElementById("clock-display");
+  const gregorianEl = document.getElementById("date-gregorian");
+  const lunarEl = document.getElementById("date-lunar");
+
+  if (clockEl)
+    clockEl.textContent = `${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+
   const days = ["CN", "T2", "T3", "T4", "T5", "T6", "T7"];
-  document.getElementById("date-gregorian").textContent =
-    `${days[d.getDay()]}, ${p(d.getDate())}/${p(d.getMonth() + 1)}/${d.getFullYear()}`;
-  document.getElementById("date-lunar").textContent = getLunarDate(d);
+  if (gregorianEl)
+    gregorianEl.textContent = `${days[d.getDay()]}, ${p(d.getDate())}/${p(d.getMonth() + 1)}/${d.getFullYear()}`;
+  if (lunarEl) lunarEl.textContent = getLunarDate(d);
 }, 1000);
 
-// --- TABS + COMMAND PALETTE ---
-let currentTab = "home";
-// Define these globally so core and arcade can share them
+// --- 3. TABS + COMMAND PALETTE ---
+// Khai báo biến toàn cục để các file JS khác có thể truy cập
+window.currentTab = "home";
 window.currentGame = null;
 window.currentGameInterval = null;
 
 function switchTab(id) {
-  currentTab = id;
+  window.currentTab = id;
   document
     .querySelectorAll(".tab")
     .forEach((t) => t.classList.toggle("active", t.dataset.tab === id));
@@ -120,11 +130,14 @@ function switchTab(id) {
     pane.style.animation = null;
     pane.classList.add("active");
   }
+
+  // Dừng game Arcade nếu chuyển tab
   if (id !== "arcade" && window.currentGameInterval) {
     clearInterval(window.currentGameInterval);
     window.currentGameInterval = null;
   }
 }
+
 document
   .querySelectorAll(".tab")
   .forEach((t) => t.addEventListener("click", () => switchTab(t.dataset.tab)));
@@ -132,6 +145,7 @@ document
 const palette = document.getElementById("cmd-palette"),
   cmdInput = document.getElementById("cmd-input"),
   cmdList = document.getElementById("cmd-list");
+
 const commands = [
   { cat: "nav", name: "home", action: () => switchTab("home") },
   { cat: "nav", name: "papers", action: () => switchTab("papers") },
@@ -146,11 +160,14 @@ const commands = [
     },
   },
 ];
+
 let selIdx = 0;
 function renderCmds(f = "") {
+  if (!cmdList) return;
   cmdList.innerHTML = "";
   const fl = commands.filter((c) => c.name.includes(f.toLowerCase()));
   if (selIdx >= fl.length) selIdx = 0;
+
   fl.forEach((c, i) => {
     const el = document.createElement("div");
     el.className = "cmd-item" + (i === selIdx ? " selected" : "");
@@ -167,29 +184,37 @@ function renderCmds(f = "") {
     cmdList.appendChild(el);
   });
 }
+
 function showPal() {
+  if (!palette || !cmdInput) return;
   palette.classList.add("visible");
   cmdInput.value = "";
   selIdx = 0;
   renderCmds();
   setTimeout(() => cmdInput.focus(), 30);
 }
+
 function hidePal() {
-  palette.classList.remove("visible");
+  if (palette) palette.classList.remove("visible");
 }
-cmdInput.addEventListener("blur", () =>
-  setTimeout(() => {
-    if (palette.classList.contains("visible")) hidePal();
-  }, 120),
-);
-cmdInput.addEventListener("input", () => renderCmds(cmdInput.value));
+
+if (cmdInput) {
+  cmdInput.addEventListener("blur", () =>
+    setTimeout(() => {
+      if (palette && palette.classList.contains("visible")) hidePal();
+    }, 120),
+  );
+  cmdInput.addEventListener("input", () => renderCmds(cmdInput.value));
+}
+
 document.addEventListener("keydown", (e) => {
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
     e.preventDefault();
-    palette.classList.contains("visible") ? hidePal() : showPal();
+    palette && palette.classList.contains("visible") ? hidePal() : showPal();
   }
   if (e.key === "Escape") hidePal();
-  if (palette.classList.contains("visible")) {
+
+  if (palette && palette.classList.contains("visible")) {
     const fl = commands.filter((c) =>
       c.name.includes(cmdInput.value.toLowerCase()),
     );
@@ -211,10 +236,10 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
-// --- FLOW FIELD BACKGROUND ---
-const bgCvs = document.getElementById("canvas-bg"),
-  bgCtx = bgCvs.getContext("2d"),
-  C_CELL = 24;
+// --- 4. FLOW FIELD BACKGROUND ---
+const bgCvs = document.getElementById("canvas-bg");
+const bgCtx = bgCvs ? bgCvs.getContext("2d") : null;
+const C_CELL = 24;
 let ft = 0,
   mouse = { x: -9999, y: -9999, active: false },
   ripples = [];
@@ -222,12 +247,15 @@ const MOUSE_R = 150,
   MOUSE_R2 = MOUSE_R * MOUSE_R,
   RIP_R = 300,
   BAND = 40;
+
 function resizeCvs() {
+  if (!bgCvs) return;
   bgCvs.width = window.innerWidth;
   bgCvs.height = window.innerHeight;
 }
 resizeCvs();
 window.addEventListener("resize", resizeCvs);
+
 document.addEventListener("mousemove", (e) => {
   mouse.x = e.clientX;
   mouse.y = e.clientY;
@@ -240,6 +268,7 @@ document.addEventListener("click", (e) => {
   if (e.target.tagName !== "INPUT" && e.target.tagName !== "BUTTON")
     ripples.push({ x: e.clientX, y: e.clientY, age: 0, maxAge: 45 });
 });
+
 const P = Array.from({ length: 512 }, () => Math.random() * Math.PI * 2);
 function noise(x, y, z) {
   const i = Math.floor(x),
@@ -263,6 +292,7 @@ function lerpA(a, b, t) {
   while (d < -Math.PI) d += Math.PI * 2;
   return a + d * t;
 }
+
 const colorCache = [];
 const CACHE_STEPS = 40;
 for (let i = 0; i <= CACHE_STEPS; i++) {
@@ -281,17 +311,23 @@ const charSets = [
 let lastDrawTime = 0;
 const TARGET_FPS = 24,
   FRAME_INTERVAL = 1000 / TARGET_FPS;
+
 function drawFlow(currentTime) {
+  if (!bgCtx) return;
   requestAnimationFrame(drawFlow);
   if (document.hidden) return;
+
   const deltaTime = currentTime - lastDrawTime;
   if (deltaTime < FRAME_INTERVAL) return;
   lastDrawTime = currentTime - (deltaTime % FRAME_INTERVAL);
+
   ft += 0.02;
   ripples = ripples.filter((r) => r.age < r.maxAge);
   ripples.forEach((r) => r.age++);
+
   bgCtx.clearRect(0, 0, bgCvs.width, bgCvs.height);
   bgCtx.font = `${C_CELL - 4}px 'DM Mono',monospace`;
+
   const cols = Math.ceil(bgCvs.width / C_CELL),
     rows = Math.ceil(bgCvs.height / C_CELL);
   for (let r = 0; r < rows; r++) {
@@ -302,6 +338,7 @@ function drawFlow(currentTime) {
         ny = r / rows;
       let angle = noise(nx * 3, ny * 3, ft * 0.35) * Math.PI * 4;
       let speed = noise(nx * 4 + 10, ny * 4 + 10, ft * 0.25 + 5);
+
       if (mouse.active) {
         const dx = px - mouse.x,
           dy = py - mouse.y,
@@ -328,6 +365,7 @@ function drawFlow(currentTime) {
         });
       }
       if (speed < 0.28) continue;
+
       const seg = Math.floor(
         ((((angle % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2)) /
           (Math.PI * 2)) *
@@ -338,6 +376,7 @@ function drawFlow(currentTime) {
       if (speed > 0.78) charSetIdx = 2;
       let ch = charSets[charSetIdx][seg];
       let isHovered = false;
+
       if (mouse.active) {
         const dx = px - mouse.x,
           dy = py - mouse.y;
@@ -354,4 +393,9 @@ function drawFlow(currentTime) {
     }
   }
 }
-requestAnimationFrame(drawFlow);
+
+// Khởi chạy hệ thống sau khi DOM load xong
+document.addEventListener("DOMContentLoaded", () => {
+  runBoot();
+  requestAnimationFrame(drawFlow);
+});

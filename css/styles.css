@@ -1,3 +1,7 @@
+/* =========================================
+   css/styles.css - GIAO DIỆN CỐT LÕI (CORE UI)
+========================================= */
+
 :root {
     --sage: #7a9e7e;
     --sage2: #5a7d5e;
@@ -18,12 +22,545 @@
     margin: 0;
     padding: 0;
 }
+
 body {
     background: var(--bg);
     color: var(--text);
     font-family: "DM Mono", monospace;
     height: 100vh;
     overflow: hidden;
-    margin: 0;
-    padding: 0;
+}
+
+/* 1. MÀN HÌNH BOOT & BACKGROUND */
+#canvas-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0;
+    pointer-events: none;
+}
+#boot-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: var(--bg);
+    z-index: 9999;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+.boot-line {
+    color: var(--muted);
+    margin-bottom: 4px;
+    font-size: 14px;
+}
+.boot-line.hl {
+    color: var(--sage);
+}
+
+/* 2. KHUNG HỆ ĐIỀU HÀNH CHÍNH */
+#shell {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background: rgba(26, 31, 26, 0.85);
+    opacity: 0;
+    transition: opacity 0.5s;
+}
+#shell.visible {
+    opacity: 1;
+}
+
+#topbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+    font-size: 13px;
+}
+.logo {
+    color: var(--sage);
+    font-weight: bold;
+    font-size: 15px;
+}
+.telemetry {
+    color: var(--muted);
+    font-size: 12px;
+}
+.live {
+    color: var(--amber);
+}
+
+#tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg2);
+}
+.tab {
+    padding: 12px 25px;
+    cursor: pointer;
+    color: var(--muted);
+    border-right: 1px solid var(--border);
+    transition: 0.2s;
+    font-size: 14px;
+}
+.tab:hover {
+    background: var(--bg3);
+    color: var(--text);
+}
+.tab.active {
+    color: var(--sage);
+    border-bottom: 2px solid var(--sage);
+    background: var(--bg);
+    font-weight: bold;
+}
+
+#statusbar {
+    padding: 8px 20px;
+    border-top: 1px solid var(--border);
+    background: var(--bg);
+    font-size: 12px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* 3. QUẢN LÝ CÁC PANE (QUAN TRỌNG NHẤT) */
+#content {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+}
+.pane {
+    display: none;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+}
+.pane.active {
+    display: block;
+}
+#pane-home.active,
+#pane-arcade.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 4. HOME PANE */
+.hero-box {
+    text-align: center;
+}
+.hero-title {
+    font-size: 52px;
+    color: var(--sage);
+    font-weight: bold;
+    margin-bottom: 10px;
+    font-family: "Playfair Display", serif;
+    font-style: italic;
+}
+.hero-sub {
+    color: var(--soft);
+    margin-bottom: 25px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-size: 14px;
+}
+.hero-divider {
+    height: 1px;
+    background: var(--border);
+    width: 150px;
+    margin: 0 auto 25px;
+}
+.hero-prompt {
+    font-size: 16px;
+    margin-bottom: 15px;
+    color: var(--text);
+}
+.cursor-blink {
+    display: inline-block;
+    width: 8px;
+    height: 16px;
+    background: var(--sage);
+    animation: blink 1s step-end infinite;
+    vertical-align: middle;
+}
+@keyframes blink {
+    50% {
+        opacity: 0;
+    }
+}
+.cmd-hint {
+    color: var(--muted);
+    font-size: 13px;
+}
+kbd {
+    background: var(--bg3);
+    padding: 3px 8px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    color: var(--sage2);
+    margin: 0 3px;
+    font-family: inherit;
+}
+
+/* 5. PAPERS SIDEBAR */
+.pcard {
+    padding: 15px;
+    border: 1px solid var(--border);
+    margin-bottom: 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    background: var(--bg);
+    transition: 0.2s;
+}
+.pcard:hover {
+    border-color: var(--sage2);
+    transform: translateX(2px);
+}
+.pcard.active {
+    border-color: var(--sage);
+    background: var(--bg3);
+    border-left: 3px solid var(--sage);
+}
+.pc-tag {
+    font-size: 11px;
+    color: var(--amber);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.pc-title {
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--text);
+}
+
+/* 6. COMMAND PALETTE */
+#cmd-palette {
+    position: fixed;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 450px;
+    background: var(--bg2);
+    border: 1px solid var(--sage2);
+    border-radius: 8px;
+    z-index: 100;
+    display: none;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+    overflow: hidden;
+}
+#cmd-palette.visible {
+    display: block;
+}
+#cmd-input {
+    width: 100%;
+    padding: 18px;
+    background: var(--bg);
+    border: none;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 16px;
+    outline: none;
+}
+.cmd-list {
+    max-height: 280px;
+    overflow-y: auto;
+}
+.cmd-item {
+    padding: 12px 18px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--bg3);
+    font-size: 14px;
+}
+.cmd-item:hover,
+.cmd-item.selected {
+    background: var(--bg3);
+    color: var(--sage);
+}
+
+/* 7. ASTROLOGY MODULE */
+.astro-layout {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    background: var(--bg);
+}
+.astro-input {
+    width: 320px;
+    padding: 25px;
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    background: var(--bg2);
+}
+.astro-chart-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+.field-group {
+    margin-bottom: 18px;
+}
+.field-label {
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.field-input {
+    width: 100%;
+    padding: 10px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 4px;
+    outline: none;
+    font-family: inherit;
+    transition: border 0.2s;
+}
+.field-input:focus {
+    border-color: var(--sage);
+}
+.calc-btn {
+    width: 100%;
+    padding: 12px;
+    background: transparent;
+    border: 1px solid var(--sage);
+    color: var(--sage);
+    cursor: pointer;
+    border-radius: 4px;
+    font-family: inherit;
+    margin-top: 10px;
+    transition: 0.2s;
+    text-transform: uppercase;
+    font-size: 13px;
+    letter-spacing: 1px;
+}
+.calc-btn:hover {
+    background: var(--sage);
+    color: var(--bg);
+}
+.astro-placeholder {
+    text-align: center;
+    color: var(--muted);
+    line-height: 1.6;
+}
+.big-sym {
+    font-size: 60px;
+    color: var(--sage2);
+    margin-bottom: 15px;
+}
+.big-three-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+}
+.btc-label {
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+}
+.btc-sign {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 5px 0;
+    color: var(--sage);
+}
+.btc-degree {
+    font-size: 12px;
+    color: var(--text);
+}
+.btc-element {
+    font-size: 24px;
+    float: right;
+    margin-top: -35px;
+    opacity: 0.3;
+}
+.btc-desc {
+    font-size: 12px;
+    color: var(--soft);
+    margin-top: 8px;
+    line-height: 1.4;
+}
+.planet-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    background: var(--bg);
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+}
+.planet-sym {
+    font-size: 18px;
+    width: 35px;
+    text-align: center;
+}
+.planet-name {
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.planet-sign {
+    font-size: 14px;
+    font-weight: bold;
+    color: var(--text);
+}
+.planet-deg {
+    font-size: 11px;
+    color: var(--soft);
+}
+.aspect-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px dashed var(--border);
+    font-size: 12px;
+}
+.aspect-title {
+    color: var(--sage);
+    font-size: 14px;
+    text-transform: uppercase;
+    margin-bottom: 15px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px;
+    letter-spacing: 1px;
+}
+
+/* 8. ARCADE MODULE */
+.arcade-machine {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+.arcade-header {
+    width: 280px;
+    display: flex;
+    justify-content: space-between;
+    color: var(--sage);
+    margin-bottom: 15px;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.arcade-screen {
+    width: 280px;
+    height: 460px;
+    border: 2px solid var(--border);
+    background: #000;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+    border-radius: 4px;
+}
+#game-canvas {
+    width: 100%;
+    height: 100%;
+    image-rendering: pixelated;
+}
+.arcade-controls {
+    margin-top: 25px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 2;
+}
+#arcade-menu {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 10;
+}
+.menu-btn {
+    width: 180px;
+    padding: 12px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: 0.2s;
+}
+.menu-btn:hover {
+    background: var(--sage);
+    color: var(--bg);
+    border-color: var(--sage);
+    transform: scale(1.05);
+}
+.game-over-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 20;
+}
+.game-over-screen.show {
+    display: flex;
+}
+.go-title {
+    color: var(--rose);
+    font-size: 28px;
+    margin-bottom: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+.go-btn {
+    background: transparent;
+    border: 1px solid var(--rose);
+    color: var(--rose);
+    padding: 8px 20px;
+    margin-top: 20px;
+    cursor: pointer;
+    font-family: inherit;
+    text-transform: uppercase;
+    font-size: 12px;
+    transition: 0.2s;
+}
+.go-btn:hover {
+    background: var(--rose);
+    color: #000;
 }

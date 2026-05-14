@@ -8,14 +8,14 @@ const papers = [
     title: "📖 Docs: Cấu trúc Singly Linked List",
     tags: ["docs", "dsa"],
     type: "markdown",
-    url: "papers/linked-list-doc.md", // Đảm bảo đường dẫn này đúng với máy bạn
+    url: "papers/dsa/linked-list-doc.md", // Đảm bảo đường dẫn này đúng với máy bạn
   },
   {
     id: "dsa-dijkstra",
     title: "[App] Dijkstra State Machine",
     tags: ["dsa"],
     type: "iframe",
-    url: "papers/dijkstra-state.html",
+    url: "papers/dsa/dijkstra-state.html",
   },
 ];
 

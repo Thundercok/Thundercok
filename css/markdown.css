@@ -8,6 +8,7 @@
     margin: 0 auto;
 }
 
+/* Tiêu đề chính */
 #md-viewer h1 {
     font-family: "Playfair Display", serif;
     font-style: italic;
@@ -18,6 +19,7 @@
     margin-bottom: 25px;
 }
 
+/* Tiêu đề phụ */
 #md-viewer h2 {
     font-family: "DM Mono", monospace;
     color: var(--soft);
@@ -28,8 +30,10 @@
     letter-spacing: 1px;
 }
 
+/* Đoạn văn và danh sách */
 #md-viewer p,
-#md-viewer ul {
+#md-viewer ul,
+#md-viewer ol {
     font-family: "Crimson Pro", serif;
     font-size: 19px;
     line-height: 1.8;
@@ -38,7 +42,8 @@
     margin-bottom: 20px;
 }
 
-#md-viewer ul {
+#md-viewer ul,
+#md-viewer ol {
     margin-left: 20px;
 }
 
@@ -46,6 +51,7 @@
     margin-bottom: 8px;
 }
 
+/* Highlight chữ Code */
 #md-viewer code {
     background: rgba(0, 0, 0, 0.4);
     color: var(--amber);
@@ -56,6 +62,7 @@
     border-radius: 4px;
 }
 
+/* Khối mô phỏng Thuật toán (Iframe) */
 .sim-container {
     width: 100%;
     height: 600px;

@@ -15,7 +15,55 @@
         <link rel="stylesheet" href="css/markdown.css" />
     </head>
     <body>
-        <div id="boot-screen"></div>
+        <div id="boot-screen">
+            <div class="boot-container">
+                <div class="boot-left">
+                    <div class="boot-brand">
+                        <pre class="boot-logo">
+ ██████╗ ███╗   ██╗ ██████╗
+██╔═══██╗████╗  ██║██╔════╝
+██║   ██║██╔██╗ ██║██║     
+██║   ██║██║╚██╗██║██║     
+╚██████╔╝██║ ╚████║╚██████╗
+ ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝
+                        </pre>
+                        <div class="boot-subtitle">ông năm chèo · deep learning lab</div>
+                    </div>
+                    <div class="radar-container">
+                        <div class="radar">
+                            <div class="radar-sweep"></div>
+                            <div class="radar-circle c1"></div>
+                            <div class="radar-circle c2"></div>
+                            <div class="radar-circle c3"></div>
+                            <div class="radar-blip"></div>
+                        </div>
+                        <div class="radar-stats">
+                            <div>SECURE UPLINK: ACTIVE</div>
+                            <div>LOCATION: 10.7626° N, 106.6602° E</div>
+                            <div>CORES: 64x DEEP QUANTUM</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="boot-right">
+                    <div class="boot-terminal-header">
+                        <span class="terminal-dot red"></span>
+                        <span class="terminal-dot yellow"></span>
+                        <span class="terminal-dot green"></span>
+                        <span class="terminal-title">system_boot.sh</span>
+                    </div>
+                    <div class="boot-log-container" id="boot-log"></div>
+                    <div class="boot-progress-area">
+                        <div class="boot-progress-info">
+                            <span id="boot-status-text">INITIALIZING CORE...</span>
+                            <span id="boot-percentage">0%</span>
+                        </div>
+                        <div class="boot-progress-bar-wrap">
+                            <div class="boot-progress-bar" id="boot-progress"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <canvas id="canvas-bg"></canvas>
 
         <div id="cmd-palette">

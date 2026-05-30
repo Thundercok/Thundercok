@@ -42,7 +42,11 @@ bootLines = [
 
 async function runBoot() {
   const bs = document.getElementById("boot-screen"),
-    shell = document.getElementById("shell");
+    shell = document.getElementById("shell"),
+    bootLog = document.getElementById("boot-log"),
+    progressBar = document.getElementById("boot-progress"),
+    pctText = document.getElementById("boot-percentage"),
+    statusText = document.getElementById("boot-status-text");
   if (!bs || !shell) return;
 
   if (sessionStorage.getItem("onc_lab_v9")) {
@@ -56,19 +60,39 @@ async function runBoot() {
     const el = document.createElement("div");
     el.className = "boot-line" + (i === bootLines.length - 1 ? " hl" : "");
     el.textContent = `[${(Math.random() * 1000).toFixed(3)}] ${bootLines[i]}`;
-    bs.appendChild(el);
-    bs.scrollTop = bs.scrollHeight;
+    if (bootLog) {
+      bootLog.appendChild(el);
+      bootLog.scrollTop = bootLog.scrollHeight;
+    } else {
+      bs.appendChild(el);
+      bs.scrollTop = bs.scrollHeight;
+    }
     i++;
+
+    const pct = Math.floor((i / bootLines.length) * 100);
+    if (progressBar) progressBar.style.width = pct + "%";
+    if (pctText) pctText.textContent = pct + "%";
+
+    if (statusText) {
+      if (pct < 15) statusText.textContent = "INITIALIZING CORE...";
+      else if (pct < 50) statusText.textContent = "LOADING QUANTUM MODULES...";
+      else if (pct < 80) statusText.textContent = "CALIBRATING FLOW SENSORS...";
+      else if (pct < 98) statusText.textContent = "OPTIMIZING NEURAL PATHWAYS...";
+      else statusText.textContent = "SYSTEM READY";
+    }
 
     if (i >= bootLines.length) {
       clearInterval(iv);
       setTimeout(() => {
-        bs.style.display = "none";
-        shell.classList.add("visible");
-        sessionStorage.setItem("onc_lab_v9", "1");
-      }, 400);
+        bs.classList.add("shutdown-anim");
+        setTimeout(() => {
+          bs.style.display = "none";
+          shell.classList.add("visible");
+          sessionStorage.setItem("onc_lab_v9", "1");
+        }, 300);
+      }, 500);
     }
-  }, 15);
+  }, 35);
 }
 
 // --- 2. CLOCK + DATE ---

@@ -62,6 +62,7 @@ function retryGame() {
   document.getElementById("go-screen").classList.remove("show");
   if (window.currentGame === "snake") startSnake();
   else if (window.currentGame === "doom_shareware") startDoomShareware();
+  else if (window.currentGame === "wolf3d_shareware") startWolf3D();
   else startTetris();
 }
 
@@ -297,6 +298,22 @@ function startDoomShareware() {
   adjustArcadeSize(640, 400);
 }
 
+function startWolf3D() {
+  document.getElementById("arcade-menu").style.display = "none";
+  gcvs.style.display = "none";
+  const embed = document.getElementById("arcade-embed");
+  if (embed) {
+    embed.src = "https://dos.zone/player/?bundleUrl=https%3A%2F%2Fcdn.dos.zone%2Fcustom%2Fdos%2Fwolf3d.jsdos&anonymous=1";
+    embed.style.display = "block";
+    embed.focus(); // Focus the iframe so the user can play immediately without clicking
+  }
+  document.getElementById("game-title").textContent = "wolf3d_shareware.exe";
+  window.currentGame = "wolf3d_shareware";
+  
+  // Set aspect ratio for DOS Wolfenstein (widescreen retro 640x400)
+  adjustArcadeSize(640, 400);
+}
+
 document.addEventListener("keydown", (e) => {
   if (
     window.currentTab !== "arcade" ||
@@ -305,7 +322,7 @@ document.addEventListener("keydown", (e) => {
     document.activeElement.id === "cmd-input"
   )
     return;
-  if (window.currentGame === "doom_shareware") return;
+  if (window.currentGame === "doom_shareware" || window.currentGame === "wolf3d_shareware") return;
   const k = e.key.toLowerCase();
   if ([" ", "arrowup", "arrowdown", "arrowleft", "arrowright"].includes(k))
     e.preventDefault();

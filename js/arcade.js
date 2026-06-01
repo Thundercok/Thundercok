@@ -15,15 +15,41 @@ function gc() {
     bg: "#000",
   };
 }
+function adjustArcadeSize(w, h) {
+  const screen = document.querySelector(".arcade-screen");
+  const header = document.querySelector(".arcade-header");
+  if (screen) {
+    screen.style.width = w + "px";
+    screen.style.height = h + "px";
+  }
+  if (header) {
+    header.style.width = w + "px";
+  }
+  if (gcvs) {
+    gcvs.width = w;
+    gcvs.height = h;
+  }
+}
 function backToMenu() {
   if (window.currentGameInterval) clearInterval(window.currentGameInterval);
   window.currentGame = null;
   isGameOver = false;
   document.getElementById("go-screen").classList.remove("show");
+  
+  // Clean up DOS iframe
+  const embed = document.getElementById("arcade-embed");
+  if (embed) {
+    embed.src = "";
+    embed.style.display = "none";
+  }
+  
   gcvs.style.display = "none";
   document.getElementById("arcade-menu").style.display = "flex";
   document.getElementById("game-title").textContent = "onc_arcade";
   document.getElementById("score-display").textContent = "0";
+  
+  // Reset screen to menu size
+  adjustArcadeSize(280, 460);
 }
 function triggerGO() {
   clearInterval(window.currentGameInterval);
@@ -36,12 +62,14 @@ function retryGame() {
   document.getElementById("go-screen").classList.remove("show");
   if (window.currentGame === "snake") startSnake();
   else if (window.currentGame === "doom") startDoom();
+  else if (window.currentGame === "doom_shareware") startDoomShareware();
   else startTetris();
 }
 
 // --- SNAKE ---
 let snake, food, sDir;
 function startSnake() {
+  adjustArcadeSize(240, 400);
   document.getElementById("arcade-menu").style.display = "none";
   gcvs.style.display = "block";
   document.getElementById("game-title").textContent = "snake.exe";
@@ -199,6 +227,7 @@ function rotMat(m) {
   return r;
 }
 function startTetris() {
+  adjustArcadeSize(240, 400);
   document.getElementById("arcade-menu").style.display = "none";
   gcvs.style.display = "block";
   document.getElementById("game-title").textContent = "tetris.exe";
@@ -309,9 +338,10 @@ function spawnWave(wave) {
     }));
 }
 function startDoom() {
+  adjustArcadeSize(240, 400);
   document.getElementById("arcade-menu").style.display = "none";
   gcvs.style.display = "block";
-  document.getElementById("game-title").textContent = "doom.exe";
+  document.getElementById("game-title").textContent = "doom_raycast_3d.exe";
   window.currentGame = "doom";
   score = 0;
   dWave = 1;
@@ -324,6 +354,20 @@ function startDoom() {
   dFlash = 0;
   if (window.currentGameInterval) clearInterval(window.currentGameInterval);
   window.currentGameInterval = setInterval(updateDoom, 33);
+}
+function startDoomShareware() {
+  document.getElementById("arcade-menu").style.display = "none";
+  gcvs.style.display = "none";
+  const embed = document.getElementById("arcade-embed");
+  if (embed) {
+    embed.src = "https://dos.zone/player/?bundleUrl=https%3A%2F%2Fcdn.dos.zone%2Fcustom%2Fdos%2Fdoom.jsdos?anonymous=1";
+    embed.style.display = "block";
+  }
+  document.getElementById("game-title").textContent = "doom_shareware.exe";
+  window.currentGame = "doom_shareware";
+  
+  // Set aspect ratio for DOS Doom (widescreen retro 640x400)
+  adjustArcadeSize(640, 400);
 }
 function updateDoom() {
   if (window.currentGame !== "doom") return;
@@ -621,6 +665,7 @@ document.addEventListener("keydown", (e) => {
     document.activeElement.id === "cmd-input"
   )
     return;
+  if (window.currentGame === "doom_shareware") return;
   const k = e.key.toLowerCase();
   dKeys[k] = true;
   if ([" ", "arrowup", "arrowdown", "arrowleft", "arrowright"].includes(k))
@@ -651,5 +696,6 @@ document.addEventListener("keydown", (e) => {
   }
 });
 document.addEventListener("keyup", (e) => {
+  if (window.currentGame === "doom_shareware") return;
   if (window.currentGame === "doom") dKeys[e.key.toLowerCase()] = false;
 });

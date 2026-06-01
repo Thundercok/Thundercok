@@ -1,6 +1,6 @@
 /* =========================================
    css/markdown.css - DOCS STYLING
-========================================= */
+   ========================================= */
 
 #md-viewer {
     padding: 40px 50px;
@@ -19,13 +19,26 @@
     margin-bottom: 25px;
 }
 
-/* Tiêu đề phụ */
+/* Tiêu đề phụ h2 */
 #md-viewer h2 {
     font-family: "DM Mono", monospace;
     color: var(--soft);
     font-size: 20px;
     margin-top: 40px;
     margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-left: 3px solid var(--sage);
+    padding-left: 12px;
+}
+
+/* Tiêu đề phụ h3 */
+#md-viewer h3 {
+    font-family: "DM Mono", monospace;
+    color: var(--soft);
+    font-size: 16px;
+    margin-top: 30px;
+    margin-bottom: 10px;
     text-transform: uppercase;
     letter-spacing: 1px;
 }
@@ -51,7 +64,7 @@
     margin-bottom: 8px;
 }
 
-/* Highlight chữ Code */
+/* Highlight chữ Code đơn */
 #md-viewer code {
     background: rgba(0, 0, 0, 0.4);
     color: var(--amber);
@@ -60,6 +73,80 @@
     padding: 2px 6px;
     border: 1px solid var(--border);
     border-radius: 4px;
+}
+
+/* Cấu trúc bảng (Tables) */
+#md-viewer table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 25px 0;
+    font-family: "DM Mono", monospace;
+    font-size: 14px;
+}
+#md-viewer th {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    padding: 10px 14px;
+    text-align: left;
+    color: var(--sage);
+    font-weight: bold;
+}
+#md-viewer td {
+    border: 1px solid var(--border);
+    padding: 10px 14px;
+    color: var(--text);
+}
+#md-viewer tr:nth-child(even) {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+/* Alert Boxes (Blockquotes) */
+#md-viewer blockquote {
+    margin: 25px 0;
+    padding: 15px 20px;
+    background: var(--bg2);
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--border);
+}
+#md-viewer blockquote p {
+    font-family: "Crimson Pro", serif;
+    font-size: 17px;
+    margin-bottom: 0;
+    color: var(--text);
+    opacity: 0.9;
+    line-height: 1.6;
+}
+#md-viewer blockquote.note {
+    border-left-color: var(--sage);
+    background: rgba(122, 158, 126, 0.04);
+}
+#md-viewer blockquote.warning {
+    border-left-color: var(--rose);
+    background: rgba(196, 122, 122, 0.04);
+}
+#md-viewer blockquote.tip {
+    border-left-color: var(--amber);
+    background: rgba(212, 148, 74, 0.04);
+}
+
+/* Khối Code (Preformatted) */
+#md-viewer pre {
+    background: #0d0f0d;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 18px;
+    overflow-x: auto;
+    margin: 25px 0;
+    box-shadow: inset 0 2px 8px rgba(0,0,0,0.8);
+}
+#md-viewer pre code {
+    background: transparent;
+    border: none;
+    color: var(--text);
+    padding: 0;
+    font-size: 14px;
+    line-height: 1.5;
 }
 
 /* Khối mô phỏng Thuật toán (Iframe) */

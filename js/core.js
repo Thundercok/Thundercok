@@ -132,9 +132,37 @@ function switchTab(id) {
   }
 
   // Dừng game Arcade nếu chuyển tab
-  if (id !== "arcade" && window.currentGameInterval) {
-    clearInterval(window.currentGameInterval);
-    window.currentGameInterval = null;
+  if (id !== "arcade") {
+    if (window.currentGameInterval) {
+      clearInterval(window.currentGameInterval);
+      window.currentGameInterval = null;
+    }
+    window.currentGame = null;
+    
+    const embed = document.getElementById("arcade-embed");
+    if (embed) {
+      embed.src = "";
+      embed.style.display = "none";
+    }
+    const canvas = document.getElementById("game-canvas");
+    if (canvas) canvas.style.display = "none";
+    const menu = document.getElementById("arcade-menu");
+    if (menu) menu.style.display = "flex";
+    const title = document.getElementById("game-title");
+    if (title) title.textContent = "onc_arcade";
+    const scoreDisp = document.getElementById("score-display");
+    if (scoreDisp) scoreDisp.textContent = "0";
+    
+    // Reset screen to menu size
+    const screen = document.querySelector(".arcade-screen");
+    const header = document.querySelector(".arcade-header");
+    if (screen) {
+      screen.style.width = "280px";
+      screen.style.height = "460px";
+    }
+    if (header) {
+      header.style.width = "280px";
+    }
   }
 }
 

@@ -561,21 +561,53 @@ kbd {
     font-size: 14px;
     text-transform: uppercase;
     letter-spacing: 1px;
+    transition: width 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 .arcade-screen {
     width: 280px;
     height: 460px;
+    max-width: 95vw;
+    max-height: 70vh;
     border: 2px solid var(--border);
     background: #000;
     position: relative;
     overflow: hidden;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
     border-radius: 4px;
+    transition: width 0.35s cubic-bezier(0.25, 0.8, 0.25, 1), height 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 #game-canvas {
     width: 100%;
     height: 100%;
     image-rendering: pixelated;
+}
+.crt-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.2) 50%), 
+                linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+    background-size: 100% 4px, 6px 100%;
+    pointer-events: none;
+    z-index: 15;
+    animation: crt-flicker 0.2s infinite;
+}
+.crt-vignette {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.85);
+    pointer-events: none;
+    z-index: 16;
+}
+@keyframes crt-flicker {
+    0% { opacity: 0.985; }
+    50% { opacity: 1; }
+    100% { opacity: 0.985; }
 }
 .arcade-controls {
     margin-top: 25px;

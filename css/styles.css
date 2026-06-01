@@ -301,8 +301,10 @@ kbd {
     align-items: center;
 }
 .pc-format-icon {
-    font-size: 14px;
-    color: var(--soft);
+    font-size: 10px;
+    color: var(--sage);
+    font-family: inherit;
+    font-weight: bold;
 }
 .pc-tag {
     font-size: 9px;

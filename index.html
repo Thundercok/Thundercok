@@ -77,6 +77,12 @@
                         <!-- SIDEBAR -->
                         <div class="papers-sidebar">
                             <div class="pane-title">document repository</div>
+                            <div class="papers-categories" id="p-cats">
+                                <button class="cat-pill active" onclick="setCategory('all')">all</button>
+                                <button class="cat-pill" onclick="setCategory('docs')">docs</button>
+                                <button class="cat-pill" onclick="setCategory('dsa')">dsa</button>
+                                <button class="cat-pill" onclick="setCategory('research')">research</button>
+                            </div>
                             <input
                                 id="psearch"
                                 placeholder="filter papers..."
@@ -89,9 +95,14 @@
                         <div class="iframe-wrap">
                             <div class="viewer-toolbar">
                                 <span id="viewer-title">awaiting selection...</span>
-                                <button class="btn-open" onclick="openExternal()">
-                                    open new tab ↗
-                                </button>
+                                <div class="viewer-actions" style="display: flex; gap: 8px;">
+                                    <button class="btn-open" id="btn-fullscreen" onclick="toggleFullscreen()">
+                                        [expand view]
+                                    </button>
+                                    <button class="btn-open" onclick="openExternal()">
+                                        open new tab ↗
+                                    </button>
+                                </div>
                             </div>
 
                             <div class="viewer-body">

@@ -262,28 +262,75 @@ kbd {
     border-radius: 6px;
     cursor: pointer;
     background: var(--bg);
-    transition: 0.2s;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    position: relative;
+    overflow: hidden;
+}
+.pcard::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--sage);
+    transform: scaleY(0);
+    transition: transform 0.2s ease;
 }
 .pcard:hover {
     border-color: var(--sage2);
-    transform: translateX(2px);
+    transform: translateX(3px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+.pcard:hover::before {
+    transform: scaleY(1);
 }
 .pcard.active {
     border-color: var(--sage);
     background: var(--bg3);
-    border-left: 3px solid var(--sage);
+}
+.pcard.active::before {
+    transform: scaleY(1);
+}
+.pc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.pc-format-icon {
+    font-size: 14px;
+    color: var(--soft);
 }
 .pc-tag {
-    font-size: 11px;
+    font-size: 9px;
     color: var(--amber);
-    margin-bottom: 6px;
     text-transform: uppercase;
     letter-spacing: 1px;
+    font-weight: bold;
 }
 .pc-title {
-    font-size: 14px;
+    font-size: 13px;
     line-height: 1.4;
     color: var(--text);
+    font-weight: bold;
+}
+.pc-desc {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.4;
+}
+.pc-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 10px;
+    color: var(--soft);
+    margin-top: 4px;
+    border-top: 1px dashed var(--border);
+    padding-top: 6px;
 }
 
 /* 6. COMMAND PALETTE */
@@ -645,6 +692,7 @@ kbd {
     display: flex;
     width: 100%;
     height: 100%;
+    transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 .papers-sidebar {
     width: 260px;
@@ -652,6 +700,14 @@ kbd {
     display: flex;
     flex-direction: column;
     background: var(--bg2);
+    transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+    overflow: hidden;
+}
+.papers-layout.fullscreen-view .papers-sidebar {
+    width: 0px !important;
+    border-right: none !important;
+    opacity: 0;
+    pointer-events: none;
 }
 .papers-sidebar .pane-title {
     padding: 18px 15px 10px;
@@ -674,6 +730,38 @@ kbd {
 }
 .papers-sidebar input:focus {
     border-color: var(--sage);
+}
+.papers-categories {
+    display: flex;
+    gap: 6px;
+    padding: 0 15px 12px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+.cat-pill {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 4px 10px;
+    font-size: 11px;
+    cursor: pointer;
+    font-family: inherit;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.cat-pill:hover {
+    color: var(--text);
+    border-color: var(--sage2);
+    background: var(--bg3);
+}
+.cat-pill.active {
+    color: var(--bg);
+    background: var(--sage);
+    border-color: var(--sage);
+    font-weight: bold;
 }
 .paper-list {
     flex: 1;

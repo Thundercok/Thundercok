@@ -5,21 +5,46 @@
 const papers = [
   {
     id: "doc-linked-list",
-    title: "📖 Docs: Cấu trúc Singly Linked List",
+    title: "Cấu trúc Singly Linked List",
+    desc: "Tìm hiểu cấu trúc danh sách liên kết đơn, cách cấp phát RAM vật lý và phân tích độ phức tạp thuật toán.",
     tags: ["docs", "dsa"],
+    duration: "5 mins",
+    icon: "TXT",
     type: "markdown",
-    url: "papers/dsa/linked-list-doc.md", // Đảm bảo đường dẫn này đúng với máy bạn
+    url: "papers/dsa/linked-list-doc.md",
   },
   {
     id: "dsa-dijkstra",
     title: "[App] Dijkstra State Machine",
+    desc: "Mô phỏng trực quan hoạt động của thuật toán tìm đường ngắn nhất Dijkstra dưới dạng máy trạng thái.",
     tags: ["dsa"],
+    duration: "O(V²)",
+    icon: "APP",
     type: "iframe",
     url: "papers/dsa/dijkstra-state.html",
   },
+  {
+    id: "vrptw-paper",
+    title: "Research: Heuristics cho VRPTW",
+    desc: "Nghiên cứu về các thuật toán Heuristics tối ưu hóa bài toán định tuyến phương tiện có ràng buộc cửa sổ thời gian.",
+    tags: ["research"],
+    duration: "15 mins",
+    icon: "PDF",
+    type: "iframe",
+    url: "papers/VRPTW-VI.pdf",
+  }
 ];
 
-let activePaper = null;
+let activePaper = papers[0].id;
+let currentCategory = "all";
+
+function setCategory(cat) {
+  currentCategory = cat;
+  document.querySelectorAll(".cat-pill").forEach((btn) => {
+    btn.classList.toggle("active", btn.getAttribute("onclick").includes(`'${cat}'`));
+  });
+  renderPapers();
+}
 
 function renderPapers() {
   const q = document.getElementById("psearch")?.value.toLowerCase() || "";
@@ -28,11 +53,26 @@ function renderPapers() {
 
   el.innerHTML = "";
   papers
-    .filter((p) => !q || p.title.toLowerCase().includes(q))
+    .filter((p) => {
+      const matchQuery = !q || p.title.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q);
+      const matchCategory = currentCategory === "all" || p.tags.includes(currentCategory);
+      return matchQuery && matchCategory;
+    })
     .forEach((p) => {
       const d = document.createElement("div");
       d.className = "pcard" + (activePaper === p.id ? " active" : "");
-      d.innerHTML = `<div class="pc-tag">[${p.tags[0]}]</div><div class="pc-title">${p.title}</div>`;
+      d.innerHTML = `
+        <div class="pc-header">
+          <span class="pc-tag">[${p.tags[0]}]</span>
+          <span class="pc-format-icon">[${p.icon}]</span>
+        </div>
+        <div class="pc-title">${p.title}</div>
+        <div class="pc-desc">${p.desc}</div>
+        <div class="pc-meta">
+          <span>${p.duration}</span>
+          <span style="font-size:9px;opacity:0.6">${p.type.toUpperCase()}</span>
+        </div>
+      `;
       d.onclick = () => loadPaper(p);
       el.appendChild(d);
     });
@@ -65,19 +105,21 @@ async function loadPaper(p) {
       let cleanContent = rawText.replace(/^[ \t]+/gm, "");
       let html = marked.parse(cleanContent);
 
-      // [PROD FIX]: Tự động nội suy đường dẫn tương đối
-      // Lấy thư mục chứa file markdown hiện tại (vd: "papers/dsa/linked-list/")
-      const basePath = p.url.substring(0, p.url.lastIndexOf("/") + 1);
-
       // Render Simulator an toàn và thông minh
+      const basePath = p.url.substring(0, p.url.lastIndexOf("/") + 1);
       html = html.replace(/::SIMULATOR\[(.*?)\]::/g, (match, simPath) => {
         let finalPath = simPath;
-        // Nếu không phải link tuyệt đối (http) hoặc link từ root (/), thì tự động nối basePath
         if (!simPath.startsWith("http") && !simPath.startsWith("/")) {
           finalPath = basePath + simPath;
         }
         return `<div class="sim-container"><iframe src="${finalPath}"></iframe></div>`;
       });
+
+      // Xử lý Hộp cảnh báo (Alert blocks) kiểu GitHub
+      html = html.replace(/<blockquote>\s*<p>\[!NOTE\]/gi, '<blockquote class="note"><p>');
+      html = html.replace(/<blockquote>\s*<p>\[!WARNING\]/gi, '<blockquote class="warning"><p>');
+      html = html.replace(/<blockquote>\s*<p>\[!TIP\]/gi, '<blockquote class="tip"><p>');
+      html = html.replace(/<blockquote>\s*<p>\[!IMPORTANT\]/gi, '<blockquote class="tip"><p>');
 
       mdViewer.innerHTML = html;
     } catch (e) {
@@ -93,6 +135,15 @@ async function loadPaper(p) {
 function openExternal() {
   const p = papers.find((x) => x.id === activePaper);
   if (p && p.url) window.open(p.url, "_blank");
+}
+
+function toggleFullscreen() {
+  const layout = document.querySelector(".papers-layout");
+  const btn = document.getElementById("btn-fullscreen");
+  if (!layout || !btn) return;
+
+  const isFullscreen = layout.classList.toggle("fullscreen-view");
+  btn.innerHTML = isFullscreen ? "[restore view]" : "[expand view]";
 }
 
 // KHỞI CHẠY KHI DOM ĐÃ SẴN SÀNG

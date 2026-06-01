@@ -377,6 +377,7 @@ function calcChart() {
   document.getElementById("astro-placeholder").style.display = "none";
   document.getElementById("birth-chart-svg").style.display = "block";
   document.getElementById("aspect-list").style.display = "block";
+  document.getElementById("chart-area").classList.add("calculated");
 }
 
 const PLANET_COLORS = {

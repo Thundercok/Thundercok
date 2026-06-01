@@ -30,10 +30,7 @@
 
         <div id="shell">
             <div id="topbar">
-                <div
-                    class="tb-left"
-                    style="display: flex; align-items: center; gap: 20px"
-                >
+                <div class="tb-left">
                     <div class="logo">Ông Năm Chèo</div>
                     <div class="telemetry">
                         <div id="date-gregorian">—</div>
@@ -58,13 +55,13 @@
                 <div id="pane-home" class="pane active">
                     <div class="hero-box">
                         <div class="hero-title">Ông Năm Chèo</div>
-                        <div class="hero-sub">research laboratory</div>
+                        <div class="hero-sub">deep learning with the deep</div>
                         <div class="hero-divider"></div>
                         <div class="hero-prompt">
                             <span style="color: var(--sage2)"
                                 >guest@onc:~$</span
                             >
-                            đang cố học data hehe
+                            python3 -m onc.deep_learning --target=abyss
                             <span class="cursor-blink"></span>
                         </div>
                         <div class="cmd-hint">
@@ -76,118 +73,31 @@
 
                 <!-- PANE: PAPERS -->
                 <div id="pane-papers" class="pane">
-                    <div
-                        class="papers-layout"
-                        style="display: flex; width: 100%; height: 100%"
-                    >
+                    <div class="papers-layout">
                         <!-- SIDEBAR -->
-                        <div
-                            class="papers-sidebar"
-                            style="
-                                width: 250px;
-                                border-right: 1px solid var(--border);
-                                display: flex;
-                                flex-direction: column;
-                            "
-                        >
-                            <div
-                                class="pane-title"
-                                style="
-                                    padding: 15px;
-                                    font-weight: bold;
-                                    color: var(--sage);
-                                "
-                            >
-                                document repository
-                            </div>
+                        <div class="papers-sidebar">
+                            <div class="pane-title">document repository</div>
                             <input
                                 id="psearch"
                                 placeholder="filter papers..."
                                 oninput="renderPapers()"
-                                style="
-                                    margin: 0 15px 15px;
-                                    padding: 8px;
-                                    background: var(--bg2);
-                                    border: 1px solid var(--border);
-                                    color: var(--text);
-                                    font-family: inherit;
-                                "
                             />
-                            <div
-                                class="paper-list"
-                                id="plist"
-                                style="
-                                    flex: 1;
-                                    overflow-y: auto;
-                                    padding: 0 15px;
-                                "
-                            ></div>
+                            <div class="paper-list" id="plist"></div>
                         </div>
 
                         <!-- VIEWER AREA -->
-                        <div
-                            class="iframe-wrap"
-                            style="
-                                display: flex;
-                                flex-direction: column;
-                                flex: 1;
-                                min-width: 0;
-                                background: var(--bg2);
-                                position: relative;
-                            "
-                        >
-                            <div
-                                class="viewer-toolbar"
-                                style="
-                                    padding: 10px 15px;
-                                    border-bottom: 1px solid var(--border);
-                                    display: flex;
-                                    justify-content: space-between;
-                                    align-items: center;
-                                "
-                            >
-                                <span
-                                    id="viewer-title"
-                                    style="
-                                        font-family:
-                                            &quot;Crimson Pro&quot;, serif;
-                                        font-style: italic;
-                                        color: var(--sage);
-                                    "
-                                    >awaiting selection...</span
-                                >
-                                <button
-                                    class="btn-open"
-                                    onclick="openExternal()"
-                                    style="
-                                        background: transparent;
-                                        border: 1px solid var(--border);
-                                        color: var(--muted);
-                                        padding: 4px 8px;
-                                        cursor: pointer;
-                                        font-family: inherit;
-                                    "
-                                >
+                        <div class="iframe-wrap">
+                            <div class="viewer-toolbar">
+                                <span id="viewer-title">awaiting selection...</span>
+                                <button class="btn-open" onclick="openExternal()">
                                     open new tab ↗
                                 </button>
                             </div>
 
-                            <div
-                                style="
-                                    flex: 1;
-                                    overflow-y: auto;
-                                    position: relative;
-                                "
-                            >
+                            <div class="viewer-body">
                                 <div id="md-viewer" style="display: none"></div>
                                 <iframe
                                     id="content-embed"
-                                    style="
-                                        display: none;
-                                        width: 100%;
-                                        height: 100%;
-                                        border: none;
-                                    "
                                     title="Viewer"
                                 ></iframe>
                             </div>
@@ -241,34 +151,14 @@
                                 ✦ calculate chart
                             </button>
                             <div id="big-three-wrap" style="display: none">
-                                <div
-                                    style="
-                                        font-size: 9px;
-                                        color: var(--muted);
-                                        letter-spacing: 2px;
-                                        text-transform: uppercase;
-                                        margin-bottom: 8px;
-                                    "
-                                >
-                                    the big three
-                                </div>
+                                <div class="astro-section-label">the big three</div>
                                 <div
                                     class="big-three"
                                     id="big-three-cards"
                                 ></div>
                             </div>
                             <div id="planet-wrap" style="display: none">
-                                <div
-                                    style="
-                                        font-size: 9px;
-                                        color: var(--muted);
-                                        letter-spacing: 2px;
-                                        text-transform: uppercase;
-                                        margin: 12px 0 8px;
-                                    "
-                                >
-                                    all planets
-                                </div>
+                                <div class="astro-section-label spaced">all planets</div>
                                 <div class="planet-grid" id="planet-grid"></div>
                             </div>
                         </div>
@@ -304,13 +194,7 @@
                 <div id="pane-arcade" class="pane">
                     <div class="arcade-machine">
                         <div class="arcade-header">
-                            <span
-                                id="game-title"
-                                style="
-                                    font-family: &quot;DM Mono&quot;, monospace;
-                                "
-                                >onc_arcade</span
-                            >
+                            <span id="game-title">onc_arcade</span>
                             <span
                                 >score: <span id="score-display">0</span></span
                             >
@@ -337,22 +221,15 @@
                             ></canvas>
                             <div class="game-over-screen" id="go-screen">
                                 <div class="go-title">game over</div>
-                                <div
-                                    style="font-size: 11px; color: var(--muted)"
-                                >
+                                <div class="go-score">
                                     score: <span id="final-score">0</span>
                                 </div>
                                 <button class="go-btn" onclick="retryGame()">
                                     retry
                                 </button>
                                 <button
-                                    class="go-btn"
+                                    class="go-btn secondary"
                                     onclick="backToMenu()"
-                                    style="
-                                        border-color: var(--border);
-                                        color: var(--muted);
-                                        margin-top: 4px;
-                                    "
                                 >
                                     menu
                                 </button>

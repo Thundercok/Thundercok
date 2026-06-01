@@ -304,9 +304,9 @@ for (let i = 0; i <= CACHE_STEPS; i++) {
 const getCachedColor = (s) =>
   colorCache[Math.floor(Math.min(1, Math.max(0, s)) * CACHE_STEPS)];
 const charSets = [
-  ["—", "\\", "|", "/", "—", "\\", "|", "/"],
-  ["+", "×", "*", "+", "×", "*", "+", "×"],
-  ["#", "@", "$", "%", "#", "@", "$", "%"],
+  ["·", "~", "≈", "≋", "∿", "~", "≈", "≋"],
+  ["λ", "ψ", "∇", "∂", "∫", "δ", "∇", "∂"],
+  ["█", "▓", "▒", "░", "█", "▓", "▒", "░"],
 ];
 let lastDrawTime = 0;
 const TARGET_FPS = 24,

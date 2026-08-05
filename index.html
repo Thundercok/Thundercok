@@ -1,332 +1,423 @@
 <!doctype html>
-<html lang="vi">
+<html lang="en">
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Ông Năm Chèo · Lab</title>
+        <title>Ông Năm Chèo — AI & Optimization</title>
+        <meta name="description" content="Portfolio of Ông Năm Chèo. Deep learning researcher and optimization engineer based in Saigon. Building neural network-guided solvers for hard combinatorial problems." />
+        <meta name="theme-color" content="#141414" />
+        <meta name="color-scheme" content="dark" />
+        <meta property="og:title" content="Ông Năm Chèo — AI & Optimization" />
+        <meta property="og:description" content="Deep learning researcher and optimization engineer. Building neural network-guided solvers for hard combinatorial problems." />
+        <meta property="og:type" content="website" />
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☽</text></svg>" />
+
         <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link
-            href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:ital,wght@0,300;0,400;1,300&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Noto+Serif+JP:wght@300;400;500&display=swap"
             rel="stylesheet"
         />
-
-        <!-- CSS Modules -->
         <link rel="stylesheet" href="css/styles.css" />
-        <link rel="stylesheet" href="css/markdown.css" />
     </head>
     <body>
-        <div id="boot-screen">
-            <div class="boot-container">
-                <div class="boot-left">
-                    <div class="boot-brand">
-                        <pre class="boot-logo">
- ██████╗ ███╗   ██╗ ██████╗
-██╔═══██╗████╗  ██║██╔════╝
-██║   ██║██╔██╗ ██║██║     
-██║   ██║██║╚██╗██║██║     
-╚██████╔╝██║ ╚████║╚██████╗
- ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝
-                        </pre>
-                        <div class="boot-subtitle">ông năm chèo · deep learning lab</div>
-                    </div>
-                    <div class="radar-container">
-                        <div class="radar">
-                            <div class="radar-sweep"></div>
-                            <div class="radar-circle c1"></div>
-                            <div class="radar-circle c2"></div>
-                            <div class="radar-circle c3"></div>
-                            <div class="radar-blip"></div>
-                        </div>
-                        <div class="radar-stats">
-                            <div>SECURE UPLINK: ACTIVE</div>
-                            <div>LOCATION: 10.7626° N, 106.6602° E</div>
-                            <div>CORES: 64x DEEP QUANTUM</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="boot-right">
-                    <div class="boot-terminal-header">
-                        <span class="terminal-dot red"></span>
-                        <span class="terminal-dot yellow"></span>
-                        <span class="terminal-dot green"></span>
-                        <span class="terminal-title">system_boot.sh</span>
-                    </div>
-                    <div class="boot-log-container" id="boot-log"></div>
-                    <div class="boot-progress-area">
-                        <div class="boot-progress-info">
-                            <span id="boot-status-text">INITIALIZING CORE...</span>
-                            <span id="boot-percentage">0%</span>
-                        </div>
-                        <div class="boot-progress-bar-wrap">
-                            <div class="boot-progress-bar" id="boot-progress"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+
+        <!-- ═══ CANVAS FLOW FIELD BACKGROUND ═══ -->
         <canvas id="canvas-bg"></canvas>
 
-        <div id="cmd-palette">
+        <!-- ═══ BOOT: ENSŌ ═══ -->
+        <div id="boot-screen">
+            <svg class="enso-svg" viewBox="0 0 200 200" aria-hidden="true">
+                <circle
+                    class="enso-circle" cx="100" cy="100" r="80"
+                    fill="none" stroke="currentColor" stroke-width="1.5"
+                    stroke-dasharray="502" stroke-dashoffset="502"
+                    stroke-linecap="round"
+                />
+            </svg>
+            <div class="boot-name">Ông Năm Chèo</div>
+            <div class="boot-status">initializing...<span class="cursor-blink"></span></div>
+        </div>
+
+
+        <!-- ═══ COMMAND PALETTE ═══ -->
+        <div id="cmd-palette" role="dialog" aria-label="Command palette">
             <input
                 type="text"
-                id="cmd-input"
-                placeholder="✦  type a command..."
+                id="cmd-search"
+                placeholder="✦ type a command..."
                 autocomplete="off"
+                spellcheck="false"
             />
-            <div class="cmd-list" id="cmd-list"></div>
+            <div id="cmd-list" role="listbox"></div>
         </div>
 
-        <div id="shell">
-            <div id="topbar">
-                <div class="tb-left">
-                    <div class="logo">Ông Năm Chèo</div>
-                    <div class="telemetry">
-                        <div id="date-gregorian">—</div>
-                        <div>âm: <span id="date-lunar">—</span></div>
+
+        <!-- ═══ APP ═══ -->
+        <div id="app">
+
+            <!-- SIDEBAR -->
+            <aside id="sidebar">
+                <div class="identity">
+                    <h1 class="name">Ông Năm Chèo</h1>
+                    <p class="role">AI & Optimization Engineer</p>
+                    <p class="tagline">I build neural network-guided solvers for problems that classical algorithms find intractable.</p>
+                </div>
+
+                <nav id="nav" aria-label="Main navigation">
+                    <a href="#about" class="nav-link active" data-section="about">about</a>
+                    <a href="#work" class="nav-link" data-section="work">research & work</a>
+                    <a href="#projects" class="nav-link" data-section="projects">projects</a>
+                    <a href="#skills" class="nav-link" data-section="skills">skills</a>
+                    <a href="#writings" class="nav-link" data-section="writings">writings</a>
+                    <a href="#contact" class="nav-link" data-section="contact">contact</a>
+                </nav>
+
+                <div class="sidebar-footer">
+                    <div class="social-links">
+                        <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="social-link">GitHub ↗</a>
+                        <a href="mailto:hello@example.com" class="social-link">Email ↗</a>
+                    </div>
+                    <div class="zen-quote" id="zen-quote">
+                        <em>"Before enlightenment, chop wood, carry water.<br>After enlightenment, chop wood, carry water."</em>
+                    </div>
+                    <div class="sidebar-meta">
+                        <span id="clock-display">--:--:--</span>
+                        <span id="lunar-display">—</span>
                     </div>
                 </div>
-                <div class="tb-right">
-                    <span id="clock-display">--:--:--</span><br />
-                    <span class="live">✦ uplink live</span>
-                </div>
-            </div>
+            </aside>
 
-            <div id="tabs">
-                <div class="tab active" data-tab="home">home</div>
-                <div class="tab" data-tab="papers">papers</div>
-                <div class="tab" data-tab="astro">astrology</div>
-                <div class="tab" data-tab="arcade">arcade</div>
-            </div>
 
-            <div id="content">
-                <!-- PANE: HOME -->
-                <div id="pane-home" class="pane active">
-                    <div class="hero-box">
-                        <div class="hero-title">Ông Năm Chèo</div>
-                        <div class="hero-sub">deep learning with the deep</div>
-                        <div class="hero-divider"></div>
-                        <div class="hero-prompt">
-                            <span style="color: var(--sage2)"
-                                >guest@onc:~$</span
-                            >
-                            python3 -m onc.deep_learning --target=abyss
-                            <span class="cursor-blink"></span>
-                        </div>
-                        <div class="cmd-hint">
-                            press <kbd>ctrl</kbd>+<kbd>k</kbd> for command
-                            palette
-                        </div>
-                    </div>
-                </div>
+            <!-- MAIN CONTENT -->
+            <main id="main-content">
 
-                <!-- PANE: PAPERS -->
-                <div id="pane-papers" class="pane">
-                    <div class="papers-layout">
-                        <!-- SIDEBAR -->
-                        <div class="papers-sidebar">
-                            <div class="pane-title">document repository</div>
-                            <div class="papers-categories" id="p-cats">
-                                <button class="cat-pill active" onclick="setCategory('all')">all</button>
-                                <button class="cat-pill" onclick="setCategory('docs')">docs</button>
-                                <button class="cat-pill" onclick="setCategory('dsa')">dsa</button>
-                                <button class="cat-pill" onclick="setCategory('research')">research</button>
-                            </div>
-                            <input
-                                id="psearch"
-                                placeholder="filter papers..."
-                                oninput="renderPapers()"
-                            />
-                            <div class="paper-list" id="plist"></div>
-                        </div>
-
-                        <!-- VIEWER AREA -->
-                        <div class="iframe-wrap">
-                            <div class="viewer-toolbar">
-                                <span id="viewer-title">awaiting selection...</span>
-                                <div class="viewer-actions" style="display: flex; gap: 8px;">
-                                    <button class="btn-open" id="btn-fullscreen" onclick="toggleFullscreen()">
-                                        [expand view]
-                                    </button>
-                                    <button class="btn-open" onclick="openExternal()">
-                                        open new tab ↗
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="viewer-body">
-                                <div id="md-viewer" style="display: none"></div>
-                                <iframe
-                                    id="content-embed"
-                                    title="Viewer"
-                                ></iframe>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- PANE: ASTROLOGY -->
-                <div id="pane-astro" class="pane">
-                    <div class="astro-layout">
-                        <div class="astro-input">
-                            <div class="pane-title">birth chart calculator</div>
-                            <div class="field-group">
-                                <div class="field-label">date of birth</div>
-                                <input
-                                    class="field-input"
-                                    type="date"
-                                    id="a-dob"
-                                />
-                            </div>
-                            <div class="field-group">
-                                <div class="field-label">time of birth</div>
-                                <input
-                                    class="field-input"
-                                    type="time"
-                                    id="a-tob"
-                                />
-                            </div>
-                            <div class="field-group">
-                                <div class="field-label">place of birth</div>
-                                <input
-                                    class="field-input"
-                                    type="text"
-                                    id="a-pob"
-                                    list="cities"
-                                    placeholder="Chọn hoặc gõ tên tỉnh/thành phố..."
-                                />
-                                <datalist id="cities">
-                                    <option value="Hồ Chí Minh"></option>
-                                    <option value="Hà Nội"></option>
-                                    <option value="Đà Nẵng"></option>
-                                    <option value="Hải Phòng"></option>
-                                    <option value="Cần Thơ"></option>
-                                    <option value="Nha Trang"></option>
-                                    <option value="Huế"></option>
-                                    <option value="Vũng Tàu"></option>
-                                    <option value="Đà Lạt"></option>
-                                </datalist>
-                            </div>
-                            <button class="calc-btn" onclick="calcChart()">
-                                ✦ calculate chart
-                            </button>
-                            <div id="big-three-wrap" style="display: none">
-                                <div class="astro-section-label">the big three</div>
-                                <div
-                                    class="big-three"
-                                    id="big-three-cards"
-                                ></div>
-                            </div>
-                            <div id="planet-wrap" style="display: none">
-                                <div class="astro-section-label spaced">all planets</div>
-                                <div class="planet-grid" id="planet-grid"></div>
-                            </div>
-                        </div>
-                        <div class="astro-chart-area" id="chart-area">
-                            <div
-                                class="astro-placeholder"
-                                id="astro-placeholder"
-                            >
-                                <div class="big-sym">☽</div>
-                                <p>
-                                    enter your birth details<br />to generate
-                                    your natal chart
+                <!-- ── ABOUT ── -->
+                <section id="about" class="section">
+                    <span class="section-prompt">about // profile & specialization</span>
+                    <div class="section-body">
+                        <div class="about-container">
+                            
+                            <!-- Main Bio Card -->
+                            <div class="about-card">
+                                <h2 class="about-title">Deep Learning & Optimization Researcher</h2>
+                                <p class="about-intro">
+                                    I specialize in <span class="about-highlight">deep reinforcement learning (DRL)</span> and <span class="about-highlight">combinatorial optimization</span>, based in Saigon. I design and build hybrid neural network-guided solvers for hard vehicle routing problems (VRPTW) — where classical heuristics stall, I enable neural models to learn adaptive search trajectories.
+                                </p>
+                                <p class="about-intro">
+                                    My research emphasizes <span class="about-highlight">rigorous cold-start benchmarking</span>, scale-aware performance analysis, and C++/CUDA acceleration for operations research pipelines.
                                 </p>
                             </div>
-                            <svg
-                                id="birth-chart-svg"
-                                style="display: none"
-                                viewBox="0 0 500 500"
-                            ></svg>
-                            <div
-                                class="aspect-list"
-                                id="aspect-list"
-                                style="display: none"
-                            >
-                                <div class="aspect-title">major aspects</div>
-                                <div id="aspect-rows"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- PANE: ARCADE -->
-                <div id="pane-arcade" class="pane">
-                    <div class="arcade-machine">
-                        <div class="arcade-header">
-                            <span id="game-title">onc_arcade</span>
-                            <span
-                                >score: <span id="score-display">0</span></span
-                            >
-                        </div>
-                        <div class="arcade-screen">
-                            <div id="arcade-menu">
-                                <button class="menu-btn" onclick="startSnake()">
-                                    snake.exe
-                                </button>
-                                <button class="menu-btn" onclick="startTetris()">
-                                    tetris.exe
-                                </button>
-                                <button class="menu-btn" onclick="startDoomShareware()">
-                                    doom_shareware.exe
-                                </button>
-                                <button class="menu-btn" onclick="startWolf3D()">
-                                    wolf3d_shareware.exe
-                                </button>
-                            </div>
-                            <canvas
-                                id="game-canvas"
-                                width="240"
-                                height="400"
-                            ></canvas>
-                            <iframe
-                                id="arcade-embed"
-                                title="Arcade Emulator"
-                                style="display: none; width: 100%; height: 100%; border: none; background: #000;"
-                                allow="autoplay; keyboard"
-                            ></iframe>
-                            <div class="crt-overlay"></div>
-                            <div class="crt-vignette"></div>
-                            <div class="game-over-screen" id="go-screen">
-                                <div class="go-title">game over</div>
-                                <div class="go-score">
-                                    score: <span id="final-score">0</span>
+                            <!-- Live Metric Counters Grid -->
+                            <div class="about-metrics-grid">
+                                <div class="metric-card">
+                                    <span class="metric-val">1,480+</span>
+                                    <span class="metric-lbl">GitHub Commits</span>
                                 </div>
-                                <button class="go-btn" onclick="retryGame()">
-                                    retry
-                                </button>
-                                <button
-                                    class="go-btn secondary"
-                                    onclick="backToMenu()"
-                                >
-                                    menu
-                                </button>
+                                <div class="metric-card">
+                                    <span class="metric-val">4.07%</span>
+                                    <span class="metric-lbl">Max TD Reduction</span>
+                                </div>
+                                <div class="metric-card">
+                                    <span class="metric-val">100%</span>
+                                    <span class="metric-lbl">Cold-Start Rigor</span>
+                                </div>
+                                <div class="metric-card">
+                                    <span class="metric-val">14</span>
+                                    <span class="metric-lbl">Public Repos</span>
+                                </div>
                             </div>
+
+                            <!-- Specialization Pillars -->
+                            <div class="about-pillars-grid">
+                                <div class="pillar-card">
+                                    <div class="pillar-header">
+                                        <span class="pillar-icon">◈</span>
+                                        <h3 class="pillar-title">Neural Solvers (DRL + ALNS)</h3>
+                                    </div>
+                                    <p class="pillar-desc">
+                                        Fusing PyTorch DDQN constructive decoders with Adaptive Large Neighborhood Search (ALNS) operators to achieve statistically significant travel distance (TD) reductions on Homberger benchmark instances.
+                                    </p>
+                                </div>
+
+                                <div class="pillar-card">
+                                    <div class="pillar-header">
+                                        <span class="pillar-icon">◇</span>
+                                        <h3 class="pillar-title">Benchmark Rigor</h3>
+                                    </div>
+                                    <p class="pillar-desc">
+                                        Enforcing strict independent cold-starts without warm-start directory contamination, ensuring true scientific reproducibility across Solomon-100, Homberger-200, and 400-customer scale tests.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Current Status Banner -->
+                            <div class="about-status-banner">
+                                <span class="status-dot"></span>
+                                <span>Open for DRL & Operations Research research collaborations and AI Engineering roles.</span>
+                                <a href="#contact" class="status-action">get in touch ↗</a>
+                            </div>
+
                         </div>
-                        <div class="arcade-controls">
-                            <div>
-                                <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd
-                                ><kbd>D</kbd> or <kbd>↑↓←→</kbd> move / rotate
+                        <p class="cmd-hint">press <kbd>Ctrl</kbd>+<kbd>K</kbd> for command palette</p>
+                    </div>
+                </section>
+
+
+                <!-- ── WORK ── -->
+                <section id="work" class="section">
+                    <span class="section-prompt">work</span>
+                    <div class="section-body">
+                        <div class="work-list">
+                            <div class="work-item">
+                                <div class="work-date">2024 —<br>Present</div>
+                                <div class="work-content">
+                                    <div class="work-role">AI Researcher · <span class="company">Independent Research</span></div>
+                                    <p class="work-desc">
+                                        Developing Hybrid-DDQN solvers for VRPTW under strict independent cold-starts (cleared archive directory starting from <code>build_greedy</code>).
+                                        On Homberger-200, both ALNS-Base and Hybrid-DDQN reach identical vehicle count floors; Hybrid-DDQN demonstrates superior consistency (0–20% NV degradation vs. 30–70% for ALNS) and <strong>1.75% to 4.07% travel distance (TD) minimization</strong> at matched vehicle counts.
+                                        On Homberger-400, Hybrid-DDQN achieves statistically significant vehicle count reductions on <code>c2_4_1</code> (Mean: 12.20 vs. 13.00, Wilcoxon <em>p</em> = 0.0078) and <code>r2_4_1</code> (Mean: 8.10 vs. 8.80, Wilcoxon <em>p</em> = 0.0156).
+                                    </p>
+                                    <div class="tech-tags">
+                                        <span class="tech-tag">Python</span>
+                                        <span class="tech-tag">PyTorch</span>
+                                        <span class="tech-tag">CUDA</span>
+                                        <span class="tech-tag">ALNS</span>
+                                        <span class="tech-tag">DRL</span>
+                                    </div>
+                                </div>
                             </div>
-                            <div>
-                                <kbd>space</kbd> shoot · hard drop (tetris)
+
+                            <div class="work-item">
+                                <div class="work-date">2023 —<br>2024</div>
+                                <div class="work-content">
+                                    <div class="work-role">Software Engineer · <span class="company">Freelance</span></div>
+                                    <p class="work-desc">
+                                        Built data-driven web applications and interactive algorithm
+                                        visualizations. Developed educational tools for data structures
+                                        and algorithms, making complex concepts accessible through
+                                        visual state machines and step-by-step simulations.
+                                    </p>
+                                    <div class="tech-tags">
+                                        <span class="tech-tag">JavaScript</span>
+                                        <span class="tech-tag">Python</span>
+                                        <span class="tech-tag">HTML/CSS</span>
+                                        <span class="tech-tag">D3.js</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
+                </section>
 
-            <div id="statusbar">
-                <span>onc//lab · ho chi minh city</span>
+
+                <!-- ── PROJECTS ── -->
+                <section id="projects" class="section">
+                    <span class="section-prompt">projects</span>
+                    <div class="section-body">
+                        <div class="project-grid">
+
+                            <div class="project-card">
+                                <div class="project-header">
+                                    <span class="project-icon">◈</span>
+                                    <div class="project-links">
+                                        <a href="papers/VRPTW-VI.pdf" target="_blank" rel="noopener" class="project-ext-link">paper ↗</a>
+                                    </div>
+                                </div>
+                                <h3 class="project-title">Hybrid-DDQN VRPTW Solver</h3>
+                                <p class="project-desc">
+                                    Neural network-guided adaptive large neighborhood search for vehicle
+                                    routing with time windows. Achieves 1.75–4.07% travel distance
+                                    improvements at matched vehicle counts on 200-customer Homberger instances.
+                                </p>
+                                <div class="project-tech">
+                                    <span class="tech-tag">PyTorch</span>
+                                    <span class="tech-tag">CUDA</span>
+                                    <span class="tech-tag">ALNS</span>
+                                    <span class="tech-tag">DRL</span>
+                                </div>
+                            </div>
+
+                            <div class="project-card">
+                                <div class="project-header">
+                                    <span class="project-icon">◇</span>
+                                    <div class="project-links">
+                                        <a href="papers/dijkstra-state.html" target="_blank" rel="noopener" class="project-ext-link">demo ↗</a>
+                                    </div>
+                                </div>
+                                <h3 class="project-title">Dijkstra State Machine</h3>
+                                <p class="project-desc">
+                                    Interactive visualization of Dijkstra's shortest path algorithm
+                                    as a finite state machine. Step through priority queue operations,
+                                    watch edge relaxation in real time, and build intuition for
+                                    graph traversal.
+                                </p>
+                                <div class="project-tech">
+                                    <span class="tech-tag">JavaScript</span>
+                                    <span class="tech-tag">Canvas</span>
+                                    <span class="tech-tag">DSA</span>
+                                </div>
+                            </div>
+
+                            <div class="project-card">
+                                <div class="project-header">
+                                    <span class="project-icon">☽</span>
+                                </div>
+                                <h3 class="project-title">zen//terminal</h3>
+                                <p class="project-desc">
+                                    This portfolio. A CLI-meets-Buddhism developer portfolio that
+                                    fuses terminal aesthetics with Zen minimalism. Type commands
+                                    below, press Ctrl+K, or simply scroll.
+                                </p>
+                                <div class="project-tech">
+                                    <span class="tech-tag">HTML</span>
+                                    <span class="tech-tag">CSS</span>
+                                    <span class="tech-tag">Vanilla JS</span>
+                                </div>
+                            </div>
+
+                            <div class="project-card">
+                                <div class="project-header">
+                                    <span class="project-icon">✦</span>
+                                    <div class="project-links">
+                                        <button class="project-ext-link" id="btn-play-badapple" style="background:none;border:none;cursor:pointer;">play ↗</button>
+                                    </div>
+                                </div>
+                                <h3 class="project-title">Bad Apple!! Shadow Art</h3>
+                                <p class="project-desc">
+                                    The iconic demoscene silhouette masterpiece. If it has a display, it plays Bad Apple!! Click to stream the video player.
+                                </p>
+                                <div class="project-tech">
+                                    <span class="tech-tag">ASCII Art</span>
+                                    <span class="tech-tag">Demoscene</span>
+                                    <span class="tech-tag">Touhou</span>
+                                    <span class="tech-tag">Canvas</span>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+
+
+                <!-- ── SKILLS ── -->
+                <section id="skills" class="section">
+                    <span class="section-prompt">skills</span>
+                    <div class="section-body">
+                        <div class="skills-grid">
+                            <div class="skill-group">
+                                <div class="skill-group-title">Languages</div>
+                                <div class="skill-tags">
+                                    <span class="skill-tag">Python</span>
+                                    <span class="skill-tag">JavaScript</span>
+                                    <span class="skill-tag">C++</span>
+                                    <span class="skill-tag">SQL</span>
+                                </div>
+                            </div>
+                            <div class="skill-group">
+                                <div class="skill-group-title">ML / Deep Learning</div>
+                                <div class="skill-tags">
+                                    <span class="skill-tag">PyTorch</span>
+                                    <span class="skill-tag">TensorFlow</span>
+                                    <span class="skill-tag">CUDA</span>
+                                    <span class="skill-tag">NumPy</span>
+                                </div>
+                            </div>
+                            <div class="skill-group">
+                                <div class="skill-group-title">Optimization</div>
+                                <div class="skill-tags">
+                                    <span class="skill-tag">ALNS</span>
+                                    <span class="skill-tag">VRPTW</span>
+                                    <span class="skill-tag">Metaheuristics</span>
+                                    <span class="skill-tag">OR-Tools</span>
+                                </div>
+                            </div>
+                            <div class="skill-group">
+                                <div class="skill-group-title">Web & Tools</div>
+                                <div class="skill-tags">
+                                    <span class="skill-tag">HTML/CSS</span>
+                                    <span class="skill-tag">React</span>
+                                    <span class="skill-tag">Git</span>
+                                    <span class="skill-tag">Linux</span>
+                                    <span class="skill-tag">Docker</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- ── WRITINGS ── -->
+                <section id="writings" class="section">
+                    <span class="section-prompt">writings</span>
+                    <div class="section-body">
+                        <div class="writings-list">
+                            <a href="papers/VRPTW-VI.pdf" target="_blank" rel="noopener" class="writing-item">
+                                <span class="writing-format">PDF</span>
+                                <div class="writing-info">
+                                    <div class="writing-title">Heuristics for VRPTW Optimization</div>
+                                    <div class="writing-desc">Research on heuristic algorithms for the vehicle routing problem with time windows.</div>
+                                </div>
+                                <span class="writing-arrow">→</span>
+                            </a>
+                            <a href="papers/dsa/linked-list-doc.md" target="_blank" rel="noopener" class="writing-item">
+                                <span class="writing-format">MD</span>
+                                <div class="writing-info">
+                                    <div class="writing-title">Singly Linked List — Structure & Analysis</div>
+                                    <div class="writing-desc">Physical memory allocation, pointer mechanics, and algorithmic complexity analysis.</div>
+                                </div>
+                                <span class="writing-arrow">→</span>
+                            </a>
+                            <a href="papers/dijkstra-state.html" target="_blank" rel="noopener" class="writing-item">
+                                <span class="writing-format">APP</span>
+                                <div class="writing-info">
+                                    <div class="writing-title">Dijkstra State Machine Visualizer</div>
+                                    <div class="writing-desc">Interactive step-through simulation of shortest path graph traversal.</div>
+                                </div>
+                                <span class="writing-arrow">→</span>
+                            </a>
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- ── CONTACT ── -->
+                <section id="contact" class="section">
+                    <span class="section-prompt">contact</span>
+                    <div class="section-body">
+                        <p class="contact-prompt">guest@onc:~$ echo "let's connect"<span class="cursor-blink"></span></p>
+                        <p class="contact-text">
+                            I'm always open to discussing research collaborations,
+                            interesting optimization problems, or exchanging ideas about
+                            the intersection of AI and philosophy. My inbox is open.
+                        </p>
+                        <a href="mailto:hello@example.com" class="contact-link">
+                            Say hello →
+                        </a>
+                    </div>
+                </section>
+
+            </main>
+        </div>
+
+
+        <!-- ═══ CLI BAR ═══ -->
+        <div id="cli-bar" role="toolbar" aria-label="Command line interface">
+            <div id="cli-output" aria-live="polite"></div>
+            <div class="cli-input-row">
+                <span class="cli-prompt-text">guest@onc:~$</span>
+                <input
+                    type="text"
+                    id="cli-input"
+                    autocomplete="off"
+                    spellcheck="false"
+                    placeholder="type 'help' for commands..."
+                    aria-label="Command input"
+                />
             </div>
         </div>
 
-        <!-- NẠP THƯ VIỆN & ENGINE TÀI LIỆU -->
-        <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-
-        <!-- NẠP MODULES (Cô lập logic hoàn toàn) -->
         <script src="js/core.js"></script>
-        <script src="js/papers.js"></script>
-        <script src="js/astro.js"></script>
-        <script src="js/arcade.js"></script>
     </body>
 </html>

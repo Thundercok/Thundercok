@@ -1157,12 +1157,13 @@ function launchDoomModal() {
             <div style="width: 100%; max-width: 820px; display: flex; justify-content: space-between; align-items: center; background: rgba(20,20,20,0.8); padding: 12px 18px; border-radius: 8px; border: 1px solid rgba(230,200,158,0.25);">
                 <span style="font-family: var(--font-mono); font-size: 13px; font-weight: 700; color: var(--accent);">✦ DOOM (1993) — Full WAD WebAssembly Engine</span>
                 <div style="display: flex; gap: 10px;">
+                    <a href="https://dos.zone/player/?bundleUrl=https%3A%2F%2Fcdn.dos.zone%2Fcustom%2Fdos%2Fdoom.jsdos%3Fanonymous%3D1" target="_blank" rel="noopener" style="background: none; border: 1px solid var(--accent); color: var(--accent); padding: 5px 12px; border-radius: 4px; font-family: var(--font-mono); font-size: 11px; text-decoration: none;">[ OPEN IN NEW TAB ↗ ]</a>
                     <button id="fullscreen-doom" style="background: none; border: 1px solid var(--accent); color: var(--accent); padding: 5px 12px; cursor: pointer; border-radius: 4px; font-family: var(--font-mono); font-size: 11px;">[ 🗖 FULLSCREEN ]</button>
                     <button id="close-doom" style="background: none; border: 1px solid var(--zen-red); color: var(--zen-red); padding: 5px 12px; cursor: pointer; border-radius: 4px; font-family: var(--font-mono); font-size: 11px;">✕ CLOSE</button>
                 </div>
             </div>
             <div style="width: 100%; max-width: 820px; height: 520px; max-height: 72vh; border: 1px solid rgba(230,200,158,0.3); border-radius: 10px; overflow: hidden; background: #000; box-shadow: 0 20px 60px rgba(0,0,0,0.8);">
-                <iframe id="doom-frame" style="width: 100%; height: 100%; border: none;" src="https://dos.zone/player/?bundleUrl=https%3A%2F%2Fcdn.dos.zone%2Fcustom%2Fdos%2Fdoom.jsdos%3Fanonymous%3D1" title="DOOM (1993)"></iframe>
+                <iframe id="doom-frame" style="width: 100%; height: 100%; border: none;" src="https://www.retrogames.cc/embed/42436-doom-usa.html" title="DOOM (1993)" allow="autoplay; keyboard; fullscreen"></iframe>
             </div>
             <div style="font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); text-align: center;">
                 Controls: <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> or <kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd> move · <kbd>Space</kbd> / <kbd>Ctrl</kbd> fire · <kbd>Shift</kbd> run · <kbd>Alt</kbd> strafe · <kbd>Esc</kbd> menu / exit
@@ -1191,8 +1192,11 @@ function launchDoomModal() {
     } else {
         modal.style.display = "flex";
         const frame = document.getElementById("doom-frame");
-        if (frame) frame.src = "https://dos.zone/player/?bundleUrl=https%3A%2F%2Fcdn.dos.zone%2Fcustom%2Fdos%2Fdoom.jsdos%3Fanonymous%3D1";
+        if (frame) frame.src = "https://www.retrogames.cc/embed/42436-doom-usa.html";
     }
+
+    cliPrint(`<span class="cli-accent">✦ DOOM (1993) WASM Engine launched. Type 'doom' anytime to play.</span>`);
+}
 
     cliPrint(`<span class="cli-accent">✦ DOOM (1993) WASM Engine launched. Type 'doom' anytime to play.</span>`);
 }

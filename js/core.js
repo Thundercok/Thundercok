@@ -328,15 +328,13 @@ const SECTIONS = ["about", "work", "projects", "skills", "writings", "astrology"
 const COMMANDS = {
     help:     { cat: "sys",  desc: "Show available commands",   fn: cmdHelp },
     about:    { cat: "nav",  desc: "Navigate to about",         fn: () => navTo("about") },
-    work:     { cat: "nav",  desc: "Navigate to work",          fn: () => navTo("work") },
+    work:     { cat: "nav",  desc: "Navigate to research & work",fn: () => navTo("work") },
     projects: { cat: "nav",  desc: "Navigate to projects",      fn: () => navTo("projects") },
     skills:   { cat: "nav",  desc: "Navigate to skills",        fn: () => navTo("skills") },
     writings: { cat: "nav",  desc: "Navigate to writings",      fn: () => navTo("writings") },
-    astrology:{ cat: "nav",  desc: "Navigate to birth chart",   fn: () => navTo("astrology") },
-    arcade:   { cat: "nav",  desc: "Navigate to arcade games",  fn: () => navTo("arcade") },
-    iching:   { cat: "nav",  desc: "Navigate to I Ching oracle",fn: () => navTo("iching") },
     contact:  { cat: "nav",  desc: "Navigate to contact",       fn: () => navTo("contact") },
-    badapple: { cat: "fun",  desc: "Play Bad Apple!! video",    fn: playBadApple },
+    doom:     { cat: "fun",  desc: "Launch DOOM (1993) WASM Engine", fn: launchDoomModal },
+    badapple: { cat: "fun",  desc: "Toggle Bad Apple!! background", fn: playBadApple },
     bell:     { cat: "fun",  desc: "Sound Tibetan singing bowl",fn: cmdBell },
     bg:       { cat: "sys",  desc: "Toggle background animation",fn: cmdBg },
     clear:    { cat: "sys",  desc: "Clear terminal output",     fn: cmdClear },
@@ -1140,6 +1138,63 @@ function playBadAppleMelody() {
             playSingingBowl(freq, 0.2);
         }, i * 180);
     });
+}
+
+
+function launchDoomModal() {
+    let modal = document.getElementById("doom-modal");
+    if (!modal) {
+        modal = document.createElement("div");
+        modal.id = "doom-modal";
+        modal.style.cssText = `
+            position: fixed; inset: 0; z-index: 10000;
+            background: rgba(10, 10, 10, 0.96); backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 20px; gap: 14px;
+        `;
+        modal.innerHTML = `
+            <div style="width: 100%; max-width: 820px; display: flex; justify-content: space-between; align-items: center; background: rgba(20,20,20,0.8); padding: 12px 18px; border-radius: 8px; border: 1px solid rgba(230,200,158,0.25);">
+                <span style="font-family: var(--font-mono); font-size: 13px; font-weight: 700; color: var(--accent);">✦ DOOM (1993) — Full WAD WebAssembly Engine</span>
+                <div style="display: flex; gap: 10px;">
+                    <button id="fullscreen-doom" style="background: none; border: 1px solid var(--accent); color: var(--accent); padding: 5px 12px; cursor: pointer; border-radius: 4px; font-family: var(--font-mono); font-size: 11px;">[ 🗖 FULLSCREEN ]</button>
+                    <button id="close-doom" style="background: none; border: 1px solid var(--zen-red); color: var(--zen-red); padding: 5px 12px; cursor: pointer; border-radius: 4px; font-family: var(--font-mono); font-size: 11px;">✕ CLOSE</button>
+                </div>
+            </div>
+            <div style="width: 100%; max-width: 820px; height: 520px; max-height: 72vh; border: 1px solid rgba(230,200,158,0.3); border-radius: 10px; overflow: hidden; background: #000; box-shadow: 0 20px 60px rgba(0,0,0,0.8);">
+                <iframe id="doom-frame" style="width: 100%; height: 100%; border: none;" src="https://dos.zone/player/?bundleUrl=https%3A%2F%2Fcdn.dos.zone%2Fcustom%2Fdos%2Fdoom.jsdos%3Fanonymous%3D1" title="DOOM (1993)"></iframe>
+            </div>
+            <div style="font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); text-align: center;">
+                Controls: <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> or <kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd> move · <kbd>Space</kbd> / <kbd>Ctrl</kbd> fire · <kbd>Shift</kbd> run · <kbd>Alt</kbd> strafe · <kbd>Esc</kbd> menu / exit
+            </div>
+        `;
+        document.body.appendChild(modal);
+
+        document.getElementById("close-doom").addEventListener("click", () => {
+            modal.style.display = "none";
+            const frame = document.getElementById("doom-frame");
+            if (frame) frame.src = "";
+        });
+
+        document.getElementById("fullscreen-doom").addEventListener("click", () => {
+            const frame = document.getElementById("doom-frame");
+            if (frame && frame.requestFullscreen) frame.requestFullscreen();
+        });
+
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape" && modal.style.display !== "none") {
+                modal.style.display = "none";
+                const frame = document.getElementById("doom-frame");
+                if (frame) frame.src = "";
+            }
+        });
+    } else {
+        modal.style.display = "flex";
+        const frame = document.getElementById("doom-frame");
+        if (frame) frame.src = "https://dos.zone/player/?bundleUrl=https%3A%2F%2Fcdn.dos.zone%2Fcustom%2Fdos%2Fdoom.jsdos%3Fanonymous%3D1";
+    }
+
+    cliPrint(`<span class="cli-accent">✦ DOOM (1993) WASM Engine launched. Type 'doom' anytime to play.</span>`);
 }
 
 

@@ -1310,226 +1310,32 @@ kbd {
     font-size: 11px;
     color: var(--text-muted);
     text-align: center;
+/* === 15. ACCESSIBILITY & UTILITIES === */
+:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 4px;
 }
 
-/* I CHING MODULE */
-.iching-box {
-    background: rgba(24, 24, 24, 0.55);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(196, 168, 130, 0.15);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
-    border-radius: 8px;
-    padding: 24px;
-    text-align: center;
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+    #cli-bar {
+        bottom: max(16px, env(safe-area-inset-bottom));
+    }
 }
-.iching-intro {
-    font-size: 13px;
-    color: var(--text-secondary);
-    margin-bottom: 18px;
-}
-.iching-display {
-    margin-top: 20px;
-    padding: 20px;
-    background: rgba(36, 36, 36, 0.5);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border: 1px solid rgba(196, 168, 130, 0.2);
-    border-radius: 6px;
-    display: none;
-    text-align: left;
-}
-.iching-title {
-    font-family: var(--font-serif);
-    font-size: 20px;
-    color: var(--accent);
-    margin-bottom: 6px;
-}
-.iching-symbol {
-    font-size: 28px;
-    color: var(--text);
-    margin-bottom: 12px;
-    letter-spacing: 4px;
-}
-.iching-meaning {
-    font-size: 13px;
-    color: var(--text-secondary);
-    line-height: 1.7;
 
-/* === 15. GITHUB SHOWCASE === */
-.github-container {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    width: 100%;
-}
-.gh-profile-bar {
-    background: rgba(16, 16, 16, 0.94);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(230, 200, 158, 0.22);
-    border-radius: 10px;
-    padding: 24px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 16px;
-}
-.gh-handle {
-    font-family: var(--font-mono);
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--accent);
-    display: block;
-}
-.gh-status {
-    font-family: var(--font-mono);
-    font-size: 12px;
-    color: var(--terminal);
-}
-.gh-stats-grid {
-    display: flex;
-    gap: 24px;
-}
-.gh-stat-item {
-    display: flex;
-    flex-direction: column;
-}
-.gh-stat-num {
-    font-family: var(--font-mono);
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--text);
-}
-.gh-stat-label {
-    font-size: 11px;
-    color: var(--text-muted);
-}
-.gh-heatmap-card {
-    background: rgba(16, 16, 16, 0.94);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(230, 200, 158, 0.22);
-    border-radius: 10px;
-    padding: 24px;
-}
-.gh-heatmap-header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 14px;
-    font-family: var(--font-mono);
-    font-size: 12px;
-}
-.gh-heatmap-title {
-    color: var(--text);
-    font-weight: 600;
-}
-.gh-heatmap-count {
-    color: var(--text-muted);
-}
-.gh-heatmap-grid {
-    display: grid;
-    grid-template-columns: repeat(52, 1fr);
-    gap: 4px;
-    margin-bottom: 12px;
-    overflow-x: auto;
-    padding-bottom: 4px;
-}
-.gh-box {
-    width: 100%;
-    aspect-ratio: 1;
-    border-radius: 2px;
-    background: rgba(255, 255, 255, 0.06);
-}
-.gh-box.level-1 { background: rgba(230, 200, 158, 0.25); }
-.gh-box.level-2 { background: rgba(230, 200, 158, 0.48); }
-.gh-box.level-3 { background: rgba(230, 200, 158, 0.75); }
-.gh-box.level-4 { background: rgba(230, 200, 158, 0.95); }
-.gh-heatmap-legend {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-family: var(--font-mono);
-    font-size: 10px;
-    color: var(--text-muted);
-    justify-content: flex-end;
-}
-.legend-box {
-    width: 8px;
-    height: 8px;
-    border-radius: 1px;
-}
-.legend-box.level-0 { background: rgba(255, 255, 255, 0.06); }
-.legend-box.level-1 { background: rgba(230, 200, 158, 0.25); }
-.legend-box.level-2 { background: rgba(230, 200, 158, 0.48); }
-.legend-box.level-3 { background: rgba(230, 200, 158, 0.75); }
-.legend-box.level-4 { background: rgba(230, 200, 158, 0.95); }
-
-.gh-repos-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 16px;
-}
-.gh-repo-card {
-    background: rgba(16, 16, 16, 0.94);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(230, 200, 158, 0.22);
-    border-radius: 10px;
-    padding: 24px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    transition: all 0.25s var(--ease);
-}
-.gh-repo-card:hover {
-    border-color: var(--accent);
-    transform: translateY(-2px);
-}
-.gh-repo-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-.gh-repo-name {
-    font-family: var(--font-mono);
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--accent);
-}
-.gh-badge {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    padding: 2px 8px;
-    border-radius: 99px;
-    border: 1px solid rgba(230, 200, 158, 0.3);
-    color: var(--text-muted);
-}
-.gh-repo-desc {
-    font-size: 13px;
-    color: var(--text-secondary);
-    line-height: 1.6;
-    flex: 1;
-}
-.gh-repo-meta {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--text-muted);
-    margin-top: 4px;
-}
-.lang-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    display: inline-block;
-}
-.lang-dot.python { background: #3572A5; }
-.lang-dot.js { background: #f1e05a; }
-.lang-dot.cpp { background: #f34b7d; }
-.lang-dot.html { background: #e34c26; }
-.gh-link {
-    margin-left: auto;
-    color: var(--accent);
+@media print {
+    #canvas-bg, #cli-bar, #cmd-palette, #boot-screen {
+        display: none !important;
+    }
+    body {
+        background: #ffffff !important;
+        color: #111111 !important;
+    }
+    .about-card, .work-item, .project-card {
+        background: #ffffff !important;
+        border: 1px solid #dddddd !important;
+        color: #111111 !important;
+        box-shadow: none !important;
+    }
 }
 

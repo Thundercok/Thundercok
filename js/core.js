@@ -78,6 +78,7 @@ function onReady() {
     initAstro();
     initArcade();
     initIChing();
+    initDonut();
 }
 
 

@@ -2195,8 +2195,8 @@ function initDonut() {
     const renderDonut = () => {
         let b = [];
         let z = [];
-        A += 0.07;
-        B += 0.03;
+        A += 0.04;
+        B += 0.015;
         
         let cA = Math.cos(A), sA = Math.sin(A),
             cB = Math.cos(B), sB = Math.sin(B);

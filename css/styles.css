@@ -388,8 +388,8 @@ a:hover {
 
 #ascii-donut {
     font-family: var(--font-mono);
-    font-size: 8px;
-    line-height: 8px;
+    font-size: 11px;
+    line-height: 11px;
     color: var(--accent);
     white-space: pre;
     user-select: none;

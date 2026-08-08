@@ -1,11 +1,11 @@
 /* =========================================
-   Nguyễn Văn Mười — Minimal Research Portfolio
+   Nguyễn Văn Mười — Research Portfolio System
    ========================================= */
 
 /* === 1. DESIGN TOKENS === */
 :root {
     --bg:              #0f0f0f;
-    --bg-surface:      #171717;
+    --bg-surface:      rgba(23, 23, 23, 0.88);
     --bg-elevated:     #1f1f1f;
     --border:          #262626;
     --border-subtle:   #1f1f1f;
@@ -72,14 +72,30 @@ a:hover {
 ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
 
 
-/* === 3. APP LAYOUT === */
+/* === 3. CANVAS BACKGROUND === */
+#canvas-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.65;
+    transition: opacity 0.5s ease;
+}
+
+
+/* === 4. APP LAYOUT === */
 #app {
     display: flex;
     height: 100vh;
     opacity: 1;
+    position: relative;
+    z-index: 1;
 }
 
-/* === 4. SIDEBAR === */
+/* === 5. SIDEBAR === */
 #sidebar {
     width: var(--sidebar-w);
     height: 100vh;
@@ -91,7 +107,9 @@ a:hover {
     flex-direction: column;
     justify-content: space-between;
     flex-shrink: 0;
-    background: var(--bg);
+    background: rgba(15, 15, 15, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
 }
 
 .identity {
@@ -188,14 +206,14 @@ a:hover {
 }
 
 
-/* === 5. MAIN CONTENT === */
+/* === 6. MAIN CONTENT === */
 #main-content {
     flex: 1;
     overflow-y: auto;
     padding-bottom: 80px;
     scroll-behavior: smooth;
     position: relative;
-    background: var(--bg);
+    background: transparent;
 }
 
 .section {
@@ -221,7 +239,7 @@ a:hover {
 }
 
 
-/* === 6. ABOUT === */
+/* === 7. ABOUT === */
 .about-container {
     display: flex;
     flex-direction: column;
@@ -231,6 +249,8 @@ a:hover {
 
 .about-card {
     background: var(--bg-surface);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border: 1px solid var(--border);
     border-radius: 8px;
     padding: 32px;
@@ -258,36 +278,6 @@ a:hover {
     font-weight: 500;
 }
 
-/* Metric Counters */
-.about-metrics-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 12px;
-}
-
-.metric-card {
-    background: var(--bg-surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 18px 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.metric-val {
-    font-family: var(--font-mono);
-    font-size: 20px;
-    font-weight: 600;
-    color: var(--text);
-}
-
-.metric-lbl {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--text-muted);
-}
-
 /* Specialization Pillars */
 .about-pillars-grid {
     display: grid;
@@ -297,6 +287,8 @@ a:hover {
 
 .pillar-card {
     background: var(--bg-surface);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border: 1px solid var(--border);
     border-radius: 8px;
     padding: 24px;
@@ -320,6 +312,8 @@ a:hover {
 /* Status Banner */
 .about-status-banner {
     background: var(--bg-surface);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border: 1px solid var(--border);
     border-radius: 8px;
     padding: 16px 20px;
@@ -340,7 +334,7 @@ a:hover {
 }
 
 
-/* === 7. WORK === */
+/* === 8. WORK === */
 .work-list {
     display: flex;
     flex-direction: column;
@@ -354,6 +348,8 @@ a:hover {
     grid-template-columns: 140px 1fr;
     gap: 20px;
     background: var(--bg-surface);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border: 1px solid var(--border);
     transition: border-color 0.2s var(--ease);
 }
@@ -403,7 +399,7 @@ a:hover {
 }
 
 
-/* === 8. PROJECTS === */
+/* === 9. PROJECTS === */
 .project-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -415,6 +411,8 @@ a:hover {
     border: 1px solid var(--border);
     border-radius: 8px;
     background: var(--bg-surface);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -466,7 +464,7 @@ a:hover {
 }
 
 
-/* === 9. SKILLS === */
+/* === 10. SKILLS === */
 .skills-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -496,7 +494,7 @@ a:hover {
 }
 
 
-/* === 10. WRITINGS & CV === */
+/* === 11. WRITINGS & CV === */
 .writings-list {
     display: flex;
     flex-direction: column;
@@ -509,6 +507,8 @@ a:hover {
     align-items: center;
     gap: 16px;
     background: var(--bg-surface);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border: 1px solid var(--border);
     transition: border-color 0.2s var(--ease);
     text-decoration: none;
@@ -555,7 +555,7 @@ a:hover {
 }
 
 
-/* === 11. CONTACT === */
+/* === 12. CONTACT === */
 .contact-text {
     font-size: 14.5px;
     color: var(--text-secondary);
@@ -573,6 +573,8 @@ a:hover {
     color: var(--text);
     padding: 10px 20px;
     background: var(--bg-surface);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border: 1px solid var(--border);
     border-radius: 6px;
     text-decoration: none;
@@ -584,7 +586,7 @@ a:hover {
 }
 
 
-/* === 12. COMMAND PALETTE === */
+/* === 13. COMMAND PALETTE === */
 #cmd-palette {
     position: fixed;
     top: 20%;
@@ -592,12 +594,12 @@ a:hover {
     transform: translateX(-50%);
     width: 460px;
     max-width: 90vw;
-    background: var(--bg-surface);
+    background: #171717;
     border: 1px solid var(--border);
     border-radius: 8px;
     z-index: 1000;
     display: none;
-    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.7);
     overflow: hidden;
 }
 #cmd-palette.visible {
@@ -664,7 +666,7 @@ kbd {
 }
 
 
-/* === 13. RESPONSIVE === */
+/* === 14. RESPONSIVE === */
 @media (max-width: 860px) {
     body {
         overflow-y: auto;

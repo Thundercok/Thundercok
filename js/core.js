@@ -63,14 +63,14 @@
         }
     }
 
-    // ── 2. INTERACTIVE CANVAS FLOW FIELD BACKGROUND ──
+    // ── 2. DENSE INTERACTIVE ASCII CANVAS FLOW FIELD ──
     function initFlowCanvas() {
         const cvs = document.getElementById("canvas-bg");
         if (!cvs) return;
         const ctx = cvs.getContext("2d");
         if (!ctx) return;
 
-        const C_CELL = 24;
+        const C_CELL = 20;
         let ft = 0;
         let mouse = { x: -9999, y: -9999, active: false };
         let ripples = [];
@@ -92,7 +92,7 @@
         });
         document.addEventListener("click", (e) => {
             if (e.target.tagName !== "INPUT" && e.target.tagName !== "BUTTON" && e.target.tagName !== "A") {
-                ripples.push({ x: e.clientX, y: e.clientY, age: 0, maxAge: 45 });
+                ripples.push({ x: e.clientX, y: e.clientY, age: 0, maxAge: 50 });
             }
         });
 
@@ -119,7 +119,7 @@
             requestAnimationFrame(draw);
             if (document.hidden) return;
 
-            ft += 0.01;
+            ft += 0.012;
             ripples = ripples.filter(r => r.age < r.maxAge);
             ripples.forEach(r => r.age++);
 
@@ -137,39 +137,45 @@
 
                     let angle = noise(nx * 3, ny * 3, ft * 0.3) * Math.PI * 4;
                     let speed = noise(nx * 4 + 10, ny * 4 + 10, ft * 0.2 + 5);
+                    let isNearMouse = false;
 
                     if (mouse.active) {
                         const dx = px - mouse.x, dy = py - mouse.y;
                         const d2 = dx * dx + dy * dy;
-                        if (d2 < 22500) {
+                        if (d2 < 32400) {
                             const dist = Math.sqrt(d2);
-                            const inf = Math.pow(1 - dist / 150, 2) * 0.8;
+                            const inf = Math.pow(1 - dist / 180, 2) * 0.85;
                             angle += (Math.atan2(dy, dx) + Math.PI - angle) * inf;
-                            speed = Math.min(1, speed + inf * 0.4);
+                            speed = Math.min(1, speed + inf * 0.5);
+                            isNearMouse = true;
                         }
                     }
 
                     ripples.forEach(rip => {
                         const dx = px - rip.x, dy = py - rip.y;
                         const dist = Math.sqrt(dx * dx + dy * dy);
-                        const wf = (rip.age / rip.maxAge) * 300;
+                        const wf = (rip.age / rip.maxAge) * 350;
                         const diff = Math.abs(dist - wf);
-                        if (diff < 40) {
-                            const ri = (1 - diff / 40) * (1 - rip.age / rip.maxAge) * 0.7;
-                            speed = Math.min(1, speed + ri * 0.5);
+                        if (diff < 50) {
+                            const ri = (1 - diff / 50) * (1 - rip.age / rip.maxAge) * 0.8;
+                            speed = Math.min(1, speed + ri * 0.6);
+                            isNearMouse = true;
                         }
                     });
 
-                    if (speed < 0.32) continue;
-
                     const seg = Math.floor((((angle % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2)) / (Math.PI * 2) * 8);
                     let charIdx = 0;
-                    if (speed > 0.58) charIdx = 1;
-                    if (speed > 0.8) charIdx = 2;
+                    if (speed > 0.45) charIdx = 1;
+                    if (speed > 0.72) charIdx = 2;
                     const ch = charSets[charIdx][seg];
 
-                    const alpha = Math.min(0.35, 0.04 + speed * 0.22);
-                    ctx.fillStyle = `rgba(129, 140, 248, ${alpha})`;
+                    // Render dense particle flow
+                    let alpha = Math.min(0.45, 0.08 + speed * 0.3);
+                    if (isNearMouse) {
+                        ctx.fillStyle = `rgba(165, 180, 252, ${Math.min(0.75, alpha * 2)})`;
+                    } else {
+                        ctx.fillStyle = `rgba(129, 140, 248, ${alpha})`;
+                    }
                     ctx.fillText(ch, c * C_CELL, r * C_CELL + C_CELL);
                 }
             }

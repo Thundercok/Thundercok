@@ -6,11 +6,17 @@
 (() => {
     "use strict";
 
-    document.addEventListener("DOMContentLoaded", () => {
+    function startApp() {
         initScrollSpy();
         initCmdPalette();
         initFlowCanvas();
-    });
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", startApp);
+    } else {
+        startApp();
+    }
 
     // ── 1. SCROLL SPY & NAVIGATION ──
     function initScrollSpy() {
@@ -169,7 +175,6 @@
                     if (speed > 0.72) charIdx = 2;
                     const ch = charSets[charIdx][seg];
 
-                    // Render dense particle flow
                     let alpha = Math.min(0.45, 0.08 + speed * 0.3);
                     if (isNearMouse) {
                         ctx.fillStyle = `rgba(165, 180, 252, ${Math.min(0.75, alpha * 2)})`;

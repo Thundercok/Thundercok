@@ -69,7 +69,7 @@
         }
     }
 
-    // ── 2. DENSE INTERACTIVE ASCII CANVAS FLOW FIELD ──
+    // ── 2. SILKY-SMOOTH ASCII CANVAS FLOW FIELD & RIPPLES ──
     function initFlowCanvas() {
         const cvs = document.getElementById("canvas-bg");
         if (!cvs) return;
@@ -78,7 +78,7 @@
 
         const C_CELL = 20;
         let ft = 0;
-        let mouse = { x: -9999, y: -9999, active: false };
+        let mouse = { x: -9999, y: -9999, targetX: -9999, targetY: -9999, active: false };
         let ripples = [];
 
         function resize() {
@@ -89,8 +89,8 @@
         window.addEventListener("resize", resize);
 
         document.addEventListener("mousemove", (e) => {
-            mouse.x = e.clientX;
-            mouse.y = e.clientY;
+            mouse.targetX = e.clientX;
+            mouse.targetY = e.clientY;
             mouse.active = true;
         });
         document.addEventListener("mouseleave", () => {
@@ -98,7 +98,7 @@
         });
         document.addEventListener("click", (e) => {
             if (e.target.tagName !== "INPUT" && e.target.tagName !== "BUTTON" && e.target.tagName !== "A") {
-                ripples.push({ x: e.clientX, y: e.clientY, age: 0, maxAge: 50 });
+                ripples.push({ x: e.clientX, y: e.clientY, age: 0, maxAge: 90 });
             }
         });
 
@@ -125,7 +125,15 @@
             requestAnimationFrame(draw);
             if (document.hidden) return;
 
-            ft += 0.012;
+            ft += 0.01;
+            
+            // Smooth mouse LERP
+            if (mouse.active) {
+                mouse.x += (mouse.targetX - mouse.x) * 0.12;
+                mouse.y += (mouse.targetY - mouse.y) * 0.12;
+            }
+
+            // Age & clean up ripples smoothly
             ripples = ripples.filter(r => r.age < r.maxAge);
             ripples.forEach(r => r.age++);
 
@@ -143,29 +151,39 @@
 
                     let angle = noise(nx * 3, ny * 3, ft * 0.3) * Math.PI * 4;
                     let speed = noise(nx * 4 + 10, ny * 4 + 10, ft * 0.2 + 5);
-                    let isNearMouse = false;
+                    let glowIntensity = 0;
 
+                    // Mouse proximity influence
                     if (mouse.active) {
                         const dx = px - mouse.x, dy = py - mouse.y;
                         const d2 = dx * dx + dy * dy;
-                        if (d2 < 32400) {
+                        if (d2 < 36000) {
                             const dist = Math.sqrt(d2);
-                            const inf = Math.pow(1 - dist / 180, 2) * 0.85;
+                            const inf = Math.pow(1 - dist / 190, 2) * 0.8;
                             angle += (Math.atan2(dy, dx) + Math.PI - angle) * inf;
-                            speed = Math.min(1, speed + inf * 0.5);
-                            isNearMouse = true;
+                            speed = Math.min(1, speed + inf * 0.45);
+                            glowIntensity = Math.max(glowIntensity, inf);
                         }
                     }
 
+                    // Silky Cosine Bell Ripple Physics
                     ripples.forEach(rip => {
                         const dx = px - rip.x, dy = py - rip.y;
                         const dist = Math.sqrt(dx * dx + dy * dy);
-                        const wf = (rip.age / rip.maxAge) * 350;
-                        const diff = Math.abs(dist - wf);
-                        if (diff < 50) {
-                            const ri = (1 - diff / 50) * (1 - rip.age / rip.maxAge) * 0.8;
-                            speed = Math.min(1, speed + ri * 0.6);
-                            isNearMouse = true;
+                        const progress = rip.age / rip.maxAge;
+                        const ringRadius = Math.sin(progress * Math.PI * 0.5) * 450;
+                        const waveWidth = 80;
+                        const distFromRing = Math.abs(dist - ringRadius);
+
+                        if (distFromRing < waveWidth) {
+                            const ringShape = 0.5 * (1 + Math.cos((distFromRing / waveWidth) * Math.PI)); // Cosine Bell Curve
+                            const timeFade = Math.sin(progress * Math.PI); // Soft start & soft fade out
+                            const ripplePower = ringShape * timeFade * 0.85;
+
+                            const outwardAngle = Math.atan2(dy, dx);
+                            angle = angle * (1 - ripplePower * 0.5) + outwardAngle * (ripplePower * 0.5);
+                            speed = Math.min(1, speed + ripplePower * 0.5);
+                            glowIntensity = Math.max(glowIntensity, ripplePower);
                         }
                     });
 
@@ -175,11 +193,16 @@
                     if (speed > 0.72) charIdx = 2;
                     const ch = charSets[charIdx][seg];
 
-                    let alpha = Math.min(0.45, 0.08 + speed * 0.3);
-                    if (isNearMouse) {
-                        ctx.fillStyle = `rgba(165, 180, 252, ${Math.min(0.75, alpha * 2)})`;
+                    // Render smooth particle color blend
+                    const baseAlpha = Math.min(0.42, 0.08 + speed * 0.28);
+                    if (glowIntensity > 0.05) {
+                        const rCol = Math.round(129 + (165 - 129) * glowIntensity);
+                        const gCol = Math.round(140 + (180 - 140) * glowIntensity);
+                        const bCol = Math.round(248 + (252 - 248) * glowIntensity);
+                        const alpha = Math.min(0.8, baseAlpha + glowIntensity * 0.45);
+                        ctx.fillStyle = `rgba(${rCol}, ${gCol}, ${bCol}, ${alpha})`;
                     } else {
-                        ctx.fillStyle = `rgba(129, 140, 248, ${alpha})`;
+                        ctx.fillStyle = `rgba(129, 140, 248, ${baseAlpha})`;
                     }
                     ctx.fillText(ch, c * C_CELL, r * C_CELL + C_CELL);
                 }

@@ -69,7 +69,7 @@
         }
     }
 
-    // ── 2. SILKY-SMOOTH ASCII CANVAS FLOW FIELD & RIPPLES ──
+    // ── 2. ZEN STONE & SAND ASCII CANVAS FLOW FIELD & RIPPLES ──
     function initFlowCanvas() {
         const cvs = document.getElementById("canvas-bg");
         if (!cvs) return;
@@ -193,16 +193,16 @@
                     if (speed > 0.72) charIdx = 2;
                     const ch = charSets[charIdx][seg];
 
-                    // Render smooth particle color blend
+                    // Render Zen Sand & Light Gold particles
                     const baseAlpha = Math.min(0.42, 0.08 + speed * 0.28);
                     if (glowIntensity > 0.05) {
-                        const rCol = Math.round(129 + (165 - 129) * glowIntensity);
-                        const gCol = Math.round(140 + (180 - 140) * glowIntensity);
-                        const bCol = Math.round(248 + (252 - 248) * glowIntensity);
-                        const alpha = Math.min(0.8, baseAlpha + glowIntensity * 0.45);
+                        const rCol = Math.round(226 + (240 - 226) * glowIntensity);
+                        const gCol = Math.round(196 + (216 - 196) * glowIntensity);
+                        const bCol = Math.round(153 + (181 - 153) * glowIntensity);
+                        const alpha = Math.min(0.85, baseAlpha + glowIntensity * 0.45);
                         ctx.fillStyle = `rgba(${rCol}, ${gCol}, ${bCol}, ${alpha})`;
                     } else {
-                        ctx.fillStyle = `rgba(129, 140, 248, ${baseAlpha})`;
+                        ctx.fillStyle = `rgba(226, 196, 153, ${baseAlpha})`;
                     }
                     ctx.fillText(ch, c * C_CELL, r * C_CELL + C_CELL);
                 }

@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="vi">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Japanese Guide to Color & Outfit Coordination — 配色総鑑 (Sanzo Wada)</title>
+        <meta name="description" content="Cẩm nang phối đồ theo phong cách Nhật Bản: 348 bảng phối màu kinh điển của Sanzo Wada (A Dictionary of Color Combinations), phòng thử đồ ảo 60-30-10, Cityboy & Wabi-Sabi styling." />
+        <meta name="theme-color" content="#09090b" />
+        <meta name="color-scheme" content="dark" />
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👘</text></svg>" />
+
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Noto+Serif+JP:wght@400;600;900&display=swap"
+            rel="stylesheet"
+        />
+        <link rel="stylesheet" href="css/colors.css?v=1.0" />
+    </head>
+    <body>
+
+        <!-- ═══ TOP ACTION BAR ═══ -->
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <a href="index.html" class="brand-badge">
+                    <span>← Interactive Portfolio</span>
+                    <span class="badge-tag">λ</span>
+                </a>
+                <a href="cv.html" class="brand-badge" style="display: none;">
+                    <span>📄 Harvard CV</span>
+                </a>
+            </div>
+            <div class="top-bar-right">
+                <button id="btn-random-outfit" class="btn btn-outline" title="Gợi ý trang phục ngẫu nhiên hôm nay">
+                    <span>🎲 Hôm nay mặc gì?</span>
+                </button>
+                <button class="btn btn-primary" onclick="document.querySelector('[data-tab=saved]').click()" title="Xem tủ đồ đã lưu">
+                    <span>❤️ Tủ đồ đã lưu</span>
+                    <span class="btn-badge" id="saved-count-badge">0</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- ═══ HERO SECTION ═══ -->
+        <section class="hero-section">
+            <div class="hero-header">
+                <div class="hero-title-group">
+                    <div class="hero-subtitle-jp">
+                        <span>配色総鑑 · A Dictionary of Color Combinations</span>
+                    </div>
+                    <h1 class="hero-title">Cẩm Nang Phối Đồ Chuẩn Nhật Bản</h1>
+                    <p class="hero-desc">
+                        Hệ thống tra cứu 348 bảng phối màu kinh điển từ tác phẩm của bậc thầy thiết kế đoạt giải Oscar <strong>Sanzo Wada (和田三造)</strong>. Tích hợp phòng thử đồ ảo (Outfit Fitting Studio), mô phỏng trang phục tức thì theo quy tắc vàng <strong>60-30-10</strong> và phong cách Cityboy, Wabi-Sabi, Smart Casual Tokyo.
+                    </p>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <span class="stat-num">348</span>
+                        <span class="stat-lbl">Bảng phối màu</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-num">159</span>
+                        <span class="stat-lbl">Sắc thái Wada</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-num">30</span>
+                        <span class="stat-lbl">Màu cổ điển Nippon</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-num">60:30:10</span>
+                        <span class="stat-lbl">Tỉ lệ vàng</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══ MAIN STUDIO LAYOUT ═══ -->
+        <main class="studio-layout">
+
+            <!-- ── LEFT: INTERACTIVE FITTING ROOM (MANNEQUIN STUDIO) ── -->
+            <aside class="fitting-studio">
+                <div class="studio-header">
+                    <div class="studio-title">
+                        <span>Phòng Thử Đồ Ảo</span>
+                        <span class="studio-title-jp">試着室</span>
+                    </div>
+                    <button class="btn btn-outline" id="btn-save-current-palette" style="padding: 4px 10px; font-size: 11.5px;">
+                        <span>❤️ Lưu Set Đồ</span>
+                    </button>
+                </div>
+
+                <!-- Silhouette Selector -->
+                <div class="silhouette-selector">
+                    <button class="sil-btn active" data-sil="smart_casual">👔 Smart Casual</button>
+                    <button class="sil-btn" data-sil="cityboy">🛹 Cityboy</button>
+                    <button class="sil-btn" data-sil="wabi_sabi">☕ Wabi-Sabi</button>
+                    <button class="sil-btn" data-sil="feminine">🌸 Trench Chic</button>
+                </div>
+
+                <!-- Visual Mannequin Stage -->
+                <div class="mannequin-stage">
+                    <div class="mannequin-art" id="mannequin-container">
+                        <!-- Rendered via JS -->
+                    </div>
+
+                    <!-- Layer Controls -->
+                    <div class="outfit-layers-control">
+                        <div class="layer-slot-row">
+                            <div class="slot-info">
+                                <div class="slot-color-chip" id="chip-outerwear"></div>
+                                <div class="slot-text">
+                                    <span class="slot-name">Áo khoác / Blazer</span>
+                                    <span class="slot-color-name" id="name-outerwear">--</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="layer-slot-row">
+                            <div class="slot-info">
+                                <div class="slot-color-chip" id="chip-top"></div>
+                                <div class="slot-text">
+                                    <span class="slot-name">Áo trong / Sơ mi</span>
+                                    <span class="slot-color-name" id="name-top">--</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="layer-slot-row">
+                            <div class="slot-info">
+                                <div class="slot-color-chip" id="chip-bottom"></div>
+                                <div class="slot-text">
+                                    <span class="slot-name">Quần / Chân váy</span>
+                                    <span class="slot-color-name" id="name-bottom">--</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="layer-slot-row">
+                            <div class="slot-info">
+                                <div class="slot-color-chip" id="chip-shoes"></div>
+                                <div class="slot-text">
+                                    <span class="slot-name">Giày / Phụ kiện</span>
+                                    <span class="slot-color-name" id="name-shoes">--</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Swap Actions -->
+                        <div class="layer-action-bar">
+                            <button class="action-btn-mini" id="btn-swap-outer-inner" title="Đổi màu Áo khoác và Áo trong">
+                                <span>🔀 Đổi Áo Ngoài ↔ Trong</span>
+                            </button>
+                            <button class="action-btn-mini" id="btn-swap-top-bottom" title="Đổi màu Áo trong và Quần">
+                                <span>🔄 Đổi Áo ↔ Quần</span>
+                            </button>
+                        </div>
+                        <button class="action-btn-mini" id="btn-cycle-colors" style="width: 100%; margin-top: 2px;">
+                            <span>🌀 Xoay vòng các lớp màu</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 60-30-10 Ratio Panel -->
+                <div class="ratio-panel">
+                    <div class="ratio-header">
+                        <span class="ratio-title">Tỉ Lệ Phối Màu (60-30-10 Rule)</span>
+                        <span class="ratio-badge" id="ratio-harmony-badge">Cân bằng</span>
+                    </div>
+                    <div class="ratio-bar" id="ratio-bar-segments">
+                        <!-- Rendered via JS -->
+                    </div>
+                    <div class="ratio-legend">
+                        <span>60% Chủ đạo</span>
+                        <span>30% Bổ trợ</span>
+                        <span>10% Điểm nhấn</span>
+                    </div>
+                </div>
+
+                <!-- Outfit Styling Advice -->
+                <div class="advice-box" id="outfit-advice-content">
+                    Đang tải dữ liệu hướng dẫn phối đồ...
+                </div>
+            </aside>
+
+            <!-- ── RIGHT: PALETTES & EXPLORERS ── -->
+            <div class="explorer-container">
+
+                <!-- Tabs Header -->
+                <div class="explorer-tabs">
+                    <button class="tab-btn active" data-tab="palettes">
+                        <span>🎨 348 Bảng Phối Sanzo Wada</span>
+                        <span class="tab-count">348</span>
+                    </button>
+                    <button class="tab-btn" data-tab="colors">
+                        <span>🌈 159 Sắc Màu Wada</span>
+                        <span class="tab-count">159</span>
+                    </button>
+                    <button class="tab-btn" data-tab="nippon">
+                        <span>🎌 30 Sắc Cổ Điển Nippon</span>
+                        <span class="tab-count">30</span>
+                    </button>
+                    <button class="tab-btn" data-tab="saved">
+                        <span>❤️ Tủ Đồ Đã Lưu</span>
+                    </button>
+                </div>
+
+                <!-- Filters & Search (Visible on Palettes Tab) -->
+                <div class="filter-card" id="main-filters-card">
+                    <!-- Search Bar -->
+                    <div class="search-row">
+                        <div class="search-input-wrapper">
+                            <span class="search-icon">🔍</span>
+                            <input
+                                type="text"
+                                id="search-input"
+                                placeholder="Tìm kiếm theo mã số (#142), tên màu (Indigo, Rikyucha, Be, Navy, Coral...)"
+                                autocomplete="off"
+                            />
+                        </div>
+                    </div>
+
+                    <!-- Number of Colors Filter -->
+                    <div class="filter-group-row">
+                        <span class="filter-label">Số màu:</span>
+                        <div class="filter-pills">
+                            <button class="pill-btn active" data-count-filter="all">Tất cả</button>
+                            <button class="pill-btn" data-count-filter="2">2 Màu (Tối giản / Suit)</button>
+                            <button class="pill-btn" data-count-filter="3">3 Màu (Kinh điển 60-30-10)</button>
+                            <button class="pill-btn" data-count-filter="4">4 Màu (Layering nhiều lớp)</button>
+                        </div>
+                    </div>
+
+                    <!-- Season Filter -->
+                    <div class="filter-group-row">
+                        <span class="filter-label">Mùa:</span>
+                        <div class="filter-pills">
+                            <button class="pill-btn active" data-season-filter="all">Tất cả mùa</button>
+                            <button class="pill-btn" data-season-filter="spring">🌸 Xuân (Pastel & Tươi)</button>
+                            <button class="pill-btn" data-season-filter="summer">🌿 Hạ (Mát mẻ & Lam)</button>
+                            <button class="pill-btn" data-season-filter="autumn">🍁 Thu (Tone Đất & Ấm)</button>
+                            <button class="pill-btn" data-season-filter="winter">❄️ Đông (Trầm & Sâu)</button>
+                        </div>
+                    </div>
+
+                    <!-- Style Vibe Filter -->
+                    <div class="filter-group-row">
+                        <span class="filter-label">Phong cách:</span>
+                        <div class="filter-pills">
+                            <button class="pill-btn active" data-vibe-filter="all">Tất cả</button>
+                            <button class="pill-btn" data-vibe-filter="Smart Casual">Smart Casual</button>
+                            <button class="pill-btn" data-vibe-filter="Cityboy">Cityboy Tokyo</button>
+                            <button class="pill-btn" data-vibe-filter="Wabi-Sabi">Wabi-Sabi</button>
+                            <button class="pill-btn" data-vibe-filter="Dark Academia">Dark Academia</button>
+                            <button class="pill-btn" data-vibe-filter="Pastel & Soft">Pastel Nhẹ Nhàng</button>
+                            <button class="pill-btn" data-vibe-filter="Minimalist">Minimalist</button>
+                        </div>
+                    </div>
+
+                    <!-- Wardrobe Base Color Matcher -->
+                    <div class="wardrobe-matcher-box">
+                        <div class="matcher-info">
+                            <span>👔 <strong>Tôi có sẵn áo/quần màu:</strong></span>
+                        </div>
+                        <div class="matcher-swatches">
+                            <div class="base-color-dot" data-color="blue_navy" style="background-color: #223a70;" title="Xanh Navy / Chàm Indigo"></div>
+                            <div class="base-color-dot" data-color="orange_earth" style="background-color: #9b6e23;" title="Nâu da bò / Be Chinos"></div>
+                            <div class="base-color-dot" data-color="green_olive" style="background-color: #556b2f;" title="Xanh rêu / Ô-liu"></div>
+                            <div class="base-color-dot" data-color="neutral" style="background-color: #27221f;" title="Đen / Xám Than Chì"></div>
+                            <div class="base-color-dot" data-color="red" style="background-color: #b7282e;" title="Đỏ đất / Gạch nung"></div>
+                            <div class="base-color-dot" data-color="yellow_gold" style="background-color: #fabf14;" title="Vàng mù tạt / Khaki"></div>
+                            <div class="base-color-dot" data-color="pink" style="background-color: #f9c1ce;" title="Hồng phấn / Pastel"></div>
+                            <div class="base-color-dot" data-color="white_cream" style="background-color: #fdfbf7;" title="Trắng ngà / Kem Linen"></div>
+                            <span class="clear-base-btn" id="clear-base-color" style="display: none;">[Xóa chọn]</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── TAB PANELS ── -->
+                
+                <!-- 1. Palettes Grid Panel -->
+                <div id="tab-panel-palettes">
+                    <div class="palettes-grid" id="palettes-grid">
+                        <!-- Rendered dynamically via colors.js -->
+                    </div>
+                </div>
+
+                <!-- 2. Colors Catalog Panel -->
+                <div id="tab-panel-colors" style="display: none;">
+                    <div class="colors-catalog-grid" id="colors-grid">
+                        <!-- Rendered dynamically via colors.js -->
+                    </div>
+                </div>
+
+                <!-- 3. Nippon Traditional Panel -->
+                <div id="tab-panel-nippon" style="display: none;">
+                    <div class="nippon-grid" id="nippon-grid">
+                        <!-- Rendered dynamically via colors.js -->
+                    </div>
+                </div>
+
+                <!-- 4. Saved Wardrobe Panel -->
+                <div id="tab-panel-saved" style="display: none;">
+                    <div class="palettes-grid" id="saved-grid">
+                        <!-- Rendered dynamically via colors.js -->
+                    </div>
+                </div>
+
+            </div>
+        </main>
+
+        <!-- ═══ FASHION STYLING PRINCIPLES SECTION ═══ -->
+        <section class="guide-section">
+            <div class="guide-card">
+                <div class="guide-col">
+                    <h3 class="guide-col-title">📐 Quy Tắc Vàng 60-30-10</h3>
+                    <p class="guide-col-text">
+                        Nguyên tắc thị giác kinh điển: <strong>60%</strong> dành cho màu chủ đạo (thường là áo khoác dáng dài hoặc quần âu), <strong>30%</strong> cho màu bổ trợ (áo sơ mi, áo thun trong hoặc cardigan), và <strong>10%</strong> cho điểm nhấn Accent nổi bật (giày, vớ tất, khăn quàng hoặc túi xách).
+                    </p>
+                </div>
+
+                <div class="guide-col">
+                    <h3 class="guide-col-title">☕ Thẩm Mỹ Wabi-Sabi & Tone Đất</h3>
+                    <p class="guide-col-text">
+                        Triết lý Wabi-Sabi tôn vinh sự mộc mạc, tĩnh lặng của tự nhiên. Phối hợp các gam màu đất như <strong>Rikyucha (Nâu trà), Ai-iro (Xanh chàm), Moss Green (Rêu phong)</strong> với chất liệu vải linen, đũi, len dệt thô giúp bộ trang phục toát lên chiều sâu tinh tế.
+                    </p>
+                </div>
+
+                <div class="guide-col">
+                    <h3 class="guide-col-title">🛹 Phong Cách Cityboy Tokyo</h3>
+                    <p class="guide-col-text">
+                        Đặc trưng bởi phom dáng rộng rãi (Oversized), thoải mái nhưng vẫn gọn gàng. Kết hợp các gam màu nền tảng như Navy, Xám than hoặc Be cát với một điểm nhấn tươi sáng như Cam Bittersweet, Vàng mù tạt hoặc Xanh ngọc Asagi.
+                    </p>
+                </div>
+
+                <div class="guide-col">
+                    <h3 class="guide-col-title">🎨 Tương Phản & Tone Da</h3>
+                    <p class="guide-col-text">
+                        Nếu bạn có <strong>Warm undertone (Tone da ấm)</strong>: Các bảng màu Thu Đông (Cam đất, Nâu gỉ sét, Vàng nghệ, Ô-liu) sẽ cực kỳ tôn da. Nếu có <strong>Cool undertone (Tone da lạnh)</strong>: Hãy ưu tiên các bảng màu Xanh chàm, Xám bạc, Hồng khô và Tím Sumire.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Toast notification -->
+        <div id="toast-notification" class="toast-msg"></div>
+
+        <!-- Scripts -->
+        <script src="js/colors-data.js?v=1.0"></script>
+        <script src="js/colors.js?v=1.0"></script>
+    </body>
+</html>

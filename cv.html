@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Curriculum Vitae — Nguyễn Văn Mười (AI & Operations Research Engineer)</title>
+        <meta name="description" content="Harvard-format ATS CV of Nguyễn Văn Mười. AI & Operations Research Engineer specializing in Neuro-Symbolic AI and GNN-DDQN VRPTW optimization." />
+        <meta name="theme-color" content="#0d1117" />
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>λ</text></svg>" />
+
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+            rel="stylesheet"
+        />
+        <link rel="stylesheet" href="css/cv.css?v=1.0" />
+    </head>
+    <body>
+
+        <!-- ═══ TOP ACTION BAR ═══ -->
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <a href="index.html" class="brand-badge">
+                    <span>← Interactive Portfolio</span>
+                    <span class="badge-tag">λ</span>
+                </a>
+            </div>
+            <div class="top-bar-right">
+                <button id="btn-toggle-evidence" class="btn btn-outline" title="Toggle technical evidence drawer">
+                    <span>🔍 Technical Evidence</span>
+                </button>
+                <button id="btn-print-cv" class="btn btn-primary" title="Print or save as ATS-compliant PDF">
+                    <span>🖨️ Download / Print ATS PDF</span>
+                    <span class="kbd-hint">Ctrl+P</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- ═══ MAIN CONTAINER ═══ -->
+        <div class="cv-container">
+
+            <!-- ── A4 HARVARD PAPER SHEET ── -->
+            <main class="resume-sheet" id="resume-sheet">
+
+                <!-- HEADER -->
+                <header class="cv-header">
+                    <h1 class="cv-name">Nguyễn Văn Mười</h1>
+                    <p class="cv-subtitle">AI & Operations Research Engineer</p>
+                    <div class="cv-contacts">
+                        <span>Ho Chi Minh City, Vietnam</span>
+                        <span class="contact-sep">|</span>
+                        <a href="mailto:cathuys69@gmail.com">cathuys69@gmail.com</a>
+                        <span class="contact-sep">|</span>
+                        <a href="https://github.com/Thundercok" target="_blank" rel="noopener">github.com/Thundercok</a>
+                        <span class="contact-sep">|</span>
+                        <a href="https://thundercok.github.io/Thundercok" target="_blank" rel="noopener">thundercok.github.io/Thundercok</a>
+                        <span class="contact-sep">|</span>
+                        <span class="evidence-link" data-evidence="education"><strong>IELTS 7.5</strong></span>
+                    </div>
+                </header>
+
+                <!-- EDUCATION -->
+                <section class="cv-section">
+                    <h2 class="cv-section-title">Education</h2>
+
+                    <div class="cv-entry">
+                        <div class="cv-entry-header">
+                            <span class="cv-org">Ton Duc Thang University (TDTU)</span>
+                            <span class="cv-loc">Ho Chi Minh City, Vietnam</span>
+                        </div>
+                        <div class="cv-entry-sub">
+                            <span class="cv-role">Bachelor of Science in Computer Science · <span class="evidence-link" data-evidence="awards"><strong>Recipient of TDTU Entrance Scholarship</strong></span></span>
+                            <span class="cv-date">2022 — Present</span>
+                        </div>
+                        <ul class="cv-bullets">
+                            <li>
+                                <strong>Thesis:</strong> Hybrid GNN-DDQN + ALNS Metaheuristics for VRPTW under <a href="papers/VRPTW-VI.pdf" target="_blank" rel="noopener" class="evidence-link" data-evidence="vrptw"><strong>TS. Hồ Thị Linh</strong> <span class="evidence-badge-inline">Evidence ↗</span></a>.
+                            </li>
+                            <li>
+                                <strong>Focus:</strong> Operations Research, Deep Reinforcement Learning, Neuro-Symbolic AI, High-Performance Systems.
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="cv-entry">
+                        <div class="cv-entry-header">
+                            <span class="cv-org">Chinese Culture University (CCU)</span>
+                            <span class="cv-loc">Taipei, Taiwan</span>
+                        </div>
+                        <div class="cv-entry-sub">
+                            <span class="cv-role">International Academic Exchange · <span class="evidence-link" data-evidence="education">AI & Computer Vision Coursework</span></span>
+                            <span class="cv-date">2026</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- RESEARCH & ENGINEERING EXPERIENCE -->
+                <section class="cv-section">
+                    <h2 class="cv-section-title">Research & Engineering Experience</h2>
+
+                    <!-- VRPTW Project -->
+                    <div class="cv-entry">
+                        <div class="cv-entry-header">
+                            <span class="cv-org"><a href="https://github.com/Thundercok/vrptw-neural-hybrid-optimizer" target="_blank" rel="noopener" class="evidence-link" data-evidence="vrptw">Neural-Metaheuristic Solver for VRPTW Optimization</a> <span class="evidence-badge-inline">Evidence ↗</span></span>
+                            <span class="cv-loc">PyTorch, GNN, DDQN, ALNS</span>
+                        </div>
+                        <div class="cv-entry-sub">
+                            <span class="cv-role">Lead Researcher & Solver Architect</span>
+                            <span class="cv-date">2024 — Present</span>
+                        </div>
+                        <ul class="cv-bullets">
+                            <li>
+                                Architected a hybrid neural solver combining <strong>Graph Attention Networks (GAT)</strong> for spatial-temporal node embeddings and <strong>Double Deep Q-Networks (DDQN)</strong> to guide repair operator selection in <strong>Adaptive Large Neighborhood Search (ALNS)</strong> with Numba JIT.
+                            </li>
+                            <li>
+                                Benchmarked under strict <strong>independent cold-starts</strong> on 62+ Solomon & Gehring-Homberger instances; discovered scale-aware divergence, achieving <strong>1.75% to 4.07% Travel Distance minimization</strong> at matched vehicle floor (200-customer) and statistically significant vehicle reductions on 400-customer scale (Wilcoxon $p=0.0078$ on <code>c2_4_1</code>, $p=0.0156$ on <code>r2_4_1</code>).
+                            </li>
+                            <li>
+                                Authored comprehensive research report and released reproducible open-source benchmarking pipeline.
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- NeSy-DocAI Project -->
+                    <div class="cv-entry">
+                        <div class="cv-entry-header">
+                            <span class="cv-org"><a href="https://github.com/Thundercok/nesy-docai" target="_blank" rel="noopener" class="evidence-link" data-evidence="nesy">NeSy-DocAI: Neuro-Symbolic Document AI Pipeline</a> <span class="evidence-badge-inline">Evidence ↗</span></span>
+                            <span class="cv-loc">Qwen2.5-VL, Z3 SMT, PyTorch</span>
+                        </div>
+                        <div class="cv-entry-sub">
+                            <span class="cv-role">AI Engineer & Creator</span>
+                            <span class="cv-date">2024 — 2025</span>
+                        </div>
+                        <ul class="cv-bullets">
+                            <li>
+                                Built an end-to-end document parsing engine coupling <strong>Qwen2.5-VL</strong> vision-language OCR extraction with <strong>Z3 SMT Solver</strong> formal theorem proving to formally verify and correct accounting arithmetic in tabular invoices.
+                            </li>
+                            <li>
+                                Formulated line-item arithmetic, subtotal-VAT relationships, and balance equations into first-order logic constraints, completely eliminating arithmetic hallucination in extracted invoice data.
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- PG-MTAN Edge CCTV Project -->
+                    <div class="cv-entry">
+                        <div class="cv-entry-header">
+                            <span class="cv-org"><a href="https://github.com/Thundercok/hcmc-traffic-analytics" target="_blank" rel="noopener" class="evidence-link" data-evidence="cctv">PG-MTAN: Edge CCTV Multi-Task Traffic & Flood Analytics</a> <span class="evidence-badge-inline">Evidence ↗</span></span>
+                            <span class="cv-loc">ConvNeXt-V2, SAM 2, TimescaleDB</span>
+                        </div>
+                        <div class="cv-entry-sub">
+                            <span class="cv-role">Computer Vision Engineer</span>
+                            <span class="cv-date">2024</span>
+                        </div>
+                        <ul class="cv-bullets">
+                            <li>
+                                Developed a physics-guided multi-task attention network for joint traffic density estimation and urban flood water level assessment on low-resolution municipal CCTV feeds, achieving <strong>54.0 FPS throughput on Nvidia Jetson Orin</strong>.
+                            </li>
+                            <li>
+                                Integrated asynchronous video ingestion pipelines with FastAPI and TimescaleDB for automated urban monitoring.
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Rust Spider Project -->
+                    <div class="cv-entry">
+                        <div class="cv-entry-header">
+                            <span class="cv-org"><a href="https://github.com/Thundercok/Spider-The-Web-Crawler" target="_blank" rel="noopener" class="evidence-link" data-evidence="spider">Spider-The-Web-Crawler: High-Throughput Engine</a> <span class="evidence-badge-inline">Evidence ↗</span></span>
+                            <span class="cv-loc">Rust, Tokio Async</span>
+                        </div>
+                        <div class="cv-entry-sub">
+                            <span class="cv-role">Systems Engineer</span>
+                            <span class="cv-date">2023 — 2024</span>
+                        </div>
+                        <ul class="cv-bullets">
+                            <li>
+                                Designed a concurrent, memory-safe web scraping engine in <strong>Rust</strong> utilizing Tokio non-blocking actors and zero-copy streaming HTML parsing for high-throughput link extraction.
+                            </li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- HONORS & LEADERSHIP -->
+                <section class="cv-section">
+                    <h2 class="cv-section-title">Honors & Leadership</h2>
+
+                    <div class="cv-entry">
+                        <div class="cv-entry-header">
+                            <span class="cv-org"><span class="evidence-link" data-evidence="awards">ITZone Student Club & Software Contests (TDTU)</span> <span class="evidence-badge-inline">Evidence ↗</span></span>
+                            <span class="cv-loc">Ho Chi Minh City, Vietnam</span>
+                        </div>
+                        <div class="cv-entry-sub">
+                            <span class="cv-role"><strong>2nd Place Winner</strong> — ITZone Software Contest · Participant — DataStorm AI Contest</span>
+                            <span class="cv-date">2023 — 2024</span>
+                        </div>
+                        <ul class="cv-bullets">
+                            <li>
+                                Mentored club members on algorithmic problem solving, software design, and high-performance programming.
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="cv-entry">
+                        <div class="cv-entry-header">
+                            <span class="cv-org"><span class="evidence-link" data-evidence="awards">Vườn Ươm Nhà Nấm</span></span>
+                            <span class="cv-loc">Ho Chi Minh City, Vietnam</span>
+                        </div>
+                        <div class="cv-entry-sub">
+                            <span class="cv-role">Vice Lead</span>
+                            <span class="cv-date">2022 — 2023</span>
+                        </div>
+                        <ul class="cv-bullets">
+                            <li>
+                                Directed student academic operations, organized research seminars, and coordinated project review workflows.
+                            </li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- TECHNICAL SKILLS -->
+                <section class="cv-section">
+                    <h2 class="cv-section-title">Technical Skills</h2>
+                    <table class="cv-skills-table">
+                        <tbody>
+                            <tr>
+                                <td class="cv-skill-cat">AI & Optimization:</td>
+                                <td class="cv-skill-items">PyTorch, GNN / GAT, Deep RL (DDQN), ALNS Metaheuristics, Numba JIT, Z3 SMT Solver, Qwen2.5-VL, ConvNeXt-V2, SAM 2, Multi-Task Attention.</td>
+                            </tr>
+                            <tr>
+                                <td class="cv-skill-cat">Languages:</td>
+                                <td class="cv-skill-items">Python, Rust, C++, C#, JavaScript, TypeScript, SQL, Swift.</td>
+                            </tr>
+                            <tr>
+                                <td class="cv-skill-cat">Systems & Tools:</td>
+                                <td class="cv-skill-items">FastAPI, TimescaleDB, ASP.NET Core, Tokio Async, Docker, Linux, Git, LaTeX, Vite/React.</td>
+                            </tr>
+                            <tr>
+                                <td class="cv-skill-cat">Languages & Certs:</td>
+                                <td class="cv-skill-items"><strong>IELTS 7.5</strong> (English Proficiency), Basic Mandarin, Vietnamese (Native).</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+
+                <!-- PRINT FOOTER (Physical paper / PDF metadata) -->
+                <footer class="cv-print-footer">
+                    <span>Portfolio & Technical Evidence: https://thundercok.github.io/Thundercok</span>
+                    <span>Nguyễn Văn Mười — Curriculum Vitae</span>
+                </footer>
+
+            </main>
+
+            <!-- ── EVIDENCE DRAWER (SIDE PANEL) ── -->
+            <aside class="evidence-drawer" id="evidence-drawer" aria-label="Technical Evidence Details">
+                <div class="evidence-header">
+                    <div class="evidence-title-wrap">
+                        <span class="evidence-tag-icon" id="evidence-tag">RESEARCH</span>
+                        <span class="evidence-title" id="evidence-title">Technical Evidence</span>
+                    </div>
+                    <button class="btn-close-drawer" id="btn-close-drawer" title="Close drawer (Esc)">✕</button>
+                </div>
+                <div class="evidence-body" id="evidence-content">
+                    <!-- Dynamic evidence rendered via js/cv.js -->
+                </div>
+            </aside>
+
+        </div>
+
+        <script src="js/cv.js?v=1.0"></script>
+    </body>
+</html>

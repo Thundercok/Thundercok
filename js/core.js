@@ -214,12 +214,16 @@
 
     // ── 3. COMMAND PALETTE (Ctrl+K) ──
     const COMMAND_ITEMS = [
+        { label: "Open Japanese Color Guide & Outfit Studio (配色総鑑)", cat: "Tools", fn: () => window.location.href = "colors.html" },
+        { label: "View Harvard CV (ATS & Evidence View)", cat: "Resume", fn: () => window.location.href = "cv.html" },
+        { label: "Download Resume PDF (ATS-Compliant)", cat: "Resume", fn: () => window.open("cv.html", "_blank") },
         { label: "Go to About", cat: "Navigation", fn: () => navTo("about") },
         { label: "Go to Experience & Education", cat: "Navigation", fn: () => navTo("work") },
         { label: "Go to Projects", cat: "Navigation", fn: () => navTo("projects") },
         { label: "Go to Skills", cat: "Navigation", fn: () => navTo("skills") },
         { label: "Go to Publications & CV", cat: "Navigation", fn: () => navTo("writings") },
         { label: "Go to Contact", cat: "Navigation", fn: () => navTo("contact") },
+        { label: "Download VRPTW Research Paper (PDF)", cat: "Publications", fn: () => window.open("papers/VRPTW-VI.pdf", "_blank") },
         { label: "Open GitHub Profile", cat: "Links", fn: () => window.open("https://github.com/Thundercok", "_blank") },
         { label: "Send Email", cat: "Links", fn: () => window.location.href = "mailto:cathuys69@gmail.com" },
     ];

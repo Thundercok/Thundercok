@@ -1,57 +1,83 @@
 # Huy
 
-**I build things to solve problems. Sometimes they turn into research.**
+**Applied AI · Systems Engineering · Algorithmic Optimization**
 
-I'm a Computer Science student who enjoys figuring things out and building solutions.
+I'm a Computer Science student interested in building intelligent systems that solve practical problems.
 
-A lot of my projects start with someone around me having a problem. Sometimes it's a friend dealing with an annoying workflow, sometimes it's an idea I can't stop thinking about. I start building, explore the problem, and occasionally take it much further than originally intended.
+My work sits between applied research and software engineering. I enjoy exploring difficult problems, understanding the mechanisms behind them, and turning those ideas into working systems.
 
-That's why my repositories don't fit into one neat category. They range from practical tools and desktop applications to algorithmic experiments and research systems.
+I work primarily with Python, Rust, and C++, with a particular interest in optimization algorithms, machine learning, local AI systems, and developer tools.
 
-I don't always know what I'll build next. Usually, I just need an interesting problem to start with.
-
----
-
-### Selected Research & Engineering
-
-#### 01. Learning-Augmented Combinatorial Optimization
-**[`vrptw-neural-hybrid-optimizer`](https://github.com/Thundercok/vrptw-neural-hybrid-optimizer)** — *Hybrid metaheuristics for the Vehicle Routing Problem with Time Windows*
-* Hybridizes Adaptive Large Neighborhood Search (ALNS) with Dueling DDQN for adaptive operator selection.
-* Solves a set-partitioning formulation over accumulated routes to recombine high-quality sub-tours.
-* Uses JIT-compiled kernels (Numba) for accelerated feasibility checks and cost evaluation under independent cold-start runs.
-* Evaluates fleet-size and travel-distance trade-offs against published benchmark instances and reference solutions.
-
-#### 02. Structured Reasoning in Small Language Models
-**[`structured-multi-step-reasoning`](https://github.com/Thundercok/structured-multi-step-reasoning)** — *Experimental evaluation of intermediate reasoning traces*
-* Fine-tunes Qwen3-8B on Apple Silicon using MLX to emit structured, inspectable intermediate reasoning steps.
-* Investigates whether final answers respond systematically to step-level counterfactual interventions, expressed as $\text{do}(z_k \leftarrow \tilde{z}_k)$.
-* Pairs experimental evaluation with **RAT**, a native macOS research testbed built with QtQuick, Rust, and Python.
+I care about building software that is measurable, reproducible, and useful—not just technically interesting.
 
 ---
 
-### Other Projects & Practical Systems
+## Selected Projects
 
-Beyond the core research directions, other repositories reflect practical tools, desktop experiments, and coursework:
+### Research & Algorithmic Engineering
 
-* **[`multimodal-intent-inference`](https://github.com/Thundercok/multimodal-intent-inference)** — Low-latency computer vision interface for macOS, exploring continuous tracking and hands-free desktop interaction.
-* **[`selective-delegation-agent`](https://github.com/Thundercok/selective-delegation-agent)** *(CHUOT)* — Local-first on-device agent architecture with deterministic guards and selective cloud escalation.
+#### [VRPTW Neural Hybrid Optimizer](https://github.com/Thundercok/vrptw-neural-hybrid-optimizer)
+**Deep Reinforcement Learning · Combinatorial Optimization · Metaheuristics**
 
-Most of my repositories have questionable names. I try to make the engineering less questionable.
+A hybrid optimization framework for the Vehicle Routing Problem with Time Windows.
+
+- Combines Adaptive Large Neighborhood Search (ALNS) with Dueling Double DQN for adaptive search-operator selection.
+- Uses MILP-based set partitioning to recombine high-quality routes.
+- Applies Numba JIT compilation to accelerate feasibility checks and cost evaluation.
+- Evaluates fleet size and travel distance on Solomon and Homberger benchmark instances.
+- Includes multi-run experiments, statistical comparisons, and reproducibility tooling.
+
+#### [Structured Multi-Step Reasoning](https://github.com/Thundercok/structured-multi-step-reasoning)
+**LLM Fine-tuning · MLX · Experimental Evaluation**
+
+An experimental study of how language models respond to interventions on explicitly generated intermediate reasoning steps.
+
+- Fine-tunes Qwen3-8B on Apple Silicon using MLX.
+- Applies counterfactual interventions to intermediate reasoning traces.
+- Evaluates whether downstream answers follow, ignore, or recover from modified steps.
+- Includes structured trace parsing, symbolic checks, and evaluation tooling.
+
+### Applied AI & Systems Engineering
+
+#### [Selective Delegation Agent (CHUOT)](https://github.com/Thundercok/selective-delegation-agent)
+**Local AI · Retrieval Systems · Desktop Engineering**
+
+A local-first assistant focused on private document workflows and selective delegation.
+
+- Combines keyword and dense-vector retrieval.
+- Supports local language-model inference.
+- Provides document indexing and analysis workflows.
+- Explores deterministic safeguards and selective cloud escalation.
+
+#### [Multimodal Intent Inference](https://github.com/Thundercok/multimodal-intent-inference)
+**Computer Vision · macOS · Human-Computer Interaction**
+
+A macOS interface experiment exploring continuous visual tracking and hands-free desktop interaction.
 
 ---
 
-### Engineering Principles
+## Technical Interests
 
-* **Reproducibility:** Self-contained environments via `uv` or Docker, executable from a single documented script.
-* **Evaluation:** Multiple independent runs reporting $\mu \pm \sigma$ (or median / IQR when distributions skew).
-* **Statistical rigor:** Paired non-parametric tests (e.g., Wilcoxon signed-rank) where comparative performance claims are made.
-* **Deterministic configurations:** Controlled seed sequences where supported by frameworks and target hardware.
-* **Transparency:** Clear distinction between measured benchmark data and early-stage exploratory hypotheses.
+| Area | Technologies |
+|---|---|
+| Programming | Python, Rust, C++, Swift, Java |
+| Machine Learning | PyTorch, MLX, NumPy, SymPy |
+| AI Systems | LLM fine-tuning, local inference, retrieval systems |
+| Optimization | ALNS, reinforcement learning, MILP |
+| Backend & Data | FastAPI, SQLite, PostgreSQL |
+| Desktop | QtQuick, PyQt, SwiftUI |
+| Engineering | Docker, `uv`, Git, Linux, macOS |
 
 ---
 
-### Technical Interests
+## Engineering Principles
 
-* **Core Focus:** Combinatorial optimization, reinforcement learning, structured language model reasoning, local inference.
-* **Languages & Systems:** Python, Rust, Swift, C++, Numba, PyTorch, MLX, QtQuick / macOS.
-* **Tooling:** Docker, `uv`, Git, Linux, macOS.
+- **Reproducibility:** Make experiments and implementations straightforward to run independently.
+- **Measurement:** Evaluate systems with quantitative metrics, not intuition alone.
+- **Statistical rigor:** Use appropriate statistical comparisons when making performance claims.
+- **Practicality:** Prefer useful implementations over unnecessary abstraction.
+- **Transparency:** Separate measured results from hypotheses and exploratory work.
+
+---
+
+*I build things to solve problems. Sometimes they turn into research.*

@@ -2,9 +2,13 @@
 
 **I build things to solve problems. Sometimes they turn into research.**
 
-I'm a Computer Science student who likes taking practical engineering problems and pushing them until they hit algorithmic depth. A lot of my projects start simply—a friend runs into an annoying bottleneck, an interface feels clunky, or an everyday workflow is tedious—and I build something to solve it. When the problem turns out to have strict constraints or non-trivial tradeoffs, I dig deeper into experiments, benchmarks, and formal checks.
+I'm a Computer Science student who enjoys figuring things out and building solutions.
 
-That is why my repositories don't fit into a single neat box: some are fast practical tools, some are desktop systems, and some develop into full research testbeds.
+A lot of my projects start with someone around me having a problem. Sometimes it's a friend dealing with an annoying workflow, sometimes it's an idea I can't stop thinking about. I start building, explore the problem, and occasionally take it much further than originally intended.
+
+That's why my repositories don't fit into one neat category. They range from practical tools and desktop applications to algorithmic experiments and research systems.
+
+I don't always know what I'll build next. Usually, I just need an interesting problem to start with.
 
 ---
 
@@ -12,17 +16,17 @@ That is why my repositories don't fit into a single neat box: some are fast prac
 
 #### 01. Learning-Augmented Combinatorial Optimization
 **[`vrptw-neural-hybrid-optimizer`](https://github.com/Thundercok/vrptw-neural-hybrid-optimizer)** — *Hybrid metaheuristics for the Vehicle Routing Problem with Time Windows*
-* Hybridizes Adaptive Large Neighborhood Search (ALNS) with Dueling DDQN for adaptive destroy/repair operator selection.
-* Integrates MILP-based set partitioning to extract exact subproblem improvements.
-* Implements JIT-compiled kernels (Numba) for accelerated feasibility verification and cost evaluation under strict cold-start benchmarks.
-* Evaluates fleet-size and travel-distance trade-offs against competitive published baselines.
+* Hybridizes Adaptive Large Neighborhood Search (ALNS) with Dueling DDQN for adaptive operator selection.
+* Solves a set-partitioning formulation over accumulated routes to recombine high-quality sub-tours.
+* Uses JIT-compiled kernels (Numba) for accelerated feasibility checks and cost evaluation under independent cold-start runs.
+* Evaluates fleet-size and travel-distance trade-offs against published benchmark instances and reference solutions.
 
 #### 02. Structured Reasoning in Small Language Models
-**[`structured-multi-step-reasoning`](https://github.com/Thundercok/structured-multi-step-reasoning)** — *Mechanistic evaluation of intermediate reasoning traces*
+**[`structured-multi-step-reasoning`](https://github.com/Thundercok/structured-multi-step-reasoning)** — *Experimental evaluation of intermediate reasoning traces*
 * Fine-tunes Qwen3-8B on Apple Silicon using MLX to emit structured, inspectable intermediate reasoning steps.
 * Investigates whether final answers respond systematically to step-level counterfactual interventions:
   $$\text{do}(z_k \leftarrow \tilde{z}_k)$$
-* Pairs experimental evaluation with **RAT**, an interactive native macOS research testbed built with QtQuick, Rust, and Python.
+* Pairs experimental evaluation with **RAT**, a native macOS research testbed built with QtQuick, Rust, and Python.
 
 ---
 

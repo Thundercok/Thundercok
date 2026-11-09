@@ -21,14 +21,14 @@ I build and evaluate intelligent systems under practical constraints, focusing o
 * Investigating whether final predictions respond systematically to interventions on intermediate reasoning steps.
 * Fine-tuning Qwen3-8B on Apple Silicon using MLX with structured, inspectable reasoning steps.
 * Applying step-level counterfactual interventions:
-  $$\operatorname{do}(z_k \leftarrow \tilde{z}_k)$$
+  $$\text{do}(z_k \leftarrow \tilde{z}_k)$$
 * Developing RAT, an interactive native macOS research testbed built with QtQuick, Rust, and Python.
 
 ---
 
 ### Engineering systems & testbeds
 
-* **[`gesture-app-for-macs`](https://github.com/Thundercok/gesture-app-for-macs)** *(GestureFlow)* — Low-latency computer vision interface for macOS, exploring intent inference and adaptive event dispatching.
+* **[`multimodal-intent-inference`](https://github.com/Thundercok/multimodal-intent-inference)** — Low-latency computer vision interface for macOS, exploring intent inference and adaptive event dispatching.
 * **[`selective-delegation-agent`](https://github.com/Thundercok/selective-delegation-agent)** *(CHUOT)* — Local-first agent architecture with deterministic guards and selective cloud escalation to balance latency, privacy, and cost.
 
 ---

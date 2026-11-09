@@ -24,8 +24,7 @@ I don't always know what I'll build next. Usually, I just need an interesting pr
 #### 02. Structured Reasoning in Small Language Models
 **[`structured-multi-step-reasoning`](https://github.com/Thundercok/structured-multi-step-reasoning)** — *Experimental evaluation of intermediate reasoning traces*
 * Fine-tunes Qwen3-8B on Apple Silicon using MLX to emit structured, inspectable intermediate reasoning steps.
-* Investigates whether final answers respond systematically to step-level counterfactual interventions:
-  $$\text{do}(z_k \leftarrow \tilde{z}_k)$$
+* Investigates whether final answers respond systematically to step-level counterfactual interventions, expressed as $\text{do}(z_k \leftarrow \tilde{z}_k)$.
 * Pairs experimental evaluation with **RAT**, a native macOS research testbed built with QtQuick, Rust, and Python.
 
 ---

@@ -56,6 +56,22 @@ A macOS interface experiment exploring continuous visual tracking and hands-free
 
 ---
 
+## Independent Research & Explorations
+
+#### [The Kirkification Effect — OMDP](https://github.com/Thundercok/kirkification-omdp)
+**Generative AI · Data-Centric AI Safety · Facial Morphology**
+
+An exploratory research pipeline investigating whether meme-driven facial distortions, paired with benign captions, can influence the facial morphology learned by latent diffusion models.
+
+- Simulates controlled dataset contamination across multiple mixing ratios.
+- Measures facial proportion drift and identity similarity using FPR and ArcFace-based ILS.
+- Fine-tunes diffusion LoRA adapters and evaluates generations with fixed prompts and seeds.
+- Explores data-centric filtering as a potential mitigation.
+
+*Experimental project: the pipeline investigates a hypothesis; its real-world prevalence and effects require empirical validation.*
+
+---
+
 ## Technical Interests
 
 | Area | Technologies |

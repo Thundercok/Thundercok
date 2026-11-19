@@ -1,24 +1,25 @@
 # Huy
 
-**Applied AI & Systems Engineering**  
-*Reliable AI · Algorithmic Optimization · On-Device Systems*
+**Computer Science · Independent Research · Unreasonably Specific Problems**
 
-I'm a Computer Science student building and evaluating intelligent systems for practical problems.
+I'm a Computer Science student who builds things, investigates strange problems, and occasionally takes an idea much further than it probably needed to go.
 
-My work focuses on three connected areas: **algorithmic optimization**, **reliable AI systems**, and **on-device applications**. Across research and engineering projects, I care about whether a system works under real constraints, how its behavior can be measured, and where it should recognize uncertainty instead of making unsupported decisions.
+My projects don't fit neatly into one domain. One day it's vehicle routing with reinforcement learning; another it's testing whether language models actually use their own reasoning traces, building a local-first desktop agent, or figuring out how to make a tiny program run with fewer registers.
 
-I primarily work with Python, Rust, C++, and Swift. I value reproducible experiments, explicit system boundaries, and software that others can inspect and run.
+The common thread is curiosity, followed by an unreasonable amount of implementation.
+
+I mostly work with Python, Rust, C++, and Swift. I like difficult problems, measurable results, and tools that do something real. I also like knowing exactly what a system does—and where it breaks.
 
 ---
 
-## Flagship Projects
+## The Main Obsessions
 
-These projects best represent the direction of my work.
+These are the projects that best represent the kind of technical work I spend the most time on.
 
 ### [VRPTW Neural Hybrid Optimizer](https://github.com/Thundercok/vrptw-neural-hybrid-optimizer)
-**Algorithmic Optimization · Deep Reinforcement Learning · Operations Research**
+**Combinatorial Optimization · Deep Reinforcement Learning · Operations Research**
 
-A hybrid optimization framework for the Vehicle Routing Problem with Time Windows.
+A hybrid solver for the Vehicle Routing Problem with Time Windows.
 
 - Combines Adaptive Large Neighborhood Search (ALNS) with Dueling Double DQN for adaptive search-operator selection.
 - Uses MILP-based set partitioning to recombine high-quality routes.
@@ -27,9 +28,9 @@ A hybrid optimization framework for the Vehicle Routing Problem with Time Window
 - Includes multi-run experiments, statistical comparisons, and reproducibility tooling.
 
 ### [Structured Multi-Step Reasoning](https://github.com/Thundercok/structured-multi-step-reasoning)
-**Experimental AI Research · LLM Fine-tuning · MLX**
+**LLM Fine-tuning · MLX · Experimental Evaluation**
 
-An experimental study of how language models respond to interventions on explicitly generated intermediate reasoning steps.
+A study of what happens when you deliberately interfere with a language model's intermediate reasoning steps. Does the final answer actually depend on them?
 
 - Fine-tunes Qwen3-8B on Apple Silicon using MLX.
 - Applies counterfactual interventions to intermediate reasoning traces.
@@ -37,9 +38,9 @@ An experimental study of how language models respond to interventions on explici
 - Includes structured trace parsing, symbolic checks, and evaluation tooling.
 
 ### [Selective Delegation Agent (CHUOT)](https://github.com/Thundercok/selective-delegation-agent)
-**AI Systems · Local Inference · Retrieval & Tool Orchestration**
+**Local AI · Retrieval Systems · Desktop Engineering**
 
-A local-first assistant focused on private document workflows and selective delegation.
+A local-first assistant for private document workflows, retrieval, and selective delegation.
 
 - Combines keyword and dense-vector retrieval.
 - Supports local language-model inference.
@@ -48,14 +49,14 @@ A local-first assistant focused on private document workflows and selective dele
 
 ---
 
-## Supporting Research & Engineering
+## Other Rabbit Holes
 
-Projects that explore adjacent methods and applications.
+Not side projects in the sense of being throwaway work. Just different questions that happened to become code.
 
 ### [Verified Document Intake](https://github.com/Thundercok/verified-document-intake)
-**Reliable AI · OCR · Uncertainty & Selective Prediction**
+**OCR · Uncertainty Estimation · On-Device Processing**
 
-An on-device document intake project investigating deterministic PDF/OCR processing, field-level uncertainty estimation, and selective abstention for privacy-sensitive administrative documents.
+An on-device document intake project exploring deterministic PDF/OCR processing, field-level uncertainty estimation, and selective abstention for privacy-sensitive administrative documents.
 
 - Separates digital PDF text extraction from explicit OCR paths.
 - Uses multi-engine OCR signals and deterministic structural checks as inputs to field-level verification.
@@ -65,25 +66,21 @@ An on-device document intake project investigating deterministic PDF/OCR process
 ### [Multimodal Intent Inference](https://github.com/Thundercok/multimodal-intent-inference)
 **Computer Vision · macOS · Human-Computer Interaction**
 
-A macOS interface experiment exploring continuous visual tracking and hands-free desktop interaction.
+A macOS experiment in continuous visual tracking and hands-free desktop interaction. The general idea: make a computer understand what you mean to do without making you reach for the mouse every time.
 
 ### [SLP Superoptimization](https://github.com/Thundercok/slp-superopt)
 **Program Synthesis · Search Algorithms · Register-Constrained Optimization**
 
-An independent solver project exploring straight-line program synthesis and superoptimization under register constraints.
+A solver exploring straight-line program synthesis and superoptimization under register constraints.
 
 - Implements a deterministic virtual machine and legality checks.
 - Explores search-based optimization over candidate programs.
 - Uses the Santa 2026 Elf Calculator benchmark as an evaluation target.
 
 ### [Archetype Symbolic Reasoning](https://github.com/Thundercok/archetype-symbolic-reasoning)
-**Symbolic AI · Formal Models · MCP**
+**Symbolic Systems · Formal Models · MCP**
 
-A deterministic symbolic reasoning toolkit for representing and evaluating structured systems such as I Ching, Tarot, and other formal symbolic frameworks.
-
-- Models symbolic systems through explicit states, transitions, and constraints.
-- Includes deterministic engines, canonical data, and evaluation metrics.
-- Exposes capabilities through an MCP server for use by external clients.
+A deterministic toolkit for representing and evaluating structured symbolic systems such as I Ching, Tarot, and other formal frameworks. An attempt to treat systems usually discussed interpretively as explicit states, rules, and constraints.
 
 ### [The Kirkification Effect — OMDP](https://github.com/Thundercok/kirkification-omdp)
 **Generative AI · Data-Centric AI Safety · Facial Morphology**
@@ -99,7 +96,7 @@ An exploratory research pipeline investigating whether meme-driven facial distor
 
 ---
 
-## Technical Interests
+## Tools I Reach For
 
 | Area | Technologies |
 |---|---|
@@ -113,14 +110,14 @@ An exploratory research pipeline investigating whether meme-driven facial distor
 
 ---
 
-## Engineering Principles
+## A Few Things I Care About
 
-- **Reproducibility:** Make experiments and implementations straightforward to run independently.
-- **Measurement:** Evaluate systems with quantitative metrics, not intuition alone.
-- **Statistical rigor:** Use appropriate statistical comparisons when making performance claims.
-- **Practicality:** Prefer useful implementations over unnecessary abstraction.
-- **Transparency:** Separate measured results from hypotheses and exploratory work.
+- **Make it work.** Then find out whether it works for the reason you think it does.
+- **Measure the thing.** A convincing explanation is not a benchmark.
+- **Keep the weird idea.** If it's interesting enough to investigate, it's worth giving it a proper experiment.
+- **Don't fake certainty.** Hypotheses, prototypes, and demonstrated results are different things.
+- **Leave something runnable.** Code should be more than a screenshot of an idea.
 
 ---
 
-*Independent projects, connected by an interest in building intelligent systems that can be measured, understood, and trusted.*
+*Mostly independent projects. Connected by curiosity, stubbornness, and a tendency to over-engineer the interesting parts.*

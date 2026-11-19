@@ -4,9 +4,9 @@
 
 I'm a Computer Science student interested in building intelligent systems that solve practical problems.
 
-My work sits between applied research and software engineering. I enjoy exploring difficult problems, understanding the mechanisms behind them, and turning those ideas into working systems.
+I work across independent research projects, software systems, and algorithmic tools. Some projects are exploratory studies; others are built as standalone tools or reusable components. I do not force them into one domain or a single product.
 
-I work primarily with Python, Rust, and C++, with a particular interest in optimization algorithms, machine learning, local AI systems, and developer tools.
+I work primarily with Python, Rust, C++, and Swift. My interests include optimization, machine learning, symbolic systems, local AI, computer vision, and developer tools.
 
 I care about building software that is measurable, reproducible, and useful—not just technically interesting.
 
@@ -36,6 +36,26 @@ An experimental study of how language models respond to interventions on explici
 - Applies counterfactual interventions to intermediate reasoning traces.
 - Evaluates whether downstream answers follow, ignore, or recover from modified steps.
 - Includes structured trace parsing, symbolic checks, and evaluation tooling.
+
+### Independent Tools & Research
+
+#### [Archetype Symbolic Reasoning](https://github.com/Thundercok/archetype-symbolic-reasoning)
+**Neuro-Symbolic Systems · Formal Symbolic Models · MCP**
+
+A deterministic symbolic reasoning toolkit for representing and evaluating structured systems such as I Ching, Tarot, and other formal symbolic frameworks.
+
+- Models symbolic systems through explicit states, transitions, and constraints.
+- Includes deterministic engines, canonical data, and evaluation metrics.
+- Exposes capabilities through an MCP server for use by external clients.
+
+#### [SLP Superoptimization](https://github.com/Thundercok/slp-superopt)
+**Program Synthesis · Search Algorithms · Register-Constrained Optimization**
+
+An independent solver project exploring straight-line program synthesis and superoptimization under register constraints.
+
+- Implements a deterministic virtual machine and legality checks.
+- Explores search-based optimization over candidate programs.
+- Uses the Santa 2026 Elf Calculator benchmark as an evaluation target.
 
 ### Applied AI & Systems Engineering
 
@@ -96,4 +116,4 @@ An exploratory research pipeline investigating whether meme-driven facial distor
 
 ---
 
-*I build things to solve problems. Sometimes they turn into research.*
+*Independent projects, built around problems worth solving.*

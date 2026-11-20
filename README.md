@@ -4,7 +4,7 @@
 
 I'm a Computer Science student interested in building useful software, solving concrete problems, and understanding how intelligent systems behave.
 
-My work spans applied AI, algorithmic optimization, and systems engineering. This profile contains a mix of research projects, experimental prototypes, and practical solutions developed for specific needs — including collaborative work.
+My work spans applied AI, algorithmic optimization, and systems engineering. This profile includes my own research and experiments, as well as solutions I build for problems and requirements brought to me by other people.
 
 I care about making ideas runnable, evaluating them honestly, and documenting what works, what doesn't, and what still needs validation.
 
@@ -37,9 +37,9 @@ An investigation into whether language models actually depend on their intermedi
 
 ---
 
-## Applied & Collaborative Builds
+## Solutions for Others
 
-Practical systems and project-specific solutions. Some repositories are collaborative work rather than standalone research projects; their individual documentation describes the implementation and current status.
+Projects I build in response to problems, ideas, or specific requirements brought to me by other people. The problem may come from someone else; I take on the engineering work of turning that need into a working solution.
 
 ### [Beauty AI Consultant](https://github.com/Thundercok/beauty-ai-consultant)
 **Computer Vision · Color Science · Recommendation Systems**

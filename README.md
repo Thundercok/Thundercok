@@ -1,3 +1,1 @@
-# Huy
-
-CS · AI · Optimization
+Experiments in software, data, and problem-solving.

@@ -31,7 +31,6 @@ GestureFlow: hands-free macOS control from camera-tracked hand motion (Apple Vis
 ## Smaller projects
 
 - **[Beauty AI Consultant](https://github.com/Thundercok/beauty-ai-consultant)**: skin colorimetry and Kubelka-Munk shade matching for picking makeup.
-- **[Santa 2026](https://github.com/Thundercok/santa-2026)**: Kaggle; synthesizing the shortest straight-line arithmetic programs over 48 registers.
 - **[Zero-Form Scheduling](https://github.com/Thundercok/zero-form-scheduling)**: timetable composition, conflict detection and iCalendar sync.
 - **[Archetype Symbolic Reasoning](https://github.com/Thundercok/archetype-symbolic-reasoning)**: deterministic grounding over formal symbolic systems (I Ching, Tarot, numerology), an exercise in neuro-symbolic evaluation.
 - **[Kirkification OMDP](https://github.com/Thundercok/kirkification-omdp)**: exploratory; does meme-distorted face data shift what latent diffusion models generate? Not yet validated.

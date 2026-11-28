@@ -13,11 +13,15 @@ Learning-augmented optimization · Structured reasoning · Reliable local-first 
 **[Structured Multi-Step Reasoning](https://github.com/Thundercok/structured-multi-step-reasoning)**  
 Fine-tuning Qwen3-8B with MLX on Apple Silicon, then using step-level counterfactual interventions to test whether intermediate reasoning steps causally affect final predictions. Includes pre-registered analyses and raw outputs.
 
-**[VRPTW Neural Hybrid Optimizer](https://github.com/Thundercok/vrptw-neural-hybrid-optimizer)**  
-A hybrid solver for vehicle routing with time windows: ALNS guided by Dueling Double DQN and graph features, with set-partitioning recombination. Evaluated on Solomon and Homberger benchmarks.
-
 **[Bounded Reasoning Harness](https://github.com/Thundercok/bounded-reasoning-harness)**  
 Controlled evaluation of small coding agents under fixed reasoning, tool-call, and runtime budgets, with deterministic verification before patch submission.
+
+## Completed research
+
+**[VRPTW Neural Hybrid Optimizer](https://github.com/Thundercok/vrptw-neural-hybrid-optimizer)** · *Research completed | Manuscript under review*  
+Developed a hybrid optimization framework combining Dueling DDQN, Adaptive Large Neighborhood Search, graph-based guidance, and MILP set partitioning for the Vehicle Routing Problem with Time Windows. Evaluated on Solomon and Homberger benchmarks, with documented experimental protocols, statistical analyses, and reproducibility artifacts.
+
+The research and implementation are complete. The manuscript is currently under review.
 
 ## Reliable local-first systems
 
